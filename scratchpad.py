@@ -1,22 +1,7 @@
-from bs4 import BeautifulSoup
-
-file = open("z80.html")
-html = file.read()
-soup = BeautifulSoup(html, "html.parser")
-
-#print(soup.prettify())
-
-table1 = soup.find(id="table1")
-#print(table1)
-
-tables = soup.find_all("table")
-
-#for table in tables:
-
-tds = soup.find_all("td")
-print(len(tds))
-
-for i, td in enumerate(tds):
-    print(td)
-    if i == 15:
-        break
+for i in range(192):
+    block = i // 64
+    block_offset = i % 64
+    row = block_offset % 8
+    row_offset = block_offset // 8
+    memory = block * 2048 + row * 256 + row_offset * 32
+    print(i, block, row, row_offset, memory)

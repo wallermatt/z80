@@ -5,3 +5,5 @@ for i in range(192):
     row_offset = block_offset // 8
     memory = block * 2048 + row * 256 + row_offset * 32
     print(i, block, row, row_offset, memory)
+
+    

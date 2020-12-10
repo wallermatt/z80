@@ -9,6 +9,8 @@ from pygame.locals import (
     K_LEFT,
     K_RIGHT,
     K_ESCAPE,
+    K_m,
+    K_k,
     KEYDOWN,
     QUIT,
 )
@@ -45,6 +47,10 @@ class Player(pygame.sprite.Sprite):
             self.rect.move_ip(-1, 0)
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(1, 0)
+        if pressed_keys[K_m]:
+            self.change_memory('dec')
+        if pressed_keys[K_k]:
+            self.change_memory('inc')
 
             # Keep player on the screen
         if self.rect.left < SPEC_SCREEN_LEFT:
@@ -72,6 +78,9 @@ class Player(pygame.sprite.Sprite):
         power = 7 - remainder
         self.memory_location_value = 2 ** power
 
+    def change_memory(self, action):
+        pass
+
 
 # Set up the drawing window
 screen = pygame.display.set_mode([1000, 1000])
@@ -90,7 +99,7 @@ rect = surf.get_rect()
 screen.blit(player.surf, player.rect)
 screen.blit(surf, ((SPEC_SCREEN_LEFT, SPEC_SCREEN_RIGHT)))
 
-pygame.key.set_repeat(1, 50)
+pygame.key.set_repeat(1, 500)
 
 # Run until the user asks to quit
 running = True

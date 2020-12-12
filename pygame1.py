@@ -20,7 +20,8 @@ SPEC_SCREEN_TOP = 50
 SPEC_SCREEN_RIGHT = 306
 SPEC_SCREEN_BOTTOM = 242
 
-SCREEN_START = 6400
+SCREEN_START = 16384
+SCREEN_END = 22528
 
 pygame.init()
 
@@ -48,9 +49,9 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(1, 0)
         if pressed_keys[K_m]:
-            self.change_memory('dec')
-        if pressed_keys[K_k]:
             self.change_memory('inc')
+        if pressed_keys[K_k]:
+            self.change_memory('dec')
 
             # Keep player on the screen
         if self.rect.left < SPEC_SCREEN_LEFT:
@@ -73,13 +74,30 @@ class Player(pygame.sprite.Sprite):
         row_offset = block_offset // 8
         self.memory_location_offset = block * 2048 + row * 256 + row_offset * 32
         self.memory_location_offset += x // 8
-        self.memory_location_offset += SCREEN_START
         remainder = x % 8
         power = 7 - remainder
         self.memory_location_value = 2 ** power
 
+
     def change_memory(self, action):
-        pass
+        if action == "inc":
+            self.memory_location_offset += 1
+        elif action == "dec":
+            self.memory_location_offset -= 1
+        if self.memory_location_offset < 0:
+            self.memory_location_offset = 0
+        elif self.memory_location_offset > (SCREEN_END - SCREEN_START):
+            self.memory_location_offset = SCREEN_END - SCREEN_START
+
+        self.calculate_coords_from_memory()
+
+    def calculate_coords_from_memory(self):
+        block = self.memory_location_offset // 2048
+        block_offset = self.memory_location_offset % 2048
+        line = block_offset // 8
+        line_offset = block_offset % 8
+        row = line_offset // 64
+        
 
 
 # Set up the drawing window
@@ -128,7 +146,7 @@ while running:
     textsurface = myfont.render("x:{}, y:{}".format(str(player.rect.left - SPEC_SCREEN_LEFT), str(player.rect.top - SPEC_SCREEN_TOP)), False, (0, 0, 0))
     screen.blit(textsurface,(400,50))
     
-    textsurface2 = myfont.render("Loc:{}, Value:{}".format(str(player.memory_location_offset), str(player.memory_location_value)), False, (0, 0, 0))
+    textsurface2 = myfont.render("Loc:{}, Value:{}".format(str(player.memory_location_offset + SCREEN_START), str(player.memory_location_value)), False, (0, 0, 0))
     screen.blit(textsurface2,(400,150))
     
     #surf.fill((215, 215, 215))

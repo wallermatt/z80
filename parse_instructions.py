@@ -4,6 +4,8 @@ instructions = []
 
 instruction_list = []
 
+instruction_set = set()
+
 class Instruction:
     
     def __init__(self, opcode, text, size, time, flags, desc, instruction_base, left=None, right=None):
@@ -71,8 +73,15 @@ for instruction in instructions:
 
     new_instruction = Instruction(instruction[4], instruction[5], size, time, flags, desc, instruction_base, left_arg, right_arg)
     instruction_list.append(new_instruction)
-    print(new_instruction)
+    instruction_set.add(instruction_base)
+    #print(new_instruction)
 
-for instruction in instruction_list:
-    print(instruction.text, instruction.size, instruction.time, instruction.flags, instruction.desc)
+#for instruction in instruction_list:
+#    print(instruction.text, instruction.size, instruction.time, instruction.flags, instruction.desc)
+    
+
+for instruction in instruction_set:
+    print(instruction)
+
+print(len(instruction_set))
 

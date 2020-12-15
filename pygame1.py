@@ -2,6 +2,7 @@
 
 # Import and initialize the pygame library
 import pygame
+import math
 
 from pygame.locals import (
     K_UP,
@@ -38,6 +39,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = SPEC_SCREEN_TOP
         self.memory_location_offset = 0
         self.memory_location_value = 128
+        self.x_coord = 0
+        self.y_coord = 0
 
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
@@ -94,10 +97,15 @@ class Player(pygame.sprite.Sprite):
     def calculate_coords_from_memory(self):
         block = self.memory_location_offset // 2048
         block_offset = self.memory_location_offset % 2048
-        line = block_offset // 8
-        line_offset = block_offset % 8
-        row = line_offset // 64
-        
+        line = block_offset // 256
+        line_offset = block_offset % 256
+        row = line_offset // 32
+        column = block_offset % 32
+        self.x_coord = column * 8 + (7 - int(math.log(self.memory_location_value) / math.log(2)))
+        self.y_coord = block * 64 + row * 8 + line
+        self.rect.left = self.x_coord + SPEC_SCREEN_LEFT
+        self.rect.top = self.y_coord + SPEC_SCREEN_TOP
+
 
 
 # Set up the drawing window
@@ -143,11 +151,15 @@ while running:
 
     screen.blit(player.surf, player.rect)
 
+    player.calculate_coords_from_memory()
     textsurface = myfont.render("x:{}, y:{}".format(str(player.rect.left - SPEC_SCREEN_LEFT), str(player.rect.top - SPEC_SCREEN_TOP)), False, (0, 0, 0))
     screen.blit(textsurface,(400,50))
     
     textsurface2 = myfont.render("Loc:{}, Value:{}".format(str(player.memory_location_offset + SCREEN_START), str(player.memory_location_value)), False, (0, 0, 0))
     screen.blit(textsurface2,(400,150))
+
+    textsurface3 = myfont.render("x:{}, y:{}".format(str(player.x_coord), str(player.y_coord)), False, (0, 0, 0))
+    screen.blit(textsurface3,(400,250))
     
     #surf.fill((215, 215, 215))
     

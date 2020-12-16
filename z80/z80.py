@@ -4,13 +4,10 @@ from base import Component, Memory, InstructionBase, DoubleComponent
 class CPUTest(InstructionBase):
 
     MEMORY_SIZE = 256 * 256
-    PROGRAM_COUNTER = "PC"
-    STACK_POINTER = "SP"
 
     def __init__(self):
         self.memory = Memory(self.MEMORY_SIZE)
         self._define_registers()
-        self.registers_by_name ={reg.name: reg for reg in self.registers}
 
     def _define_registers(self):
         self.program_counter_low = Component("PCL")
@@ -36,12 +33,26 @@ class CPUTest(InstructionBase):
         self.IYH = Component("IYH")
         self.IYL = Component("IYL")
 
+        self.A_ALT = Component("A'")
+        self.B_ALT = Component("B'")
+        self.C_ALT = Component("C'")
+        self.D_ALT = Component("D'")
+        self.E_ALT = Component("E'")
+        self.F_ALT = Component("F'")
+        self.H_ALT = Component("H'")
+        self.L_ALT = Component("L'")
+
         self.AF = DoubleComponent("AF", self.F, self.A)
         self.BC = DoubleComponent("BC", self.C, self.B)
         self.DE = DoubleComponent("DE", self.E, self.D)
         self.HL = DoubleComponent("HL", self.L, self.H)
         self.IX = DoubleComponent("IX", self.IXL, self.IXH)
         self.IY = DoubleComponent("IY", self.IYL, self.IYH)
+
+        self.AF_ALT = DoubleComponent("AF'", self.F_ALT, self.A_ALT)
+        self.BC_ALT = DoubleComponent("BC'", self.C_ALT, self.B_ALT)
+        self.DE_ALT = DoubleComponent("DE'", self.E_ALT, self.D_ALT)
+        self.HL_ALT = DoubleComponent("HL'", self.L_ALT, self.H_ALT)
 
         self.registers = [
             self.program_counter,
@@ -65,7 +76,17 @@ class CPUTest(InstructionBase):
             self.DE,
             self.HL,
             self.IX,
-            self.IY
+            self.IY,
+            self.A_ALT,
+            self.B_ALT,
+            self.C_ALT,
+            self.D_ALT,
+            self.E_ALT,
+            self.F_ALT,
+            self.AF_ALT,
+            self.BC_ALT,
+            self.DE_ALT,
+            self.HL_ALT,
         ]
 
         self.registers_by_name = {reg.name: reg for reg in self.registers}

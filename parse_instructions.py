@@ -8,7 +8,7 @@ instruction_set = set()
 
 class Instruction:
     
-    def __init__(self, opcode, text, size, time, flags, desc, instruction_base, left=None, right=None):
+    def __init__(self, opcode, text, size, time, flags, desc, instruction_base, left_arg=None, right_arg=None):
         self.opcode = opcode
         self.text = text
         self.size = size
@@ -16,8 +16,8 @@ class Instruction:
         self.flags = flags
         self.desc = desc
         self.instruction_base = instruction_base
-        self.left = left
-        self.right = right
+        self.left_arg = left_arg
+        self.right_arg = right_arg
 
 
     def __str__(self):
@@ -76,12 +76,13 @@ for instruction in instructions:
     instruction_set.add(instruction_base)
     #print(new_instruction)
 
-#for instruction in instruction_list:
-#    print(instruction.text, instruction.size, instruction.time, instruction.flags, instruction.desc)
+for instruction in instruction_list:
+    if instruction.text[:2] == "ld":
+        print(instruction.text, instruction.size, instruction.time, instruction.flags, instruction.desc)
     
 
-for instruction in instruction_set:
-    print(instruction)
+#for instruction in instruction_set:
+#    print(instruction)
 
-print(len(instruction_set))
+#print(len(instruction_set))
 

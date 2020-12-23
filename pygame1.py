@@ -12,6 +12,8 @@ from pygame.locals import (
     K_ESCAPE,
     K_m,
     K_k,
+    K_q,
+    K_a,
     KEYDOWN,
     QUIT,
 )
@@ -28,6 +30,74 @@ pygame.init()
 
 pygame.font.init()
 myfont = pygame.font.SysFont('Arial', 30)
+
+COLOURS = {
+    0: {0: "#000000", 1: "#000000"},
+    1: {0: "#0000D7", 1: "#0000FF"},
+    2: {0: "#D70000", 1: "#FF0000"},
+    3: {0: "#D700D7", 1: "#FF00FF"},
+    4: {0: "#00D700", 1: "#00FF00"},
+    5: {0: "#00D7D7", 1: "#00FFFF"},
+    6: {0: "#D7D700", 1: "#FFFF00"},
+    7: {0: "#D7D7D7", 1: "#FFFFFF"},
+}
+
+SCR_ATTRIBUTES = [[8 * i for i in range(32)] for _ in range(24)]
+
+
+def get_screen_attributes(value):
+    flash = value // 128
+    flash_offset = value % 128
+    bright = flash_offset // 64
+    bright_offset = flash_offset % 64
+    paper = bright_offset // 8
+    ink = bright_offset % 8
+    paper_colour = COLOURS[paper][bright]
+    ink_colour = COLOURS[ink][bright]
+    return flash, paper_colour, ink_colour
+
+
+def get_grid_from_coords(x, y):
+    x -= SPEC_SCREEN_LEFT
+    y -= SPEC_SCREEN_TOP
+    grid_x = x // 8
+    grid_y = y // 8
+    return grid_x, grid_y
+
+
+def get_coords_from_grid(grid_x, grid_y):
+    x = grid_x * 8 + SPEC_SCREEN_LEFT
+    y = grid_y * 8 + SPEC_SCREEN_TOP
+    return x, y
+
+
+def set_screen_paper():
+    for grid_y, row in enumerate(SCR_ATTRIBUTES):
+        for grid_x, attribute in enumerate(row):
+            _, paper_colour, _ = get_screen_attributes(attribute)
+            x,y = get_coords_from_grid(grid_x, grid_y)
+            pygame.draw.rect(screen, (paper_colour), (x, y, 8, 8), 0)
+
+
+def get_current_attribute_value(x, y):
+    grid_x, grid_y = get_grid_from_coords(x, y)
+    attribute_value = SCR_ATTRIBUTES[grid_y][grid_x]
+    return attribute_value
+
+
+def manaual_attribute_update(pressed_keys, player):
+    current_attribute_value = get_current_attribute_value(player.rect.left, player.rect.top)
+    if pressed_keys[K_q]:
+        current_attribute_value += 1
+    elif pressed_keys[K_a]:
+        current_attribute_value -= 1
+    if current_attribute_value < 0:
+        current_attribute_value = 0
+    elif current_attribute_value > 255:
+        current_attribute_value = 255
+    grid_x, grid_y = get_grid_from_coords(player.rect.left, player.rect.top)
+    SCR_ATTRIBUTES[grid_y][grid_x] = current_attribute_value
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -143,11 +213,18 @@ while running:
         pressed_keys = pygame.key.get_pressed()
         player.update(pressed_keys)
 
+        manaual_attribute_update(pressed_keys, player)
+
     # Fill the background with white
 
     screen.fill((255, 255, 255))
-    surf.fill((215, 215, 215))
+    
+    #surf.fill((215, 215, 215))
+    
     screen.blit(surf, ((50, 50)))
+    set_screen_paper()
+
+    #pygame.draw.rect(screen, ("#000000"), (90, 90, 8, 8), 0)
 
     screen.blit(player.surf, player.rect)
 
@@ -161,6 +238,9 @@ while running:
     textsurface3 = myfont.render("x:{}, y:{}".format(str(player.x_coord), str(player.y_coord)), False, (0, 0, 0))
     screen.blit(textsurface3,(400,250))
     
+    current_attribute_value = get_current_attribute_value(player.rect.left, player.rect.top)
+    textsurface4 = myfont.render("Current Attribute Value: {}".format(str(current_attribute_value)), False, (0, 0, 0))
+    screen.blit(textsurface4,(400,350))
     #surf.fill((215, 215, 215))
     
 

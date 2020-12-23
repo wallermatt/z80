@@ -42,6 +42,8 @@ COLOURS = {
     7: {0: "#D7D7D7", 1: "#FFFFFF"},
 }
 
+SCR_MEMORY = [[0 for _ in range(32)] for _ in range(192)]
+
 SCR_ATTRIBUTES = [[8 * i for i in range(32)] for _ in range(24)]
 
 
@@ -97,6 +99,28 @@ def manaual_attribute_update(pressed_keys, player):
         current_attribute_value = 255
     grid_x, grid_y = get_grid_from_coords(player.rect.left, player.rect.top)
     SCR_ATTRIBUTES[grid_y][grid_x] = current_attribute_value
+
+
+def convert_memory_value_to_binary_string(value):
+    return bin(value)[2:]
+
+
+def get_memory_value_at_coords(x, y):
+    return SCR_MEMORY[y][x // 8]
+
+
+def set_memory_value_at_coords(value, x, y):
+    SCR_MEMORY[y][x // 8] = value
+
+
+def write_memory_location_at_coords_to_screen(x, y):
+    value = get_memory_value_at_coords(x, y)
+    binary_value = convert_memory_value_to_binary_string(value)
+    current_attribute_value = get_current_attribute_value(x, y)
+    _,_, ink_colour = get_screen_attributes(current_attribute_value)
+    for i, bit in enumerate(binary_value):
+        if bit == "1":
+            pygame.draw.rect(screen, (ink_colour), (x + i, y, 1, 1), 0
 
 
 class Player(pygame.sprite.Sprite):

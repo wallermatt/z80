@@ -3,6 +3,7 @@
 # Import and initialize the pygame library
 import pygame
 import math
+import random
 
 from pygame.locals import (
     K_UP,
@@ -14,6 +15,8 @@ from pygame.locals import (
     K_k,
     K_q,
     K_a,
+    K_w,
+    K_s,
     KEYDOWN,
     QUIT,
 )
@@ -30,6 +33,7 @@ pygame.init()
 
 pygame.font.init()
 myfont = pygame.font.SysFont('Arial', 30)
+myfont2 = pygame.font.SysFont('Arial', 15)
 
 COLOURS = {
     0: {0: "#000000", 1: "#000000"},
@@ -42,9 +46,11 @@ COLOURS = {
     7: {0: "#D7D7D7", 1: "#FFFFFF"},
 }
 
-SCR_MEMORY = [[0 for _ in range(32)] for _ in range(192)]
+SCR_MEMORY = [[0 for e in range(32)] for _ in range(192)]
 
-SCR_ATTRIBUTES = [[8 * i for i in range(32)] for _ in range(24)]
+
+#SCR_ATTRIBUTES = [[random.randint(0,255) for i in range(32)] for _ in range(24)]
+SCR_ATTRIBUTES = [[56 for i in range(32)] for _ in range(24)]
 
 
 def get_screen_attributes(value):
@@ -101,6 +107,25 @@ def manaual_attribute_update(pressed_keys, player):
     SCR_ATTRIBUTES[grid_y][grid_x] = current_attribute_value
 
 
+def manaual_scr_memory_update(pressed_keys, player):
+    current_memory_value = get_scr_memory_value_at_coords(player.rect.left, player.rect.top)
+    if pressed_keys[K_w]:
+        current_memory_value += 1
+    elif pressed_keys[K_s]:
+        current_memory_value -= 1
+    if current_memory_value < 0:
+        current_memory_value = 0
+    elif current_memory_value > 255:
+        current_memory_value = 255
+    mem_x, mem_y = get_scr_memory_index_from_coords(player.rect.left, player.rect.top)
+    SCR_MEMORY[mem_y][mem_x] = current_memory_value
+
+
+def get_scr_memory_index_from_coords(x, y):
+    mem_x = (x - SPEC_SCREEN_LEFT) // 8
+    mem_y = y - SPEC_SCREEN_TOP
+    return mem_x, mem_y
+
 def convert_memory_value_to_binary_string(value):
     return bin(value)[2:]
 
@@ -113,14 +138,47 @@ def set_memory_value_at_coords(value, x, y):
     SCR_MEMORY[y][x // 8] = value
 
 
-def write_memory_location_at_coords_to_screen(x, y):
-    value = get_memory_value_at_coords(x, y)
+def write_memory_location_at_coords_to_screen(x, y, value=None):
+    if value  == None:
+        value = get_memory_value_at_coords(x, y)
     binary_value = convert_memory_value_to_binary_string(value)
     current_attribute_value = get_current_attribute_value(x, y)
     _,_, ink_colour = get_screen_attributes(current_attribute_value)
     for i, bit in enumerate(binary_value):
         if bit == "1":
-            pygame.draw.rect(screen, (ink_colour), (x + i, y, 1, 1), 0
+            pygame.draw.rect(screen, (ink_colour), (x + i, y, 1, 1), 0)
+
+
+def get_coords_from_screen_memory_index(mem_x, mem_y):
+    x = mem_x * 8 + SPEC_SCREEN_LEFT
+    y = mem_y + SPEC_SCREEN_TOP
+    return x, y
+
+
+def write_memory_to_screen():
+    for mem_y, row in enumerate(SCR_MEMORY):
+        for mem_x, value in enumerate(row):
+            x, y = get_coords_from_screen_memory_index(mem_x, mem_y)
+            write_memory_location_at_coords_to_screen(x, y, value)
+
+
+def get_scr_memory_value_at_coords(x, y):
+    mem_x, mem_y = get_scr_memory_index_from_coords(x, y)
+    return SCR_MEMORY[mem_y][mem_x]
+
+def load_screen_data_from_sna():
+    snapshot = open("/home/matthew/games/be.sna", "rb").read()
+    counter = 27
+    for y, row in enumerate(SCR_MEMORY):
+        for x, _ in enumerate(row):
+            SCR_MEMORY[y][x] = snapshot[counter]
+            counter += 1
+
+ 
+    for y, row in enumerate(SCR_ATTRIBUTES):
+        for x, _ in enumerate(row):
+            SCR_ATTRIBUTES[y][x] = snapshot[counter]
+            counter += 1
 
 
 class Player(pygame.sprite.Sprite):
@@ -201,6 +259,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.top = self.y_coord + SPEC_SCREEN_TOP
 
 
+load_screen_data_from_sna()
 
 # Set up the drawing window
 screen = pygame.display.set_mode([1000, 1000])
@@ -238,6 +297,7 @@ while running:
         player.update(pressed_keys)
 
         manaual_attribute_update(pressed_keys, player)
+        manaual_scr_memory_update(pressed_keys, player)
 
     # Fill the background with white
 
@@ -247,6 +307,7 @@ while running:
     
     screen.blit(surf, ((50, 50)))
     set_screen_paper()
+    write_memory_to_screen()
 
     #pygame.draw.rect(screen, ("#000000"), (90, 90, 8, 8), 0)
 
@@ -267,6 +328,13 @@ while running:
     screen.blit(textsurface4,(400,350))
     #surf.fill((215, 215, 215))
     
+    flash, paper_colour, ink_colour = get_screen_attributes(current_attribute_value)
+    textsurface5 = myfont2.render("Flash: {}, Paper Colour: {}, Ink Colour: {}".format(str(flash), str(paper_colour), str(ink_colour)), False, (0, 0, 0))
+    screen.blit(textsurface5,(400,400))
+
+    memory_value = get_scr_memory_value_at_coords(player.rect.left, player.rect.top)
+    textsurface6 = myfont.render("SCR memory Value: {}".format(str(memory_value)), False, (0, 0, 0))
+    screen.blit(textsurface6,(400,450))
 
     # Flip the display
     pygame.display.flip()

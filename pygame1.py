@@ -127,7 +127,11 @@ def get_scr_memory_index_from_coords(x, y):
     return mem_x, mem_y
 
 def convert_memory_value_to_binary_string(value):
-    return bin(value)[2:]
+    binary_value = bin(value)[2:]
+    while len(binary_value) < 8:
+        binary_value = "0" + binary_value
+    return binary_value
+
 
 
 def get_memory_value_at_coords(x, y):
@@ -151,7 +155,11 @@ def write_memory_location_at_coords_to_screen(x, y, value=None):
 
 def get_coords_from_screen_memory_index(mem_x, mem_y):
     x = mem_x * 8 + SPEC_SCREEN_LEFT
-    y = mem_y + SPEC_SCREEN_TOP
+    block = mem_y // 64
+    block_offset = mem_y % 64
+    row = block_offset // 8
+    row_offset = block_offset % 8
+    y = block * 64 + row_offset * 8 + row + SPEC_SCREEN_TOP
     return x, y
 
 
@@ -167,7 +175,7 @@ def get_scr_memory_value_at_coords(x, y):
     return SCR_MEMORY[mem_y][mem_x]
 
 def load_screen_data_from_sna():
-    snapshot = open("/home/matthew/games/be.sna", "rb").read()
+    snapshot = open("/home/matthew/games/md.sna", "rb").read()
     counter = 27
     for y, row in enumerate(SCR_MEMORY):
         for x, _ in enumerate(row):
@@ -180,6 +188,12 @@ def load_screen_data_from_sna():
             SCR_ATTRIBUTES[y][x] = snapshot[counter]
             counter += 1
 
+def fill_screen_memory():
+    for mem_y, row in enumerate(SCR_MEMORY):
+        for mem_x, value in enumerate(row):
+            if value != 255:
+                SCR_MEMORY[mem_y][mem_x] = 255
+                return
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -335,6 +349,8 @@ while running:
     memory_value = get_scr_memory_value_at_coords(player.rect.left, player.rect.top)
     textsurface6 = myfont.render("SCR memory Value: {}".format(str(memory_value)), False, (0, 0, 0))
     screen.blit(textsurface6,(400,450))
+
+    #fill_screen_memory()
 
     # Flip the display
     pygame.display.flip()

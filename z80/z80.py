@@ -1,13 +1,16 @@
-from base import Component, Memory, InstructionBase, DoubleComponent
+from base import Component, Memory, DoubleComponent
+from instructions import instructions_by_opcode, instructions_by_text
 
 
-class CPUTest(InstructionBase):
+class CPUTest():
 
     MEMORY_SIZE = 256 * 256
 
     def __init__(self):
         self.memory = Memory(self.MEMORY_SIZE)
         self._define_registers()
+        self.instructions_by_opcode = instructions_by_opcode
+        self.instructions_by_text = instructions_by_text
 
     def _define_registers(self):
         self.program_counter_low = Component("PCL")

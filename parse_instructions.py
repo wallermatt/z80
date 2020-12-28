@@ -6,6 +6,8 @@ instruction_list = []
 
 instruction_set = set()
 
+INSTRUCTION_TEMPLATE = 'Instruction(opcode="{}", instruction_base="{}", left_arg="{}", right_arg="{}", size="{}", time="{}", flags="{}", text="{}", desc="{}"),'
+
 class Instruction:
     
     def __init__(self, opcode, text, size, time, flags, desc, instruction_base, left_arg=None, right_arg=None):
@@ -51,9 +53,19 @@ for i, table in enumerate(tables):
 
 
 for instruction in instructions:
-    if instruction[0] > 0:
-        break
-    #print(instruction)
+    instruction[4] = str(instruction[4])
+    if instruction[0] == 1:
+        instruction[4] = "ED" + instruction[4]
+    elif instruction[0] == 2:
+        instruction[4] = "CB" + instruction[4]
+    elif instruction[0] == 3:
+        instruction[4] = "DD" + instruction[4]
+    elif instruction[0] == 4:
+        instruction[4] = "DDCB" + instruction[4]
+    elif instruction[0] == 5:
+        instruction[4] = "FD" + instruction[4]
+    elif instruction[0] == 6:
+        instruction[4] = "FDCB" + instruction[4]
     instruction_text = instruction[5]
     components = instruction_text.split(" ")
     instruction_base = components[0]
@@ -77,8 +89,11 @@ for instruction in instructions:
     #print(new_instruction)
 
 for instruction in instruction_list:
-    if instruction.text[:2] == "ld":
-        print(instruction.text, instruction.size, instruction.time, instruction.flags, instruction.desc)
+    #if instruction.text[:2] == "ld":
+        #print(instruction.text, instruction.size, instruction.time, instruction.flags, instruction.desc, instruction.instruction_base)
+    print(INSTRUCTION_TEMPLATE.format(
+            instruction.opcode, instruction.instruction_base, instruction.left_arg, instruction.right_arg,
+            instruction.size, instruction.time, instruction.flags, instruction.text, instruction.desc))
     
 
 #for instruction in instruction_set:

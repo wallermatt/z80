@@ -175,7 +175,7 @@ def get_scr_memory_value_at_coords(x, y):
     return SCR_MEMORY[mem_y][mem_x]
 
 def load_screen_data_from_sna():
-    snapshot = open("/home/matthew/games/md.sna", "rb").read()
+    snapshot = open("/home/matthew/games/be.sna", "rb").read()
     counter = 27
     for y, row in enumerate(SCR_MEMORY):
         for x, _ in enumerate(row):

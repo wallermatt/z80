@@ -14,32 +14,21 @@ type ScrMemory [192]ScrRow
 type ScrAttributes [24]ScrRow
 
 type SpecColour struct {
-	normal string
-	bright string
+	normal color.RGBA
+	bright color.RGBA
 }
 type SpecColoursType [8]SpecColour
 
 var SpecColours = SpecColoursType{
-	SpecColour{"#000000", "#000000"},
-	SpecColour{"#0000D7", "#0000FF"},
-	SpecColour{"#D70000", "#FF0000"},
-	SpecColour{"#D700D7", "#FF00FF"},
-	SpecColour{"#00D700", "#00FF00"},
-	SpecColour{"#00D7D7", "#00FFFF"},
-	SpecColour{"#D7D700", "#FFFF00"},
-	SpecColour{"#D7D7D7", "#FFFFFF"},
+	SpecColour{color.RGBA{0, 0, 0, 255}, color.RGBA{0, 0, 0, 255}},
+	SpecColour{color.RGBA{0, 0, 215, 255}, color.RGBA{0, 0, 255, 255}},
+	SpecColour{color.RGBA{215, 0, 0, 255}, color.RGBA{255, 0, 0, 255}},
+	SpecColour{color.RGBA{215, 0, 215, 255}, color.RGBA{255, 0, 255, 255}},
+	SpecColour{color.RGBA{0, 215, 0, 255}, color.RGBA{0, 255, 0, 255}},
+	SpecColour{color.RGBA{0, 215, 215, 255}, color.RGBA{0, 255, 255, 255}},
+	SpecColour{color.RGBA{215, 215, 0, 255}, color.RGBA{255, 255, 0, 255}},
+	SpecColour{color.RGBA{215, 215, 215, 255}, color.RGBA{255, 255, 255, 255}},
 }
-
-/*
-rgb(0,0,0) rgb(0,0,0)
-rgb(0,0,215) rgb(0,0,255)
-rgb(215,0,0) rgb(255,0,0)
-rgb(215,0,215) rgb(255,0,255)
-rgb(0,215,0) rgb(0,255,0)
-rgb(0,215,215) rgb(0,255,255)
-rgb(215,215,0) rgb(255,255,0)
-rgb(215,215,215) rgb(255,255,255)
-*/
 
 const (
 	filename           = "/home/matthew/projects/z80/be.sna"
@@ -79,6 +68,40 @@ func LoadScrAttributes(s []byte) ScrAttributes {
 	return scrAttributes
 }
 
+func getPaperAndInk(value byte) (paper color.RGBA, ink color.RGBA) {
+	bright := (value << 1) / 128
+	paperIndex := (value >> 3) % 8
+	inkIndex := value % 8
+	if bright == 0 {
+		paper = SpecColours[paperIndex].normal
+		ink = SpecColours[inkIndex].normal
+	} else {
+		paper = SpecColours[paperIndex].bright
+		ink = SpecColours[inkIndex].bright
+	}
+	return paper, ink
+}
+
+func getXYFromScrMemory(memX int, memY int) (x int, y int) {
+	x = memX * 8
+	block := memY / 64
+	blockOffset := memY % 64
+	row := blockOffset / 8
+	rowOffset := blockOffset % 8
+	y = block*64 + rowOffset*8 + row
+	return x, y
+}
+
+func getScrMemoryFromXY(x int, y int) int {
+	memX := x / 8
+	block := y / 64
+	blockOffset := block % 64
+	row := blockOffset % 8
+	rowOffset := blockOffset / 8
+	memY = block*64 + row*8 + rowOffset
+	return scrMemory[memY][memX]
+}
+
 func main() {
 
 	s := ReadSnapshot(filename)
@@ -97,26 +120,17 @@ func main() {
 
 	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
 
-	// Colors are defined by Red, Green, Blue, Alpha uint8 values.
-	cyan := color.RGBA{100, 200, 200, 0xff}
-
-	// Set color for each pixel.
+	// Set paper color for each pixel.
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			switch {
-			case x < width/2 && y < height/2: // upper left quadrant
-				img.Set(x, y, cyan)
-			case x >= width/2 && y >= height/2: // lower right quadrant
-				img.Set(x, y, color.White)
-			default:
-				// Use zero value.
-			}
+			gridX := x / 8
+			gridY := y / 8
+			paper, _ := getPaperAndInk(scrAttributes[gridY][gridX])
+			img.Set(x, y, paper)
 		}
 	}
 
 	f, _ := os.Create("image.png")
 	png.Encode(f, img)
-
-	fmt.Println(SpecColours)
 
 }

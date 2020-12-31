@@ -1,4 +1,4 @@
-package main
+package zx_image
 
 import (
 	"fmt"
@@ -133,7 +133,7 @@ func SaveImage(img *image.RGBA) error {
 	return nil
 }
 
-func main() {
+func createImageFromSnapshot() {
 	s := ReadSnapshot(snapshotFilename)
 	scrMemory := LoadScrMemory(s)
 	scrAttributes := LoadScrAttributes(s)

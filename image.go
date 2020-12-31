@@ -6,6 +6,7 @@ import (
 	"image/color"
 	"image/png"
 	"io/ioutil"
+	"math"
 	"os"
 )
 
@@ -31,13 +32,16 @@ var SpecColours = SpecColoursType{
 }
 
 const (
-	filename           = "/home/matthew/projects/z80/be.sna"
+	snapshotFilename   = "/home/matthew/games/lf1.sna"
+	imageFilename      = "image7.png"
 	scrMemoryStart     = 27
 	scrAttributesStart = 6171
+	width              = 256
+	height             = 192
 )
 
 func ReadSnapshot(f string) []byte {
-	s, err := ioutil.ReadFile(filename)
+	s, err := ioutil.ReadFile(f)
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +72,7 @@ func LoadScrAttributes(s []byte) ScrAttributes {
 	return scrAttributes
 }
 
-func getPaperAndInk(value byte) (paper color.RGBA, ink color.RGBA) {
+func GetPaperAndInk(value byte) (paper color.RGBA, ink color.RGBA) {
 	bright := (value << 1) / 128
 	paperIndex := (value >> 3) % 8
 	inkIndex := value % 8
@@ -82,55 +86,62 @@ func getPaperAndInk(value byte) (paper color.RGBA, ink color.RGBA) {
 	return paper, ink
 }
 
-func getXYFromScrMemory(memX int, memY int) (x int, y int) {
-	x = memX * 8
-	block := memY / 64
-	blockOffset := memY % 64
-	row := blockOffset / 8
-	rowOffset := blockOffset % 8
-	y = block*64 + rowOffset*8 + row
-	return x, y
-}
-
-func getScrMemoryFromXY(x int, y int) int {
+func GetScrMemoryFromXY(x int, y int, scrMemory ScrMemory) byte {
 	memX := x / 8
 	block := y / 64
-	blockOffset := block % 64
+	blockOffset := y % 64
 	row := blockOffset % 8
 	rowOffset := blockOffset / 8
-	memY = block*64 + row*8 + rowOffset
+	memY := block*64 + row*8 + rowOffset
 	return scrMemory[memY][memX]
 }
 
-func main() {
+func GetXPixelFromByte(x int, memory byte) bool {
+	offsetX := x % 8
+	return int(memory)&int(math.Pow(2, float64(7-offsetX))) != 0
+}
 
-	s := ReadSnapshot(filename)
-	scrMemory := LoadScrMemory(s)
-	scrAttributes := LoadScrAttributes(s)
-
-	fmt.Println(len(s))
-	fmt.Println(scrMemory)
-	fmt.Println(scrAttributes)
-
-	width := 256
-	height := 192
-
+func BuildImage(scrMemory ScrMemory, scrAttributes ScrAttributes) *image.RGBA {
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{width, height}
 
 	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
 
-	// Set paper color for each pixel.
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
 			gridX := x / 8
 			gridY := y / 8
-			paper, _ := getPaperAndInk(scrAttributes[gridY][gridX])
-			img.Set(x, y, paper)
+			paper, ink := GetPaperAndInk(scrAttributes[gridY][gridX])
+			memory := GetScrMemoryFromXY(x, y, scrMemory)
+			if GetXPixelFromByte(x, memory) {
+				img.Set(x, y, ink)
+			} else {
+				img.Set(x, y, paper)
+			}
 		}
 	}
+	return img
+}
 
-	f, _ := os.Create("image.png")
+func SaveImage(img *image.RGBA) error {
+	f, err := os.Create(imageFilename)
+	if err != nil {
+		return err
+	}
+
 	png.Encode(f, img)
+	return nil
+}
 
+func main() {
+	s := ReadSnapshot(snapshotFilename)
+	scrMemory := LoadScrMemory(s)
+	scrAttributes := LoadScrAttributes(s)
+
+	img := BuildImage(scrMemory, scrAttributes)
+	err := SaveImage(img)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Image %s created from snapshot %s \n", imageFilename, snapshotFilename)
 }

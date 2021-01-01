@@ -1,4 +1,4 @@
-package zx_image
+package main
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"math"
 	"os"
+	"strings"
 )
 
 type ScrRow [32]byte
@@ -32,8 +33,7 @@ var SpecColours = SpecColoursType{
 }
 
 const (
-	snapshotFilename   = "/home/matthew/games/lf1.sna"
-	imageFilename      = "image7.png"
+	testSnapshotFile   = "testData/testSnapshot.sna"
 	scrMemoryStart     = 27
 	scrAttributesStart = 6171
 	width              = 256
@@ -123,7 +123,7 @@ func BuildImage(scrMemory ScrMemory, scrAttributes ScrAttributes) *image.RGBA {
 	return img
 }
 
-func SaveImage(img *image.RGBA) error {
+func SaveImage(img *image.RGBA, imageFilename string) error {
 	f, err := os.Create(imageFilename)
 	if err != nil {
 		return err
@@ -133,15 +133,30 @@ func SaveImage(img *image.RGBA) error {
 	return nil
 }
 
-func createImageFromSnapshot() {
-	s := ReadSnapshot(snapshotFilename)
+func CreateImageFromSnapshot(snapshotFile string, imageFilename string) {
+	s := ReadSnapshot(snapshotFile)
 	scrMemory := LoadScrMemory(s)
 	scrAttributes := LoadScrAttributes(s)
 
 	img := BuildImage(scrMemory, scrAttributes)
-	err := SaveImage(img)
+	err := SaveImage(img, imageFilename)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Image %s created from snapshot %s \n", imageFilename, snapshotFilename)
+	fmt.Printf("Image %s created from snapshot %s \n", imageFilename, snapshotFile)
+}
+
+func main() {
+	snapshotFile := testSnapshotFile
+	argsWithoutProg := os.Args[1:]
+	if len(argsWithoutProg) > 0 {
+		snapshotFile = argsWithoutProg[0]
+	}
+	splitF := strings.Split(snapshotFile, "/")
+	imageFilename := splitF[len(splitF)-1]
+	imageFilename = strings.Split(imageFilename, ".")[0] + ".png"
+	if len(argsWithoutProg) > 1 {
+		imageFilename = argsWithoutProg[1]
+	}
+	CreateImageFromSnapshot(snapshotFile, imageFilename)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"os"
 )
 
 func getXYFromScrMemory(memX int, memY int) (x int, y int) {
@@ -32,6 +33,10 @@ func getXPixelFromByte(x int, memory byte) int {
 }
 
 func main() {
+
+	args := os.Args
+	fmt.Println(args)
+
 	x, y := getScrMemoryFromXY(0, 0)
 	fmt.Println(x, y)
 	memX, memY := getScrMemoryFromXY(0, 0)

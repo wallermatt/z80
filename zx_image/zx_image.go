@@ -33,13 +33,14 @@ var SpecColours = SpecColoursType{
 }
 
 const (
-	testSnapshotFile   = "testData/testSnapshot.sna"
+	TestSnapshotFile   = "testData/testSnapshot.sna"
 	scrMemoryStart     = 27
 	scrAttributesStart = 6171
 	width              = 256
 	height             = 192
 )
 
+// ReadSnapshot reads a ZX Spectrum snapshot file into a byte slice.
 func ReadSnapshot(f string) []byte {
 	s, err := ioutil.ReadFile(f)
 	if err != nil {
@@ -48,6 +49,7 @@ func ReadSnapshot(f string) []byte {
 	return s
 }
 
+// LoadScrMemory loads screen memory from snapshot into ScrMemory array of arrays.
 func LoadScrMemory(s []byte) ScrMemory {
 	snapshotIndex := scrMemoryStart
 	scrMemory := ScrMemory{}
@@ -60,6 +62,7 @@ func LoadScrMemory(s []byte) ScrMemory {
 	return scrMemory
 }
 
+// LoadScrAttributes loads screen attributes from snapshot into ScrAttributes array of arrays.
 func LoadScrAttributes(s []byte) ScrAttributes {
 	snapshotIndex := scrAttributesStart
 	scrAttributes := ScrAttributes{}
@@ -72,6 +75,7 @@ func LoadScrAttributes(s []byte) ScrAttributes {
 	return scrAttributes
 }
 
+// GetPaperAndInk determines paper and ink colours from byte (attribute memory value).
 func GetPaperAndInk(value byte) (paper color.RGBA, ink color.RGBA) {
 	bright := (value << 1) / 128
 	paperIndex := (value >> 3) % 8
@@ -86,6 +90,7 @@ func GetPaperAndInk(value byte) (paper color.RGBA, ink color.RGBA) {
 	return paper, ink
 }
 
+// GetScrMemoryFromXY returns screen memory location for given coordinates.
 func GetScrMemoryFromXY(x int, y int, scrMemory ScrMemory) byte {
 	memX := x / 8
 	block := y / 64
@@ -96,11 +101,18 @@ func GetScrMemoryFromXY(x int, y int, scrMemory ScrMemory) byte {
 	return scrMemory[memY][memX]
 }
 
+// GetXPixelFromByte determines for a given x coordinate whether the relevant memory location specifies a pixel
+// should be displayed.
 func GetXPixelFromByte(x int, memory byte) bool {
 	offsetX := x % 8
-	return int(memory)&int(math.Pow(2, float64(7-offsetX))) != 0
+	pixelPosition := int(math.Pow(2, float64(7-offsetX)))
+	return int(memory)&pixelPosition != 0
 }
 
+// Builds image of ZX Spectrum's display from specified screen and attribute memory.
+// It builds the image pixel by pixel, determining what the background (paper) and
+// foreground (ink) colours are for that pixel, then it determines if a pixel is
+// printed or not.
 func BuildImage(scrMemory ScrMemory, scrAttributes ScrAttributes) *image.RGBA {
 	upLeft := image.Point{0, 0}
 	lowRight := image.Point{width, height}
@@ -123,6 +135,7 @@ func BuildImage(scrMemory ScrMemory, scrAttributes ScrAttributes) *image.RGBA {
 	return img
 }
 
+// SaveImage saves screen image as a .png file.
 func SaveImage(img *image.RGBA, imageFilename string) error {
 	f, err := os.Create(imageFilename)
 	if err != nil {
@@ -133,6 +146,7 @@ func SaveImage(img *image.RGBA, imageFilename string) error {
 	return nil
 }
 
+// CreateImageFromSnapshot controls the whole conversion process.
 func CreateImageFromSnapshot(snapshotFile string, imageFilename string) {
 	s := ReadSnapshot(snapshotFile)
 	scrMemory := LoadScrMemory(s)
@@ -146,8 +160,11 @@ func CreateImageFromSnapshot(snapshotFile string, imageFilename string) {
 	fmt.Printf("Image %s created from snapshot %s \n", imageFilename, snapshotFile)
 }
 
+// Snapshot file defaults to the test file if no arguments, otherwise it's the first argument.
+// The image name defaults to the name of the snapshot file (but ends in .png not .sna) unless
+// second argument is supplied.
 func main() {
-	snapshotFile := testSnapshotFile
+	snapshotFile := TestSnapshotFile
 	argsWithoutProg := os.Args[1:]
 	if len(argsWithoutProg) > 0 {
 		snapshotFile = argsWithoutProg[0]

@@ -2,7 +2,7 @@ from base import Component, Memory, DoubleComponent
 from instructions import instructions_by_opcode, instructions_by_text
 
 
-class CPUTest():
+class Z80():
 
     MEMORY_SIZE = 256 * 256
 
@@ -93,3 +93,14 @@ class CPUTest():
         ]
 
         self.registers_by_name = {reg.name: reg for reg in self.registers}
+
+    def read_memory_and_increment_pc(self):
+        memory_contents = self.memory.get_contents_value(self.program_counter.get_contents())
+        self.program_counter.add_to_contents(1)
+        return memory_contents
+
+    def run(self):
+        opcode = self.memory.get_contents_value(self.program_counter.get_contents())
+        if opcode not in self.instructions_by_opcode:
+            raise Exception("Opcode {} not recognised!!!".format(opcode))
+        instruction = self.instructions_by_opcode[opcode]

@@ -1,4 +1,6 @@
 
+NO_OPERATION = "nop"
+LOAD = "ld"
 
 class Instruction:
     

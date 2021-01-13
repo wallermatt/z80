@@ -88,13 +88,19 @@ for instruction in instructions:
     instruction_set.add(instruction_base)
     #print(new_instruction)
 
+instruction_set = set()
 for instruction in instruction_list:
     #if instruction.text[:2] == "ld":
         #print(instruction.text, instruction.size, instruction.time, instruction.flags, instruction.desc, instruction.instruction_base)
+    '''
     print(INSTRUCTION_TEMPLATE.format(
             instruction.opcode, instruction.instruction_base, instruction.left_arg, instruction.right_arg,
             instruction.size, instruction.time, instruction.flags, instruction.text, instruction.desc))
-    
+    '''
+    instruction_set.add(instruction.right_arg)
+
+for e in instruction_set:
+    print(e)
 
 #for instruction in instruction_set:
 #    print(instruction)

@@ -1,3 +1,4 @@
+SPECIAL_ARGS = ["0", "1", "pe", "z", "nc", "nz", "pe", "pp", "00h", "08h", "10h", "18h", "20h", "28h", "30h", "38h"]
 
 NO_OPERATION = "nop"
 LOAD = "ld"

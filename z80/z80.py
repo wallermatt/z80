@@ -1,5 +1,5 @@
 from base import Component, Memory, DoubleComponent
-from instructions import instructions_by_opcode, instructions_by_text, NO_OPERATION
+from instructions import instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD
 
 
 class Z80():
@@ -117,16 +117,31 @@ class Z80():
             return
         substituted_left_arg = self.substitute_arg(instruction.left_arg)
         substituted_right_arg = self.substitute_right_arg(instruction.right_arg)
+        self.execute_instruction_base(instruction, substituted_left_arg, substituted_right_arg)
+
+    def execute_instruction_base(self, instruction, substituted_left_arg, substituted_right_arg):
+        if instruction.instruction_base == LOAD:
+            self.load_execute(instruction, substituted_left_arg, substituted_right_arg)
+
+    def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        substituted_left_arg.set_contents(substituted_right_arg)
 
     def substitute_arg(self, arg):
-        if not arg:
-            return None
+        if not arg or arg in SPECIAL_ARGS:
+            return arg
         if arg.upper() in self.registers_by_name:
             return self.registers_by_name[arg.upper()]
         if "(" in arg:
             arg = arg[1:-1]
+            if arg == "c":   # in/out (c) specifies port
+                return self.registers_by_name["C"].get_contents()
             if arg.upper() in self.registers_by_name:
                 return self.memory.get_contents(self.registers_by_name[arg.upper()].get_contents())
+            else:
+                if arg == "ix+*":
+                    ix_value = self.registers_by_name["IX"].get_contents()
+                    displacement, _ = self.read_memory_and_increment_pc()
+                    return self.memory.get_contents(ix_value + displacement)
             if "**" in arg:
                 high_byte, end_of_memory_reached = self.read_memory_and_increment_pc()
                 if end_of_memory_reached:
@@ -150,7 +165,7 @@ class Z80():
         return high_byte * 256 + low_byte
 
     def substitute_right_arg(self, arg):
-        if arg == None:
+        if not arg or arg in SPECIAL_ARGS:
             return arg
         substituted_arg = self.substitute_arg(arg)
         if not isinstance(substituted_arg, int):

@@ -143,25 +143,25 @@ class Z80():
                     displacement, _ = self.read_memory_and_increment_pc()
                     return self.memory.get_contents(ix_value + displacement)
             if "**" in arg:
-                high_byte, end_of_memory_reached = self.read_memory_and_increment_pc()
+                low_byte, end_of_memory_reached = self.read_memory_and_increment_pc()
                 if end_of_memory_reached:
                     raise Exception("Out of memory!!!")
-                low_byte, _ = self.read_memory_and_increment_pc()
-                address = self.convert_high_and_low_bytes_to_address(high_byte, low_byte)
+                high_byte, _ = self.read_memory_and_increment_pc()
+                address = self.convert_low_and_high_bytes_to_address(low_byte, high_byte)
                 return self.memory.get_contents(address)
             raise Exception("Invalid arg {}".format(arg))
         if arg == "*":
             value, _ = self.read_memory_and_increment_pc()
             return value
         elif arg == "**":
-            high_byte, end_of_memory_reached = self.read_memory_and_increment_pc()
+            low_byte, end_of_memory_reached = self.read_memory_and_increment_pc()
             if end_of_memory_reached:
                 raise Exception("Out of memory!!!")
-            low_byte, _ = self.read_memory_and_increment_pc()
-            return self.convert_high_and_low_bytes_to_address(high_byte, low_byte)
+            high_byte, _ = self.read_memory_and_increment_pc()
+            return self.convert_low_and_high_bytes_to_address(low_byte, high_byte)
         raise Exception("Invalid arg {}".format(arg))
 
-    def convert_high_and_low_bytes_to_address(self, high_byte, low_byte):
+    def convert_low_and_high_bytes_to_address(self, low_byte, high_byte):
         return high_byte * 256 + low_byte
 
     def substitute_right_arg(self, arg):

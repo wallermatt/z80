@@ -48,7 +48,7 @@ def test_substitute_left_arg():
     assert substituted_arg == z80.memory.get_contents(4000)
     assert z80.program_counter.get_contents() == 0
 
-    z80.memory.load([7, 11, 4, 2, 9, 55])
+    z80.memory.load([7, 4, 11, 9, 2, 55])
     substituted_arg = z80.substitute_arg("*")
     assert substituted_arg == 7
     assert z80.program_counter.get_contents() == 1
@@ -100,7 +100,7 @@ def test_substitute_right_arg():
     assert substituted_arg == 99
     assert z80.program_counter.get_contents() == 0
 
-    z80.memory.load([7, 11, 4, 2, 9, 55])
+    z80.memory.load([7, 4, 11, 9, 2, 55])
     substituted_arg = z80.substitute_right_arg("*")
     assert substituted_arg == 7
     assert z80.program_counter.get_contents() == 1
@@ -129,3 +129,50 @@ def test_substitute_right_arg():
         substituted_arg = z80.substitute_right_arg(arg)
         assert substituted_arg == arg
         assert z80.program_counter.get_contents() == 6
+
+
+def test_load_execute_instruction():
+    z80 = Z80()
+    
+    z80.program_counter.set_contents_value(0)
+    z80.registers_by_name["BC"].set_contents(0)
+    instruction = z80.instructions_by_text["ld bc,**"]
+    z80.memory.load([4, 11])
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["BC"].get_contents() == 2820
+    assert z80.program_counter.get_contents() == 2
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(2820, 0)
+    z80.registers_by_name["A"].set_contents(99)
+    z80.registers_by_name["BC"].set_contents(2820)
+    instruction = z80.instructions_by_text["ld (bc),a"]
+    z80.execute_instruction(instruction)
+    assert z80.memory.get_contents_value(2820) == 99
+    assert z80.registers_by_name["BC"].get_contents() == 2820
+    assert z80.program_counter.get_contents() == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.registers_by_name["B"].set_contents(0)
+    instruction = z80.instructions_by_text["ld b,*"]
+    z80.memory.load([11])
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["B"].get_contents() == 11
+    assert z80.program_counter.get_contents() == 1
+
+    z80.program_counter.set_contents_value(0)
+    z80.registers_by_name["A"].set_contents(0)
+    z80.registers_by_name["BC"].set_contents(2820)
+    z80.memory.set_contents_value(2820, 99)
+    instruction = z80.instructions_by_text["ld a,(bc)"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 99
+    assert z80.program_counter.get_contents() == 0
+
+'''
+"ld (**),hl"
+"ld hl,(**)"
+"ld (hl),*"
+"ld b,c"
+"ld (**),de"
+'''

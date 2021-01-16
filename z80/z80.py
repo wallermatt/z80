@@ -115,8 +115,8 @@ class Z80():
     def execute_instruction(self, instruction):
         if instruction.instruction_base == NO_OPERATION:
             return
-        substituted_left_arg = self.substitute_arg(instruction.left_arg)
-        substituted_right_arg = self.substitute_right_arg(instruction.right_arg)
+        substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
+        substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg)
         self.execute_instruction_base(instruction, substituted_left_arg, substituted_right_arg)
 
     def execute_instruction_base(self, instruction, substituted_left_arg, substituted_right_arg):
@@ -126,7 +126,7 @@ class Z80():
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         substituted_left_arg.set_contents(substituted_right_arg)
 
-    def substitute_arg(self, arg):
+    def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:
             return arg
         if arg.upper() in self.registers_by_name:
@@ -148,7 +148,10 @@ class Z80():
                     raise Exception("Out of memory!!!")
                 high_byte, _ = self.read_memory_and_increment_pc()
                 address = self.convert_low_and_high_bytes_to_address(low_byte, high_byte)
-                return self.memory.get_contents(address)
+
+                if self.registers_by_name[opposite._arg.upper()].size == 1:
+                    return self.memory.get_contents(address)
+                return (self.memory.get_contents(address), self.memory.get_contents(address + 1))
             raise Exception("Invalid arg {}".format(arg))
         if arg == "*":
             value, _ = self.read_memory_and_increment_pc()

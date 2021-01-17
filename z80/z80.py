@@ -124,7 +124,7 @@ class Z80():
             self.load_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
-        if len(substituted_left_arg) == 1:
+        if not isinstance(substituted_left_arg, tuple):
             substituted_left_arg.set_contents(substituted_right_arg)
         elif len(substituted_left_arg) == 2:
             low, high = self.convert_value_to_low_and_high_bytes(substituted_right_arg)
@@ -133,7 +133,7 @@ class Z80():
         else:
             raise Exception("Left arg subsititution has too many components")
 
-    def substitute_arg(self, arg, opposite_arg=None):
+    def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:
             return arg
         if arg.upper() in self.registers_by_name:
@@ -156,7 +156,7 @@ class Z80():
                 high_byte, _ = self.read_memory_and_increment_pc()
                 address = self.convert_low_and_high_bytes_to_value(low_byte, high_byte)
 
-                if self.registers_by_name[opposite_arg.upper()].size == 1:
+                if not opposite_arg or self.registers_by_name[opposite_arg.upper()].SIZE == 1:
                     return self.memory.get_contents(address)
                 return (self.memory.get_contents(address), self.memory.get_contents(address + 1))
 
@@ -176,12 +176,17 @@ class Z80():
     def convert_low_and_high_bytes_to_value(self, low_byte, high_byte):
         return high_byte * 256 + low_byte
 
+    def convert_value_to_low_and_high_bytes(self, value):
+        high = value // 256
+        low = value % 256
+        return low, high
+
     def substitute_right_arg(self, arg, opposite_arg=None):
         if not arg or arg in SPECIAL_ARGS:
             return arg
         substituted_arg = self.substitute_arg(arg, opposite_arg)
         if not isinstance(substituted_arg, int):
-            if len(substituted_arg) == 1:
+            if not isinstance(substituted_arg, tuple):
                 substituted_arg = substituted_arg.get_contents()
             elif len(substituted_arg) == 2:
                 substituted_arg = self.convert_low_and_high_bytes_to_value(

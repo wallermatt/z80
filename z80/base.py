@@ -82,6 +82,8 @@ class Memory:
         self.contents = [Component("address: {}".format(e)) for e in range(size)]
 
     def get_contents(self, address):
+        if address >= len(self.contents):
+             raise Exception("Memory address out of range!!! address: {}, memory size: {}".format(address, self.contents))
         return self.contents[address]
 
     def get_contents_value(self, address):

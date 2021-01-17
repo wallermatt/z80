@@ -124,9 +124,16 @@ class Z80():
             self.load_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
-        substituted_left_arg.set_contents(substituted_right_arg)
+        if len(substituted_left_arg) == 1:
+            substituted_left_arg.set_contents(substituted_right_arg)
+        elif len(substituted_left_arg) == 2:
+            low, high = self.convert_value_to_low_and_high_bytes(substituted_right_arg)
+            substituted_left_arg[0].set_contents(low)
+            substituted_left_arg[1].set_contents(high)
+        else:
+            raise Exception("Left arg subsititution has too many components")
 
-    def substitute_arg(self, arg, opposite_arg):
+    def substitute_arg(self, arg, opposite_arg=None):
         if not arg or arg in SPECIAL_ARGS:
             return arg
         if arg.upper() in self.registers_by_name:
@@ -147,12 +154,14 @@ class Z80():
                 if end_of_memory_reached:
                     raise Exception("Out of memory!!!")
                 high_byte, _ = self.read_memory_and_increment_pc()
-                address = self.convert_low_and_high_bytes_to_address(low_byte, high_byte)
+                address = self.convert_low_and_high_bytes_to_value(low_byte, high_byte)
 
-                if self.registers_by_name[opposite._arg.upper()].size == 1:
+                if self.registers_by_name[opposite_arg.upper()].size == 1:
                     return self.memory.get_contents(address)
                 return (self.memory.get_contents(address), self.memory.get_contents(address + 1))
+
             raise Exception("Invalid arg {}".format(arg))
+
         if arg == "*":
             value, _ = self.read_memory_and_increment_pc()
             return value
@@ -161,16 +170,24 @@ class Z80():
             if end_of_memory_reached:
                 raise Exception("Out of memory!!!")
             high_byte, _ = self.read_memory_and_increment_pc()
-            return self.convert_low_and_high_bytes_to_address(low_byte, high_byte)
+            return self.convert_low_and_high_bytes_to_value(low_byte, high_byte)
         raise Exception("Invalid arg {}".format(arg))
 
-    def convert_low_and_high_bytes_to_address(self, low_byte, high_byte):
+    def convert_low_and_high_bytes_to_value(self, low_byte, high_byte):
         return high_byte * 256 + low_byte
 
-    def substitute_right_arg(self, arg):
+    def substitute_right_arg(self, arg, opposite_arg=None):
         if not arg or arg in SPECIAL_ARGS:
             return arg
-        substituted_arg = self.substitute_arg(arg)
+        substituted_arg = self.substitute_arg(arg, opposite_arg)
         if not isinstance(substituted_arg, int):
-            substituted_arg = substituted_arg.get_contents()
+            if len(substituted_arg) == 1:
+                substituted_arg = substituted_arg.get_contents()
+            elif len(substituted_arg) == 2:
+                substituted_arg = self.convert_low_and_high_bytes_to_value(
+                    substituted_arg[0].get_contents(),
+                    substituted_arg[1].get_contents(),
+                )
+            else:
+                raise Exception("Right arg subsititution has too many components")
         return substituted_arg

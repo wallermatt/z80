@@ -155,7 +155,6 @@ class Z80():
                     raise Exception("Out of memory!!!")
                 high_byte, _ = self.read_memory_and_increment_pc()
                 address = self.convert_low_and_high_bytes_to_value(low_byte, high_byte)
-
                 if not opposite_arg or self.registers_by_name[opposite_arg.upper()].SIZE == 1:
                     return self.memory.get_contents(address)
                 return (self.memory.get_contents(address), self.memory.get_contents(address + 1))

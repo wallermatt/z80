@@ -187,10 +187,41 @@ def test_load_execute_instruction():
     assert z80.registers_by_name["A"].get_contents() == 99
     assert z80.program_counter.get_contents() == 0
 
-'''
-"ld (**),hl" extra code needed
-"ld hl,(**)" extra code needed
-"ld (hl),*"
-"ld b,c"
-"ld (**),de"
-'''
+    z80.memory.load([9, 2])
+    z80.registers_by_name["HL"].set_contents(1000)
+    instruction = z80.instructions_by_text["ld (**),hl"]
+    z80.execute_instruction(instruction)
+    assert z80.memory.get_contents_value(521) == 232
+    assert z80.memory.get_contents_value(522) ==  3
+    assert z80.program_counter.get_contents() == 2
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.load([9, 2])
+    z80.registers_by_name["HL"].set_contents(0)
+    z80.memory.set_contents_value(521, 232)
+    z80.memory.set_contents_value(522, 3)
+    instruction = z80.instructions_by_text["ld hl,(**)"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["HL"].get_contents() == 1000
+    assert z80.program_counter.get_contents() == 2
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.load([54])
+    z80.registers_by_name["HL"].set_contents(1000)
+    z80.memory.set_contents_value(1000, 0)
+    z80.memory.set_contents_value(1001, 100)
+    instruction = z80.instructions_by_text["ld (hl),*"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["HL"].get_contents() == 1000
+    assert z80.memory.get_contents_value(1000) == 54
+    assert z80.memory.get_contents_value(1001) ==  100
+    assert z80.program_counter.get_contents() == 1
+
+    z80.program_counter.set_contents_value(0)
+    z80.registers_by_name["B"].set_contents(0)
+    z80.registers_by_name["C"].set_contents(100)
+    instruction = z80.instructions_by_text["ld b,c"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["B"].get_contents() == 100
+    assert z80.registers_by_name["C"].get_contents() == 100
+    assert z80.program_counter.get_contents() == 0

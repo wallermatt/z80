@@ -226,7 +226,7 @@ def test_load_execute_instruction():
     assert z80.registers_by_name["C"].get_contents() == 100
     assert z80.program_counter.get_contents() == 0
 
-def test_load_execute_multi_instruction():
+def test_execute_multi_instruction():
     z80 = Z80()
     
     z80.program_counter.set_contents_value(0)
@@ -245,3 +245,32 @@ def test_load_execute_multi_instruction():
     assert z80.registers_by_name["DE'"].get_contents() == 2
     assert z80.registers_by_name["HL'"].get_contents() == 3
     assert z80.program_counter.get_contents() == 0
+
+
+def test_execute_instruction():
+    z80 = Z80()
+
+    z80.program_counter.set_contents_value(0)
+    z80.registers_by_name["DE"].set_contents(10)
+    z80.registers_by_name["HL"].set_contents(20)
+    instruction = z80.instructions_by_text["ex de,hl"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["DE"].get_contents() == 20
+    assert z80.registers_by_name["HL"].get_contents() == 10
+    assert z80.program_counter.get_contents() == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(1000, 1)
+    z80.memory.set_contents_value(1001, 2)
+    z80.registers_by_name["SP"].set_contents(1000)
+    z80.registers_by_name["HL"].set_contents(20)
+    instruction = z80.instructions_by_text["ex (sp),hl"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["HL"].get_contents() == 513
+    assert z80.memory.get_contents_value(1000) == 20
+    assert z80.memory.get_contents_value(1001) == 0
+    assert z80.program_counter.get_contents() == 0
+
+"ex (sp),hl"
+"ex (sp),ix"
+"ex (sp),iy"

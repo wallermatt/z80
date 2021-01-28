@@ -2,6 +2,8 @@ SPECIAL_ARGS = ["0", "1", "pe", "z", "nc", "nz", "pe", "pp", "00h", "08h", "10h"
 
 NO_OPERATION = "nop"
 LOAD = "ld"
+EXCHANGE_MULTI = "exx"
+EXCHANGE = "ex"
 
 class Instruction:
     

@@ -225,3 +225,23 @@ def test_load_execute_instruction():
     assert z80.registers_by_name["B"].get_contents() == 100
     assert z80.registers_by_name["C"].get_contents() == 100
     assert z80.program_counter.get_contents() == 0
+
+def test_load_execute_multi_instruction():
+    z80 = Z80()
+    
+    z80.program_counter.set_contents_value(0)
+    z80.registers_by_name["BC"].set_contents(1)
+    z80.registers_by_name["DE"].set_contents(2)
+    z80.registers_by_name["HL"].set_contents(3)
+    z80.registers_by_name["BC'"].set_contents(10)
+    z80.registers_by_name["DE'"].set_contents(20)
+    z80.registers_by_name["HL'"].set_contents(30)
+    instruction = z80.instructions_by_text["exx"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["BC"].get_contents() == 10
+    assert z80.registers_by_name["DE"].get_contents() == 20
+    assert z80.registers_by_name["HL"].get_contents() == 30
+    assert z80.registers_by_name["BC'"].get_contents() == 1
+    assert z80.registers_by_name["DE'"].get_contents() == 2
+    assert z80.registers_by_name["HL'"].get_contents() == 3
+    assert z80.program_counter.get_contents() == 0

@@ -1,5 +1,8 @@
 from base import Component, Memory, DoubleComponent
-from instructions import instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD
+from instructions import (
+    instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
+    EXCHANGE, EXCHANGE_MULTI
+)
 
 
 class Z80():
@@ -122,6 +125,13 @@ class Z80():
     def execute_instruction_base(self, instruction, substituted_left_arg, substituted_right_arg):
         if instruction.instruction_base == LOAD:
             self.load_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == EXCHANGE_MULTI:
+            self.exchange_execute(self.registers_by_name["BC"], self.registers_by_name["BC'"])
+            self.exchange_execute(self.registers_by_name["DE"], self.registers_by_name["DE'"])
+            self.exchange_execute(self.registers_by_name["HL"], self.registers_by_name["HL'"])
+        elif instruction.instruction_base == EXCHANGE:
+            substituted_right_arg = self.substitute_arg(instruction.right_arg, instruction.left_arg)
+            self.exchange_execute(substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -132,6 +142,11 @@ class Z80():
             substituted_left_arg[1].set_contents(high)
         else:
             raise Exception("Left arg subsititution has too many components")
+
+    def exchange_execute(self, substituted_left_arg, substituted_right_arg):
+        temp_substituted_left_arg_contents = substituted_left_arg.get_contents()
+        substituted_left_arg.set_contents(substituted_right_arg.get_contents())
+        substituted_right_arg.set_contents(temp_substituted_left_arg_contents)
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

@@ -1,3 +1,21 @@
+SIGN_FLAG = "S"
+ZERO_FLAG = "Z"
+HALF_CARRY_FLAG = "H"
+PARITY_OVERFLOW_FLAG = "P/V"
+ADD_SUBTRACT_FLAG = "N"
+CARRY_FLAG = "C"
+
+FLAG_POSITIONS = {
+    SIGN_FLAG: 7,
+    ZERO_FLAG: 6,
+    HALF_CARRY_FLAG: 4,
+    PARITY_OVERFLOW_FLAG: 2,
+    ADD_SUBTRACT_FLAG: 1,
+    CARRY_FLAG: 0,
+}
+
+
+
 class Component:
 
     SIZE = 1
@@ -33,6 +51,15 @@ class Component:
             self.contents = self.contents - value + self.MAX_VALUE
             carry_flag = 1
         return carry_flag
+
+    def convert_contents_to_bit_list(self):
+        return [int(x) for x in '{:08b}'.format(input)]
+
+    def convert_bit_list_to_contents(self, bit_list):
+        self.contents = 0
+        for bit in bit_list:
+            self.contents = (self.contents << 1) | bit
+
 
 
 class DoubleComponent(Component):

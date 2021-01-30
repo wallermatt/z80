@@ -1,4 +1,8 @@
-from base import Component, Memory, DoubleComponent
+from base import (
+    Component, Memory, DoubleComponent,
+    SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG,
+    FLAG_POSITIONS
+)
 from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
     EXCHANGE, EXCHANGE_MULTI
@@ -16,14 +20,6 @@ class Z80():
         self.instructions_by_text = instructions_by_text
 
     def _define_registers(self):
-        self.program_counter_low = Component("PCL")
-        self.program_counter_high = Component("PCH")
-        self.program_counter = DoubleComponent("PC", self.program_counter_low, self.program_counter_high)
-
-        self.stack_pointer_low = Component("SPL")
-        self.stack_pointer_high = Component("SPH")
-        self.stack_pointer = DoubleComponent("SP", self.stack_pointer_low, self.stack_pointer_high)
-
         self.A = Component("A")
         self.B = Component("B")
         self.C = Component("C")
@@ -59,6 +55,16 @@ class Z80():
         self.BC_ALT = DoubleComponent("BC'", self.C_ALT, self.B_ALT)
         self.DE_ALT = DoubleComponent("DE'", self.E_ALT, self.D_ALT)
         self.HL_ALT = DoubleComponent("HL'", self.L_ALT, self.H_ALT)
+
+        self.program_counter_low = Component("PCL")
+        self.program_counter_high = Component("PCH")
+        self.program_counter = DoubleComponent("PC", self.program_counter_low, self.program_counter_high)
+
+        self.stack_pointer_low = Component("SPL")
+        self.stack_pointer_high = Component("SPH")
+        self.stack_pointer = DoubleComponent("SP", self.stack_pointer_low, self.stack_pointer_high)
+
+        self.flag_register = self.F
 
         self.registers = [
             self.program_counter,

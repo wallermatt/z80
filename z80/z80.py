@@ -144,8 +144,18 @@ class Z80():
             raise Exception("Left arg subsititution has too many components")
 
     def exchange_execute(self, substituted_left_arg, substituted_right_arg):
-        temp_substituted_left_arg_contents = substituted_left_arg.get_contents()
-        substituted_left_arg.set_contents(substituted_right_arg.get_contents())
+        if not isinstance(substituted_left_arg, tuple):
+            temp_substituted_left_arg_contents = substituted_left_arg.get_contents()
+            substituted_left_arg.set_contents(substituted_right_arg.get_contents())
+        elif len(substituted_left_arg) == 2:
+            low = substituted_left_arg[0].get_contents()
+            high = substituted_left_arg[1].get_contents()
+            temp_substituted_left_arg_contents = self.convert_low_and_high_bytes_to_value(low, high)
+            low, high = self.convert_value_to_low_and_high_bytes(substituted_right_arg.get_contents())
+            substituted_left_arg[0].set_contents(low)
+            substituted_left_arg[1].set_contents(high)
+        else:
+            raise Exception("Left arg subsititution has too many components")
         substituted_right_arg.set_contents(temp_substituted_left_arg_contents)
 
     def substitute_arg(self, arg, opposite_arg):
@@ -158,7 +168,10 @@ class Z80():
             if arg == "c":   # in/out (c) specifies port
                 return self.registers_by_name["C"].get_contents()
             if arg.upper() in self.registers_by_name:
-                return self.memory.get_contents(self.registers_by_name[arg.upper()].get_contents())
+                address = self.registers_by_name[arg.upper()].get_contents()
+                if not opposite_arg or opposite_arg == "*" or self.registers_by_name[opposite_arg.upper()].SIZE == 1:
+                    return self.memory.get_contents(address)
+                return (self.memory.get_contents(address), self.memory.get_contents(address + 1))
             else:
                 if arg == "ix+*":
                     ix_value = self.registers_by_name["IX"].get_contents()

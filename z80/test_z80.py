@@ -271,6 +271,3 @@ def test_execute_instruction():
     assert z80.memory.get_contents_value(1001) == 0
     assert z80.program_counter.get_contents() == 0
 
-"ex (sp),hl"
-"ex (sp),ix"
-"ex (sp),iy"

@@ -65,3 +65,4 @@ def test_subtraction_with_flags():
     assert (0, False, False) == register.subtraction_with_flags(128,128)
     assert (255, True, True) == register.subtraction_with_flags(128,129)
     assert (51, True, False) == register.subtraction_with_flags(15,220)
+    assert (47, True, True) == register.subtraction_with_flags(14,223)

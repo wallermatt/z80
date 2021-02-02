@@ -5,21 +5,21 @@ PARITY_OVERFLOW_FLAG = "P/V"
 ADD_SUBTRACT_FLAG = "N"
 CARRY_FLAG = "C"
 
-FLAG_POSITIONS = {
-    SIGN_FLAG: 7,
-    ZERO_FLAG: 6,
-    HALF_CARRY_FLAG: 4,
-    PARITY_OVERFLOW_FLAG: 2,
-    ADD_SUBTRACT_FLAG: 1,
-    CARRY_FLAG: 0,
-}
-
-
 
 class Component:
 
     SIZE = 1
     MAX_VALUE = 256
+    MAX_NIBBLE_VALUE = 16
+
+    FLAG_POSITIONS = {
+        SIGN_FLAG: 7,
+        ZERO_FLAG: 6,
+        HALF_CARRY_FLAG: 4,
+        PARITY_OVERFLOW_FLAG: 2,
+        ADD_SUBTRACT_FLAG: 1,
+        CARRY_FLAG: 0,
+    }
 
     def __init__(self, name):
         self.name = name
@@ -34,32 +34,52 @@ class Component:
     def set_contents(self, value):
         self.contents = value
 
-    def add_to_contents(self, value):
-        carry_flag = 0
-        result = self.contents + value
-        if result >= self.MAX_VALUE:
-            result = result % self.MAX_VALUE
-            carry_flag = 1
-        self.contents = result
-        return carry_flag
+    def addition_with_flags(self, left_value, right_value):
+        result = left_value + right_value
+        overflow_result = result % self.MAX_VALUE
+        left_nibble = left_value % 16
+        right_nibble = right_value % 16
+        nibble_result = left_nibble + right_nibble
+        return (overflow_result, overflow_result != result, nibble_result > self.MAX_NIBBLE_VALUE)
 
-    def subtract_from_contents(self, value):
-        carry_flag = 0
-        if self.contents >= value:
-            self.contents -= value
+    def subtraction_with_flags(self, left_value, right_value):
+        result = left_value - right_value
+        if result < 0:
+            overflow_result = self.MAX_VALUE + result
         else:
-            self.contents = self.contents - value + self.MAX_VALUE
-            carry_flag = 1
-        return carry_flag
+            overflow_result = result
+
+        left_nibble = left_value % 16
+        right_nibble = right_value % 16
+        nibble_result = left_nibble - right_nibble
+        if nibble_result < 0:
+            nibble_overflow = True
+        else:
+            nibble_overflow = False
+        return (overflow_result, overflow_result != result, nibble_overflow)
 
     def convert_contents_to_bit_list(self):
-        return [int(x) for x in '{:08b}'.format(input)]
+        bit_list = [int(x) for x in '{:08b}'.format(self.contents)]
+        bit_list.reverse()
+        return bit_list
 
     def convert_bit_list_to_contents(self, bit_list):
         self.contents = 0
-        for bit in bit_list:
+        bit_list.reverse()
+        for i, bit in enumerate(bit_list):
             self.contents = (self.contents << 1) | bit
 
+    def set_flag(self, flag):
+        flag_position = self.FLAG_POSITIONS[flag]
+        bit_list = self.convert_contents_to_bit_list()
+        bit_list[flag_position] = 1
+        self.convert_bit_list_to_contents(bit_list)
+
+    def reset_flag(self, flag):
+        flag_position = self.FLAG_POSITIONS[flag]
+        bit_list = self.convert_contents_to_bit_list()
+        bit_list[flag_position] = 0
+        self.convert_bit_list_to_contents(bit_list)
 
 
 class DoubleComponent(Component):

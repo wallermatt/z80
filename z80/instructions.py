@@ -4,6 +4,7 @@ NO_OPERATION = "nop"
 LOAD = "ld"
 EXCHANGE_MULTI = "exx"
 EXCHANGE = "ex"
+ADD = "ADD"
 
 class Instruction:
     

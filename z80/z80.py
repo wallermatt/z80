@@ -3,7 +3,7 @@ from base import (
 )
 from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
-    EXCHANGE, EXCHANGE_MULTI
+    EXCHANGE, EXCHANGE_MULTI, ADD
 )
 
 
@@ -136,6 +136,8 @@ class Z80():
         elif instruction.instruction_base == EXCHANGE:
             substituted_right_arg = self.substitute_arg(instruction.right_arg, instruction.left_arg)
             self.exchange_execute(substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == ADD:
+            self.add_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -161,6 +163,12 @@ class Z80():
         else:
             raise Exception("Left arg subsititution has too many components")
         substituted_right_arg.set_contents(temp_substituted_left_arg_contents)
+
+    def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        result, carry_flag, half_carry_flag = substituted_left_arg.addition_with_flags(
+            substituted_left_arg.get_contents(),
+            substituted_right_arg
+        )
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

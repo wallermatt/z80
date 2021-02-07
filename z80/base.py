@@ -46,31 +46,31 @@ class Component:
         else:
             self.potential_flags[ZERO_FLAG] = False
 
-    def addition_with_flags(self, left_value, right_value):
-        result = left_value + right_value
+    def addition_with_flags(self, value):
+        result = self.contents + value
         overflow_result = result % self.MAX_VALUE
-        left_nibble = left_value % 16
-        right_nibble = right_value % 16
+        left_nibble = self.contents % 16
+        right_nibble = value % 16
         nibble_result = left_nibble + right_nibble
 
         self.potential_flags[ADD_SUBTRACT_FLAG] = False
         self.potential_flags[CARRY_FLAG] = overflow_result != result
         self.potential_flags[HALF_CARRY_FLAG] = nibble_result > self.MAX_NIBBLE_VALUE
-        if (left_value // 128 == right_value // 128) and (left_value // 128 != overflow_result // 128):
+        if (self.contents // 128 == value // 128) and (self.contents // 128 != overflow_result // 128):
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
         self.contents = overflow_result
 
-    def subtraction_with_flags(self, left_value, right_value):
-        result = left_value - right_value
+    def subtraction_with_flags(self, value):
+        result = self.contents - value
         if result < 0:
             overflow_result = self.MAX_VALUE + result
         else:
             overflow_result = result
 
-        left_nibble = left_value % 16
-        right_nibble = right_value % 16
+        left_nibble = self.contents % 16
+        right_nibble = value % 16
         nibble_result = left_nibble - right_nibble
         if nibble_result < 0:
             nibble_overflow = True
@@ -80,7 +80,7 @@ class Component:
         self.potential_flags[CARRY_FLAG] = overflow_result != result
         self.potential_flags[HALF_CARRY_FLAG] = nibble_overflow
 
-        if left_value // 128 != right_value // 128:
+        if self.contents // 128 != value // 128:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False

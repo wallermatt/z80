@@ -3,7 +3,7 @@ from base import (
 )
 from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
-    EXCHANGE, EXCHANGE_MULTI, ADD
+    EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS
 )
 
 
@@ -170,6 +170,11 @@ class Z80():
             substituted_right_arg
         )
 
+    def add_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        substituted_left_arg.addition_with_flags(substituted_right_arg)
+        substituted_left_arg.test_set_potential_flags()
+        self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:
             return arg
@@ -235,3 +240,77 @@ class Z80():
             else:
                 raise Exception("Right arg subsititution has too many components")
         return substituted_arg
+
+    def set_flags_if_required(self, instruction, potential_flags):
+        for i, action in enumerate(instruction.flags):
+            if action in ["-", " "]:
+                continue
+            flag = INSTRUCTION_FLAG_POSITIONS[i]
+            if action in ["+", "V", "P", "*"]:
+                set_flag = potential_flags[flag]
+                if set_flag:
+                    self.flag_register.set_flag(flag)
+                else:
+                    self.flag_register.reset_flag(flag)
+            elif action == "0":
+                self.flag_register.reset_flag(flag)
+            elif action == "1":
+                self.flag_register.set_flag(flag)
+        potential_flags = {}
+
+'''
+
+*-P*++
+-1  * 
+-10+++
+-1-1--
+00P0++
+10-0--
+-0*0++
++0-0--
+-0 1+ 
+00P1++
+-000--
++0P0++
+-0*0--
+-0P0++
+++-+--
+-+V+++
+++V+++
+-1*+++
+------
+-1  1 
+*0-*--
+
+var flags = ['C', 'N', 'P/V', 'H', 'Z', 'S'];
+
+          for (i = 0; i < 6; i++) {
+            desc += '<br><b>' + flags[i] + ':</b> ';
+
+            switch (val[0].charAt(i)) {
+              case '-':
+                desc += 'unaffected';
+                break;
+              case '+':
+                desc += 'affected as defined';
+                break;
+              case 'P':
+                desc += 'detects parity';
+                break;
+              case 'V':
+                desc += 'detects overflow';
+                break;
+              case '1':
+                desc += 'set';
+                break;
+              case '0':
+                desc += 'reset';
+                break;
+              case '*':
+                desc += 'exceptional';
+                break;
+              default:
+                desc += 'unknown';
+            }
+          }
+'''

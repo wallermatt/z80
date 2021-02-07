@@ -1,3 +1,7 @@
+from base import (
+    SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG
+)
+
 SPECIAL_ARGS = ["0", "1", "pe", "z", "nc", "nz", "pe", "pp", "00h", "08h", "10h", "18h", "20h", "28h", "30h", "38h"]
 
 NO_OPERATION = "nop"
@@ -5,6 +9,10 @@ LOAD = "ld"
 EXCHANGE_MULTI = "exx"
 EXCHANGE = "ex"
 ADD = "ADD"
+
+INSTRUCTION_FLAG_POSITIONS = [
+    SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG
+]
 
 class Instruction:
     

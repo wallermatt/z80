@@ -52,17 +52,93 @@ def test_reset_flag():
 
 def test_addition_with_flags():
     register =  Component("A")
-    assert (3, False, False) == register.addition_with_flags(1,2)
-    assert (1, True, True) == register.addition_with_flags(255,2)
-    assert (0, True, False) == register.addition_with_flags(128,128)
-    assert (17, False, True) == register.addition_with_flags(15,2)
+    register.addition_with_flags(1,2)
+    assert register.get_contents() == 3
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == False
+    assert register.potential_flags[HALF_CARRY_FLAG] == False
+    assert register.potential_flags[CARRY_FLAG] == False
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == False
+
+    register.addition_with_flags(255,2)
+    assert register.get_contents() == 1
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == False
+    assert register.potential_flags[HALF_CARRY_FLAG] == True
+    assert register.potential_flags[CARRY_FLAG] == True
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == False
+
+    register.addition_with_flags(128,128)
+    assert register.get_contents() == 0
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == False
+    assert register.potential_flags[HALF_CARRY_FLAG] == False
+    assert register.potential_flags[CARRY_FLAG] == True
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == True
+
+    register.addition_with_flags(15,2)
+    assert register.get_contents() == 17
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == False
+    assert register.potential_flags[HALF_CARRY_FLAG] == True
+    assert register.potential_flags[CARRY_FLAG] == False
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == False
 
 
 def test_subtraction_with_flags():
     register =  Component("A")
-    assert (3, False, False) == register.subtraction_with_flags(5,2)
-    assert (255, True, True) == register.subtraction_with_flags(1,2)
-    assert (0, False, False) == register.subtraction_with_flags(128,128)
-    assert (255, True, True) == register.subtraction_with_flags(128,129)
-    assert (51, True, False) == register.subtraction_with_flags(15,220)
-    assert (47, True, True) == register.subtraction_with_flags(14,223)
+    register.subtraction_with_flags(5,2)
+    assert register.get_contents() == 3
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == True
+    assert register.potential_flags[HALF_CARRY_FLAG] == False
+    assert register.potential_flags[CARRY_FLAG] == False
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == False
+
+    register.subtraction_with_flags(1,2)
+    assert register.get_contents() == 255
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == True
+    assert register.potential_flags[HALF_CARRY_FLAG] == True
+    assert register.potential_flags[CARRY_FLAG] == True
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == False
+
+    register.subtraction_with_flags(128,128)
+    assert register.get_contents() == 0
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == True
+    assert register.potential_flags[HALF_CARRY_FLAG] == False
+    assert register.potential_flags[CARRY_FLAG] == False
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == False
+
+    register.subtraction_with_flags(128,129)
+    assert register.get_contents() == 255
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == True
+    assert register.potential_flags[HALF_CARRY_FLAG] == True
+    assert register.potential_flags[CARRY_FLAG] == True
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == False
+
+    register.subtraction_with_flags(15,220)
+    assert register.get_contents() == 51
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == True
+    assert register.potential_flags[HALF_CARRY_FLAG] == False
+    assert register.potential_flags[CARRY_FLAG] == True
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == True
+
+    register.subtraction_with_flags(14,223)
+    assert register.get_contents() == 47
+    assert register.potential_flags[ADD_SUBTRACT_FLAG] == True
+    assert register.potential_flags[HALF_CARRY_FLAG] == True
+    assert register.potential_flags[CARRY_FLAG] == True
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == True
+
+
+def test_set_potential_flags():
+    register =  Component("A")
+    register.set_contents(0)
+    register.set_potential_flags()
+    assert register.potential_flags[SIGN_FLAG] == False
+    assert register.potential_flags[ZERO_FLAG] == True
+
+    register.set_contents(10)
+    register.set_potential_flags()
+    assert register.potential_flags[SIGN_FLAG] == False
+    assert register.potential_flags[ZERO_FLAG] == False
+
+    register.set_contents(255)
+    register.set_potential_flags()
+    assert register.potential_flags[SIGN_FLAG] == True
+    assert register.potential_flags[ZERO_FLAG] == False

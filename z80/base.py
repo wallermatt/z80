@@ -60,7 +60,7 @@ class Component:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
-        return overflow_result
+        self.contents = overflow_result
 
     def subtraction_with_flags(self, left_value, right_value):
         result = left_value - right_value
@@ -78,14 +78,14 @@ class Component:
             nibble_overflow = False
         self.potential_flags[ADD_SUBTRACT_FLAG] = True
         self.potential_flags[CARRY_FLAG] = overflow_result != result
-        self.potential_flags[HALF_CARRY_FLAG] = nibble_result > self.MAX_NIBBLE_VALUE
+        self.potential_flags[HALF_CARRY_FLAG] = nibble_overflow
 
         if left_value // 128 != right_value // 128:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
 
-        return overflow_result
+        self.contents = overflow_result
 
     def convert_contents_to_bit_list(self):
         bit_list = [int(x) for x in '{:08b}'.format(self.contents)]

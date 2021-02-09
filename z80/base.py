@@ -46,46 +46,51 @@ class Component:
         else:
             self.potential_flags[ZERO_FLAG] = False
 
-    def addition_with_flags(self, value):
+    def addition_with_flags(self, value, set_flags=True):
         result = self.contents + value
         overflow_result = result % self.MAX_VALUE
-        left_nibble = self.contents % 16
-        right_nibble = value % 16
-        nibble_result = left_nibble + right_nibble
-
-        self.potential_flags[ADD_SUBTRACT_FLAG] = False
-        self.potential_flags[CARRY_FLAG] = overflow_result != result
-        self.potential_flags[HALF_CARRY_FLAG] = nibble_result > self.MAX_NIBBLE_VALUE
-        if (self.contents // 128 == value // 128) and (self.contents // 128 != overflow_result // 128):
-            self.potential_flags[PARITY_OVERFLOW_FLAG] = True
-        else:
-            self.potential_flags[PARITY_OVERFLOW_FLAG] = False
         self.contents = overflow_result
 
-    def subtraction_with_flags(self, value):
+        if set_flags:
+            left_nibble = self.contents % 16
+            right_nibble = value % 16
+            nibble_result = left_nibble + right_nibble
+
+            self.potential_flags[ADD_SUBTRACT_FLAG] = False
+            self.potential_flags[CARRY_FLAG] = overflow_result != result
+            self.potential_flags[HALF_CARRY_FLAG] = nibble_result > self.MAX_NIBBLE_VALUE
+            if (self.contents // 128 == value // 128) and (self.contents // 128 != overflow_result // 128):
+                self.potential_flags[PARITY_OVERFLOW_FLAG] = True
+            else:
+                self.potential_flags[PARITY_OVERFLOW_FLAG] = False
+        
+
+    def subtraction_with_flags(self, value, set_flags=True):
         result = self.contents - value
         if result < 0:
             overflow_result = self.MAX_VALUE + result
         else:
             overflow_result = result
-
-        left_nibble = self.contents % 16
-        right_nibble = value % 16
-        nibble_result = left_nibble - right_nibble
-        if nibble_result < 0:
-            nibble_overflow = True
-        else:
-            nibble_overflow = False
-        self.potential_flags[ADD_SUBTRACT_FLAG] = True
-        self.potential_flags[CARRY_FLAG] = overflow_result != result
-        self.potential_flags[HALF_CARRY_FLAG] = nibble_overflow
-
-        if self.contents // 128 != value // 128:
-            self.potential_flags[PARITY_OVERFLOW_FLAG] = True
-        else:
-            self.potential_flags[PARITY_OVERFLOW_FLAG] = False
-
         self.contents = overflow_result
+
+        if set_flags:
+            left_nibble = self.contents % 16
+            right_nibble = value % 16
+            nibble_result = left_nibble - right_nibble
+            if nibble_result < 0:
+                nibble_overflow = True
+            else:
+                nibble_overflow = False
+            self.potential_flags[ADD_SUBTRACT_FLAG] = True
+            self.potential_flags[CARRY_FLAG] = overflow_result != result
+            self.potential_flags[HALF_CARRY_FLAG] = nibble_overflow
+
+            if self.contents // 128 != value // 128:
+                self.potential_flags[PARITY_OVERFLOW_FLAG] = True
+            else:
+                self.potential_flags[PARITY_OVERFLOW_FLAG] = False
+
+        
 
     def convert_contents_to_bit_list(self):
         bit_list = [int(x) for x in '{:08b}'.format(self.contents)]
@@ -133,7 +138,7 @@ class DoubleComponent(Component):
         self.low.set_contents(low_value)
         self.high.set_contents(high_value) 
 
-    def add_to_contents(self, value):
+    def add_to_contents_with_flags(self, value, set_flags=True):
         low_value = value % self.MAX_VALUE
         high_value = value // self.MAX_VALUE
         carry_flag = self.low.add_to_contents(low_value)
@@ -142,7 +147,7 @@ class DoubleComponent(Component):
         carry_flag = self.high.add_to_contents(high_value)
         return carry_flag
 
-    def subtract_from_contents(self, value):
+    def subtract_from_contents_with_flags(self, value, set_flags=True):
         low_value = value % self.MAX_VALUE
         high_value = value // self.MAX_VALUE
         carry_flag = self.low.subtract_from_contents(low_value)

@@ -164,12 +164,6 @@ class Z80():
             raise Exception("Left arg subsititution has too many components")
         substituted_right_arg.set_contents(temp_substituted_left_arg_contents)
 
-    def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
-        result, carry_flag, half_carry_flag = substituted_left_arg.addition_with_flags(
-            substituted_left_arg.get_contents(),
-            substituted_right_arg
-        )
-
     def add_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         substituted_left_arg.addition_with_flags(substituted_right_arg)
         substituted_left_arg.test_set_potential_flags()

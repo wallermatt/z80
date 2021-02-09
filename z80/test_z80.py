@@ -226,7 +226,7 @@ def test_load_execute_instruction():
     assert z80.registers_by_name["C"].get_contents() == 100
     assert z80.program_counter.get_contents() == 0
 
-def test_execute_multi_instruction():
+def test_exchange_multi_instruction():
     z80 = Z80()
     
     z80.program_counter.set_contents_value(0)
@@ -247,7 +247,7 @@ def test_execute_multi_instruction():
     assert z80.program_counter.get_contents() == 0
 
 
-def test_execute_instruction():
+def test_exchange_instruction():
     z80 = Z80()
 
     z80.program_counter.set_contents_value(0)
@@ -271,3 +271,24 @@ def test_execute_instruction():
     assert z80.memory.get_contents_value(1001) == 0
     assert z80.program_counter.get_contents() == 0
 
+    z80.program_counter.set_contents_value(0)
+    z80.registers_by_name["A"].set_contents(0)
+    z80.registers_by_name["BC"].set_contents(2820)
+    z80.memory.set_contents_value(2820, 99)
+    instruction = z80.instructions_by_text["ld a,(bc)"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 99
+    assert z80.program_counter.get_contents() == 0
+
+
+def test_add_execute():
+    z80 = Z80()
+    
+    z80.program_counter.set_contents_value(0)
+    z80.registers_by_name["A"].set_contents(0)
+    z80.registers_by_name["BC"].set_contents(2820)
+    z80.memory.set_contents_value(2820, 99)
+    instruction = z80.instructions_by_text["ld a,(bc)"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 99
+    assert z80.program_counter.get_contents() == 0

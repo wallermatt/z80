@@ -3,6 +3,10 @@ import pytest
 from z80 import Z80
 from instructions import SPECIAL_ARGS
 
+from base import (
+    SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG,
+)
+
 def test_initial():
     z80 = Z80()
     assert len(z80.registers) == 32
@@ -285,10 +289,17 @@ def test_add_execute():
     z80 = Z80()
     
     z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
     z80.registers_by_name["A"].set_contents(0)
-    z80.registers_by_name["BC"].set_contents(2820)
+    z80.registers_by_name["HL"].set_contents(2820)
     z80.memory.set_contents_value(2820, 99)
-    instruction = z80.instructions_by_text["ld a,(bc)"]
+    instruction = z80.instructions_by_text["add a,(hl)"]
     z80.execute_instruction(instruction)
     assert z80.registers_by_name["A"].get_contents() == 99
     assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0

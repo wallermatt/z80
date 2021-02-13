@@ -166,7 +166,7 @@ class Z80():
 
     def add_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         substituted_left_arg.addition_with_flags(substituted_right_arg)
-        substituted_left_arg.test_set_potential_flags()
+        substituted_left_arg.set_potential_flags()
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
 
     def substitute_arg(self, arg, opposite_arg):

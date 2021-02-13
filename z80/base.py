@@ -57,7 +57,6 @@ class Component:
         left_nibble = self.contents % self.MAX_NIBBLE_VALUE
         value_nibble = value % self.MAX_NIBBLE_VALUE
         result_nibble = (left_nibble + value_nibble) % self.MAX_NIBBLE_VALUE
-        print(self.contents, value, left_nibble, value_nibble, result_nibble)
 
         self.contents = overflow_result
  
@@ -106,6 +105,11 @@ class Component:
         for i, bit in enumerate(bit_list):
             self.contents = (self.contents << 1) | bit
 
+    def get_flag(self, flag):
+        flag_position = self.FLAG_POSITIONS[flag]
+        bit_list = self.convert_contents_to_bit_list()
+        return bit_list[flag_position]
+        
     def set_flag(self, flag):
         flag_position = self.FLAG_POSITIONS[flag]
         bit_list = self.convert_contents_to_bit_list()

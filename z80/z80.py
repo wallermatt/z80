@@ -188,6 +188,10 @@ class Z80():
                     ix_value = self.registers_by_name["IX"].get_contents()
                     displacement, _ = self.read_memory_and_increment_pc()
                     return self.memory.get_contents(ix_value + displacement)
+                elif arg == "iy+*":
+                    iy_value = self.registers_by_name["IY"].get_contents()
+                    displacement, _ = self.read_memory_and_increment_pc()
+                    return self.memory.get_contents(iy_value + displacement)
             if "**" in arg:
                 low_byte, end_of_memory_reached = self.read_memory_and_increment_pc()
                 if end_of_memory_reached:

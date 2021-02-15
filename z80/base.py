@@ -40,42 +40,42 @@ class Component:
         self.contents = self.contents % self.MAX_VALUE
 
     def set_potential_flags(self):
-        if self.contents >= 128:
+        if self.get_contents() >= 128:
             self.potential_flags[SIGN_FLAG] = True
         else:
             self.potential_flags[SIGN_FLAG] = False
 
-        if self.contents == 0:
+        if self.get_contents() == 0:
             self.potential_flags[ZERO_FLAG] = True
         else:
             self.potential_flags[ZERO_FLAG] = False
 
     def addition_with_flags(self, value):
-        result = self.contents + value
+        result = self.get_contents() + value
         overflow_result = result % self.MAX_VALUE
 
-        left_nibble = self.contents % self.MAX_NIBBLE_VALUE
+        left_nibble = self.get_contents() % self.MAX_NIBBLE_VALUE
         value_nibble = value % self.MAX_NIBBLE_VALUE
         result_nibble = (left_nibble + value_nibble) % self.MAX_NIBBLE_VALUE
 
-        self.contents = overflow_result
+        self.set_contents(overflow_result)
  
         self.potential_flags[ADD_SUBTRACT_FLAG] = False
         self.potential_flags[CARRY_FLAG] = overflow_result != result
         self.potential_flags[HALF_CARRY_FLAG] = left_nibble > result_nibble
-        if (self.contents // 128 == value // 128) and (self.contents // 128 != overflow_result // 128):
+        if (self.get_contents() // 128 == value // 128) and (self.get_contents() // 128 != overflow_result // 128):
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
         
     def subtraction_with_flags(self, value, set_flags=True):
-        result = self.contents - value
+        result = self.get_contents() - value
         if result < 0:
             overflow_result = self.MAX_VALUE + result
         else:
             overflow_result = result
 
-        left_nibble = self.contents % self.MAX_NIBBLE_VALUE
+        left_nibble = self.get_contents() % self.MAX_NIBBLE_VALUE
         right_nibble = value % self.MAX_NIBBLE_VALUE
         nibble_result = left_nibble - right_nibble
         if nibble_result < 0:
@@ -87,12 +87,12 @@ class Component:
         self.potential_flags[CARRY_FLAG] = overflow_result != result
         self.potential_flags[HALF_CARRY_FLAG] = nibble_overflow
 
-        if self.contents // 128 != value // 128:
+        if self.get_contents() // 128 != value // 128:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
 
-        self.contents = overflow_result
+        self.set_contents(overflow_result)
 
     def convert_contents_to_bit_list(self):
         bit_list = [int(x) for x in '{:08b}'.format(self.contents)]
@@ -134,6 +134,7 @@ class DoubleComponent(Component):
         self.name = name
         self.low = low_component
         self.high = high_component
+        self.potential_flags = {}
 
     def get_contents(self):
         return self.high.get_contents() * self.MAX_VALUE + self.low.get_contents()

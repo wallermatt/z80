@@ -303,3 +303,124 @@ def test_add_execute():
     assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
     assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
     assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["A"].set_contents(10)
+    instruction = z80.instructions_by_text["add a,a"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 20
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 1
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["A"].set_contents(10)
+    z80.registers_by_name["B"].set_contents(250)
+    instruction = z80.instructions_by_text["add a,b"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 4
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 1
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 1
+
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["IY"].set_contents(10)
+    z80.registers_by_name["DE"].set_contents(250)
+    instruction = z80.instructions_by_text["add iy,de"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["IY"].get_contents() == 260
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 99)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["A"].set_contents(10)
+    instruction = z80.instructions_by_text["add a,*"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 109
+    assert z80.program_counter.get_contents() == 1
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["A"].set_contents(10)
+    z80.registers_by_name["IYL"].set_contents(255)
+    instruction = z80.instructions_by_text["add a,iyl"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 9
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 1
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 1
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 99)
+    z80.memory.set_contents_value(116, 42)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["A"].set_contents(10)
+    z80.registers_by_name["IY"].set_contents(17)
+    instruction = z80.instructions_by_text["add a,(iy+*)"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 52
+    assert z80.program_counter.get_contents() == 1
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 1
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+'''
+add a,a
+add a,b
+add a,(hl)
+add a,l
+add iy,de
+add ix,bc
+add a,c
+add a,(iy+*)
+add hl,sp
+add a,e
+add ix,sp
+add iy,iy
+add hl,hl
+add a,d
+add a,h
+add a,iyh
+add a,*
+add hl,de
+add ix,de
+add a,(ix+*)
+add iy,bc
+add a,ixl
+add ix,ix
+add a,ixh
+add iy,sp
+add a,iyl
+add hl,bc
+'''

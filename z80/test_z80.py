@@ -380,47 +380,17 @@ def test_add_execute():
 
     z80.program_counter.set_contents_value(0)
     z80.memory.set_contents_value(0, 99)
-    z80.memory.set_contents_value(116, 42)
+    z80.memory.set_contents_value(116, 120)
     z80.flag_register.set_contents(0)
     z80.registers_by_name["A"].set_contents(10)
     z80.registers_by_name["IY"].set_contents(17)
     instruction = z80.instructions_by_text["add a,(iy+*)"]
     z80.execute_instruction(instruction)
-    assert z80.registers_by_name["A"].get_contents() == 52
+    assert z80.registers_by_name["A"].get_contents() == 130
     assert z80.program_counter.get_contents() == 1
-    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 1
     assert z80.flag_register.get_flag(ZERO_FLAG) == 0
     assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 1
-    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 1
     assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
     assert z80.flag_register.get_flag(CARRY_FLAG) == 0
-
-'''
-add a,a
-add a,b
-add a,(hl)
-add a,l
-add iy,de
-add ix,bc
-add a,c
-add a,(iy+*)
-add hl,sp
-add a,e
-add ix,sp
-add iy,iy
-add hl,hl
-add a,d
-add a,h
-add a,iyh
-add a,*
-add hl,de
-add ix,de
-add a,(ix+*)
-add iy,bc
-add a,ixl
-add ix,ix
-add a,ixh
-add iy,sp
-add a,iyl
-add hl,bc
-'''

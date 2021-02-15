@@ -57,8 +57,6 @@ class Component:
         left_nibble = self.get_contents() % self.MAX_NIBBLE_VALUE
         value_nibble = value % self.MAX_NIBBLE_VALUE
         result_nibble = (left_nibble + value_nibble) % self.MAX_NIBBLE_VALUE
-
-        self.set_contents(overflow_result)
  
         self.potential_flags[ADD_SUBTRACT_FLAG] = False
         self.potential_flags[CARRY_FLAG] = overflow_result != result
@@ -67,6 +65,8 @@ class Component:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
+
+        self.set_contents(overflow_result)
         
     def subtraction_with_flags(self, value, set_flags=True):
         result = self.get_contents() - value

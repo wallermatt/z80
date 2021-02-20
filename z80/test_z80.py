@@ -459,20 +459,108 @@ def test_subtract_execute():
     assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
     assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 1
     assert z80.flag_register.get_flag(CARRY_FLAG) == 1
+
+def test_adc_execute():
+    z80 = Z80()
+    
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["A"].set_contents(0)
+    z80.registers_by_name["HL"].set_contents(2820)
+    z80.memory.set_contents_value(2820, 99)
+    instruction = z80.instructions_by_text["adc a,(hl)"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 99
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+    
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_flag(CARRY_FLAG)
+    z80.registers_by_name["A"].set_contents(0)
+    z80.registers_by_name["HL"].set_contents(2820)
+    z80.memory.set_contents_value(2820, 99)
+    instruction = z80.instructions_by_text["adc a,(hl)"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 100
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_flag(CARRY_FLAG)
+    z80.registers_by_name["HL"].set_contents(1000)
+    z80.registers_by_name["BC"].set_contents(500)
+    z80.memory.set_contents_value(2820, 99)
+    instruction = z80.instructions_by_text["adc hl,bc"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["HL"].get_contents() == 1501
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+def test_sbc_execute():
+    z80 = Z80()
+    
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["A"].set_contents(100)
+    z80.registers_by_name["B"].set_contents(99)
+    instruction = z80.instructions_by_text["sbc a,b"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 1
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 1
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_flag(CARRY_FLAG)
+    z80.registers_by_name["A"].set_contents(100)
+    z80.registers_by_name["B"].set_contents(99)
+    instruction = z80.instructions_by_text["sbc a,b"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 0
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 1
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 1
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
 '''
-sub b
-sub c
-sub a
-sub d
-sub (iy+*)
-sub ixl
-sub iyh
-sub (hl)
-sub (ix+*)
-sub iyl
-sub e
-sub l
-sub ixh
-sub h
-sub *
+adc a,c
+adc a,a
+adc hl,hl
+adc hl,bc
+adc a,(hl)
+adc a,l
+adc hl,sp
+adc a,ixh
+adc a,b
+adc a,(ix+*)
+adc a,d
+adc a,(iy+*)
+adc a,iyh
+adc a,e
+adc a,*
+adc a,iyl
+adc a,ixl
+adc a,h
+adc hl,de
 '''

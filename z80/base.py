@@ -10,6 +10,7 @@ class Component:
 
     SIZE = 1
     MAX_VALUE = 256
+    HALF_MAX_VALUE = MAX_VALUE / 2
     MAX_NIBBLE_VALUE = 16
 
     FLAG_POSITIONS = {
@@ -37,10 +38,10 @@ class Component:
 
     def add_to_contents(self, value):
         self.contents += value
-        self.contents = self.contents % self.MAX_VALUE
+        self.contents = self.contents % self.HALF_MAX_VALUE
 
     def set_potential_flags(self):
-        if self.get_contents() >= 128:
+        if self.get_contents() >= self.MAX_VALUE / 2:
             self.potential_flags[SIGN_FLAG] = True
         else:
             self.potential_flags[SIGN_FLAG] = False
@@ -61,7 +62,7 @@ class Component:
         self.potential_flags[ADD_SUBTRACT_FLAG] = False
         self.potential_flags[CARRY_FLAG] = overflow_result != result
         self.potential_flags[HALF_CARRY_FLAG] = left_nibble > result_nibble
-        if (self.get_contents() // 128 == value // 128) and (self.get_contents() // 128 != overflow_result // 128):
+        if (self.get_contents() // self.HALF_MAX_VALUE == value // self.HALF_MAX_VALUE) and (self.get_contents() // self.HALF_MAX_VALUE != overflow_result // self.HALF_MAX_VALUE):
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
@@ -87,7 +88,7 @@ class Component:
         self.potential_flags[CARRY_FLAG] = overflow_result != result
         self.potential_flags[HALF_CARRY_FLAG] = nibble_overflow
 
-        if self.get_contents() // 128 != value // 128:
+        if self.get_contents() // self.HALF_MAX_VALUE != value // self.HALF_MAX_VALUE:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
@@ -127,6 +128,7 @@ class DoubleComponent(Component):
 
     SIZE = 2
     MAX_VALUE = 65536
+    HALF_MAX_VALUE = MAX_VALUE / 2
     MAX_NIBBLE_VALUE = 4096
 
 

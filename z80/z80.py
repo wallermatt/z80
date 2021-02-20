@@ -3,7 +3,7 @@ from base import (
 )
 from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
-    EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB
+    EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC
 )
 
 
@@ -139,6 +139,12 @@ class Z80():
         elif instruction.instruction_base == ADD:
             self.add_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == SUB:
+            self.sub_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == ADC:
+            substituted_right_arg += self.flag_register.get_flag(CARRY_FLAG)
+            self.add_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == SBC:
+            substituted_right_arg += self.flag_register.get_flag(CARRY_FLAG)
             self.sub_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):

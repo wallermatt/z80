@@ -3,7 +3,7 @@ from base import (
 )
 from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
-    EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS
+    EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB
 )
 
 
@@ -138,6 +138,8 @@ class Z80():
             self.exchange_execute(substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == ADD:
             self.add_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == SUB:
+            self.sub_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -166,6 +168,11 @@ class Z80():
 
     def add_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         substituted_left_arg.addition_with_flags(substituted_right_arg)
+        substituted_left_arg.set_potential_flags()
+        self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+
+    def sub_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        substituted_left_arg.subtraction_with_flags(substituted_right_arg)
         substituted_left_arg.set_potential_flags()
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
 

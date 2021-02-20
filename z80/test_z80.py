@@ -497,16 +497,16 @@ def test_adc_execute():
 
     z80.program_counter.set_contents_value(0)
     z80.flag_register.set_flag(CARRY_FLAG)
-    z80.registers_by_name["HL"].set_contents(1000)
+    z80.registers_by_name["HL"].set_contents(4000)
     z80.registers_by_name["BC"].set_contents(500)
     z80.memory.set_contents_value(2820, 99)
     instruction = z80.instructions_by_text["adc hl,bc"]
     z80.execute_instruction(instruction)
-    assert z80.registers_by_name["HL"].get_contents() == 1501
+    assert z80.registers_by_name["HL"].get_contents() == 4501
     assert z80.program_counter.get_contents() == 0
     assert z80.flag_register.get_flag(SIGN_FLAG) == 0
     assert z80.flag_register.get_flag(ZERO_FLAG) == 0
-    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 1
     assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
     assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
     assert z80.flag_register.get_flag(CARRY_FLAG) == 0

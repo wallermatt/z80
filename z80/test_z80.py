@@ -543,24 +543,62 @@ def test_sbc_execute():
     assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
     assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 1
     assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+def test_inc_execute():
+    z80 = Z80()
+    
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["A"].set_contents(100)
+    instruction = z80.instructions_by_text["inc a"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 101
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["IX"].set_contents(5000)
+    z80.memory.set_contents_value(0, 55)
+    z80.memory.set_contents_value(5055, 77)
+    instruction = z80.instructions_by_text["inc (ix+*)"]
+    z80.execute_instruction(instruction)
+    assert z80.memory.get_contents_value(5055) == 78
+    assert z80.program_counter.get_contents() == 1
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+
+
+
 '''
-adc a,c
-adc a,a
-adc hl,hl
-adc hl,bc
-adc a,(hl)
-adc a,l
-adc hl,sp
-adc a,ixh
-adc a,b
-adc a,(ix+*)
-adc a,d
-adc a,(iy+*)
-adc a,iyh
-adc a,e
-adc a,*
-adc a,iyl
-adc a,ixl
-adc a,h
-adc hl,de
+inc l
+inc iy
+inc h
+inc de
+inc sp
+inc a
+inc ixl
+inc (iy+*)
+inc hl
+inc ix
+inc b
+inc e
+inc (ix+*)
+inc iyh
+inc iyl
+inc c
+inc (hl)
+inc ixh
+inc d
+inc bc
 '''

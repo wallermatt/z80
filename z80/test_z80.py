@@ -578,6 +578,38 @@ def test_inc_execute():
     assert z80.flag_register.get_flag(CARRY_FLAG) == 0
 
 
+def test_dec_execute():
+    z80 = Z80()
+    
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["A"].set_contents(100)
+    instruction = z80.instructions_by_text["dec a"]
+    z80.execute_instruction(instruction)
+    assert z80.registers_by_name["A"].get_contents() == 99
+    assert z80.program_counter.get_contents() == 0
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 1
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
+
+    z80.program_counter.set_contents_value(0)
+    z80.flag_register.set_contents(0)
+    z80.registers_by_name["IX"].set_contents(5000)
+    z80.memory.set_contents_value(0, 55)
+    z80.memory.set_contents_value(5055, 77)
+    instruction = z80.instructions_by_text["dec (ix+*)"]
+    z80.execute_instruction(instruction)
+    assert z80.memory.get_contents_value(5055) == 76
+    assert z80.program_counter.get_contents() == 1
+    assert z80.flag_register.get_flag(SIGN_FLAG) == 0
+    assert z80.flag_register.get_flag(ZERO_FLAG) == 0
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
+    assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
+    assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 1
+    assert z80.flag_register.get_flag(CARRY_FLAG) == 0
 
 
 '''

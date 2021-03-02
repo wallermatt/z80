@@ -613,24 +613,17 @@ def test_dec_execute():
 
 
 '''
-inc l
-inc iy
-inc h
-inc de
-inc sp
-inc a
-inc ixl
-inc (iy+*)
-inc hl
-inc ix
-inc b
-inc e
-inc (ix+*)
-inc iyh
-inc iyl
-inc c
-inc (hl)
-inc ixh
-inc d
-inc bc
+push ix
+push hl
+push iy
+push bc
+push af
+push de
+
+pop de
+pop bc
+pop hl
+pop af
+pop iy
+pop ix
 '''

@@ -3,7 +3,8 @@ from base import (
 )
 from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
-    EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC
+    EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
+    PUSH, POP
 )
 
 

@@ -151,6 +151,10 @@ class Z80():
             self.add_execute(instruction, substituted_left_arg, 1)
         elif instruction.instruction_base == DEC:
             self.sub_execute(instruction, substituted_left_arg, 1)
+        elif instruction.instruction_base == PUSH:
+            self.push_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == POP:
+            self.sub_execute(instruction, substituted_left_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -186,6 +190,19 @@ class Z80():
         substituted_left_arg.subtraction_with_flags(substituted_right_arg)
         substituted_left_arg.set_potential_flags()
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+
+    def push_execute(self, instruction, substituted_left_arg):
+        import pdb; pdb.set_trace()
+        self.stack_pointer.subtraction_with_flags(1)
+        self.memory.set_contents_value(
+            self.stack_pointer.get_contents(),
+            substituted_left_arg.high.get_contents()
+        )
+        self.stack_pointer.subtraction_with_flags(1)
+        self.memory.set_contents_value(
+            self.stack_pointer.get_contents(),
+            substituted_left_arg.low.get_contents()
+        )
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

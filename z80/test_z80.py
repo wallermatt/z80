@@ -597,7 +597,7 @@ def test_dec_execute():
 
     z80.program_counter.set_contents_value(0)
     z80.flag_register.set_contents(0)
-    z80.registers_by_name["IX"].set_contents(5000)
+    z80.registers_by_name["IX"].set_contents_value(5000)
     z80.memory.set_contents_value(0, 55)
     z80.memory.set_contents_value(5055, 77)
     instruction = z80.instructions_by_text["dec (ix+*)"]
@@ -618,7 +618,7 @@ def test_push_execute():
     z80.stack_pointer.set_contents_value(50000)
     z80.memory.set_contents_value(49999, 0)
     z80.memory.set_contents_value(49998, 0)
-    z80.registers_by_name["IX"].set_contents(5000)
+    z80.registers_by_name["IX"].set_contents_value(5000)
     instruction = z80.instructions_by_text["push ix"]
     z80.execute_instruction(instruction)
     assert z80.stack_pointer.get_contents() == 49998

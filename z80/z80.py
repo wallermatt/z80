@@ -192,6 +192,7 @@ class Z80():
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
 
     def push_execute(self, instruction, substituted_left_arg):
+        import pdb; pdb.set_trace()
         self.stack_pointer.subtraction_with_flags(1)
         self.memory.set_contents_value(
             self.stack_pointer.get_contents(),

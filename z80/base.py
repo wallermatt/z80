@@ -139,10 +139,9 @@ class DoubleComponent(Component):
         self.potential_flags = {}
 
     def get_contents(self):
-        return self.high.get_contents() * self.MAX_VALUE + self.low.get_contents()
+        return self.high.get_contents() * self.low.MAX_VALUE + self.low.get_contents()
 
     def set_contents_value(self, value):
-        import pdb; pdb.set_trace()
         low_value = value % self.low.MAX_VALUE
         high_value = value // self.low.MAX_VALUE
         self.low.set_contents(low_value)

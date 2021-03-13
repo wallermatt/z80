@@ -154,7 +154,7 @@ class Z80():
         elif instruction.instruction_base == PUSH:
             self.push_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == POP:
-            self.sub_execute(instruction, substituted_left_arg)
+            self.pop_execute(instruction, substituted_left_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -202,6 +202,14 @@ class Z80():
             self.stack_pointer.get_contents(),
             substituted_left_arg.low.get_contents()
         )
+
+    def pop_execute(self, instruction, substituted_left_arg):
+        low_value = self.memory.get_contents_value(self.stack_pointer.get_contents())
+        substituted_left_arg.low.set_contents(low_value)
+        self.stack_pointer.addition_with_flags(1)
+        high_value = self.memory.get_contents_value(self.stack_pointer.get_contents())
+        substituted_left_arg.high.set_contents(high_value)
+        self.stack_pointer.addition_with_flags(1)
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

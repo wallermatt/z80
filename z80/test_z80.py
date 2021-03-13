@@ -614,6 +614,7 @@ def test_dec_execute():
 
 def test_push_execute():
     z80 = Z80()
+
     z80.program_counter.set_contents_value(0)
     z80.stack_pointer.set_contents_value(50000)
     z80.memory.set_contents_value(49999, 0)
@@ -625,7 +626,22 @@ def test_push_execute():
     assert z80.memory.get_contents_value(49999) == 19
     assert z80.memory.get_contents_value(49998) == 136
     assert z80.program_counter.get_contents() == 0
-    assert z80.stack_pointer.get_contents() == 49998
+
+
+def test_pop_execute():
+    z80 = Z80()
+    
+    z80.program_counter.set_contents_value(0)
+    z80.stack_pointer.set_contents_value(49998)
+    z80.memory.set_contents_value(49999, 19)
+    z80.memory.set_contents_value(49998, 136)
+    z80.registers_by_name["IX"].set_contents_value(0)
+    instruction = z80.instructions_by_text["pop ix"]
+    z80.execute_instruction(instruction)
+    assert z80.stack_pointer.get_contents() == 50000
+    assert z80.memory.get_contents_value(49999) == 19
+    assert z80.memory.get_contents_value(49998) == 136
+    assert z80.program_counter.get_contents() == 0
 
 '''
 push ix

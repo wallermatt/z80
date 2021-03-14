@@ -97,8 +97,8 @@ for instruction in instruction_list:
             instruction.opcode, instruction.instruction_base, instruction.left_arg, instruction.right_arg,
             instruction.size, instruction.time, instruction.flags, instruction.text, instruction.desc))
     '''
-    if instruction.instruction_base == "pop":
-        instruction_set.add(instruction.text)
+    if instruction.instruction_base[0] == "d":
+        instruction_set.add((instruction.text, instruction.desc))
 
 for e in instruction_set:
     print(e)

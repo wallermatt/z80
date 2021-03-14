@@ -643,18 +643,39 @@ def test_pop_execute():
     assert z80.memory.get_contents_value(49998) == 136
     assert z80.program_counter.get_contents() == 0
 
-'''
-push ix
-push hl
-push iy
-push bc
-push af
-push de
 
-pop de
-pop bc
-pop hl
-pop af
-pop iy
-pop ix
 '''
+('jr z,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
+('jp nz,**', 'If condition cc is true, ** is copied to pc.')
+('jr nz,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
+('jp nc,**', 'If condition cc is true, ** is copied to pc.')
+('jp c,**', 'If condition cc is true, ** is copied to pc.')
+('jp (iy)', 'Loads the value of iy into pc.')
+('jp pe,**', 'If condition cc is true, ** is copied to pc.')
+('jp **', '** is copied to pc.')
+('jp po,**', 'If condition cc is true, ** is copied to pc.')
+('jp (hl)', 'Loads the value of hl into pc.')
+('jp m,**', 'If condition cc is true, ** is copied to pc.')
+('jp (ix)', 'Loads the value of ix into pc.')
+('jp z,**', 'If condition cc is true, ** is copied to pc.')
+('jr nc,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
+('jr *', 'The signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
+('jr c,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
+('jp p,**', 'If condition cc is true, ** is copied to pc.')
+
+('djnz *', 'The b register is decremented, and if not zero, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
+
+cc Condition
+Relevant
+Flag
+000 Non-Zero (NZ) Z
+001 Zero (Z) Z
+010 No Carry (NC) C
+011 Carry (C) C
+100 Parity Odd (PO) P/V
+101 Parity Even (PE) P/V
+110 Sign Positive (P) S
+111 Sign Negative (M) S
+
+'''
+

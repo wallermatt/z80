@@ -4,7 +4,7 @@ from base import (
 from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
-    PUSH, POP
+    PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS
 )
 
 
@@ -123,6 +123,11 @@ class Z80():
     def execute_instruction(self, instruction):
         if instruction.instruction_base == NO_OPERATION:
             return
+        if instruction.instruction_base in JUMP_INSTRUCTIONS:
+            instruction.left_arg.replace("(", "")
+            instruction.left_arg.replace(")", "")
+            instruction.right_arg.replace("(", "")
+            instruction.right_arg.replace(")", "")
         substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
         substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg)
         self.execute_instruction_base(instruction, substituted_left_arg, substituted_right_arg)

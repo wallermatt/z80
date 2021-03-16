@@ -644,7 +644,27 @@ def test_pop_execute():
     assert z80.program_counter.get_contents() == 0
 
 
+def test_jump_execute():
+    z80 = Z80()
+    '''
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    instruction = z80.instructions_by_text["jp **"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 34835
+    '''
+    z80.program_counter.set_contents_value(0)
+    z80.registers_by_name["HL"].set_contents_value(5000)
+    instruction = z80.instructions_by_text["jp (hl)"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 5000
+
 '''
+('jp **', '** is copied to pc.')
+('jp (hl)', 'Loads the value of hl into pc.')
+
+
 ('jr z,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
 ('jp nz,**', 'If condition cc is true, ** is copied to pc.')
 ('jr nz,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
@@ -652,9 +672,9 @@ def test_pop_execute():
 ('jp c,**', 'If condition cc is true, ** is copied to pc.')
 ('jp (iy)', 'Loads the value of iy into pc.')
 ('jp pe,**', 'If condition cc is true, ** is copied to pc.')
-('jp **', '** is copied to pc.')
+
 ('jp po,**', 'If condition cc is true, ** is copied to pc.')
-('jp (hl)', 'Loads the value of hl into pc.')
+
 ('jp m,**', 'If condition cc is true, ** is copied to pc.')
 ('jp (ix)', 'Loads the value of ix into pc.')
 ('jp z,**', 'If condition cc is true, ** is copied to pc.')

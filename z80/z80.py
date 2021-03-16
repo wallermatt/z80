@@ -124,10 +124,15 @@ class Z80():
         if instruction.instruction_base == NO_OPERATION:
             return
         if instruction.instruction_base in JUMP_INSTRUCTIONS:
-            instruction.left_arg.replace("(", "")
-            instruction.left_arg.replace(")", "")
-            instruction.right_arg.replace("(", "")
-            instruction.right_arg.replace(")", "")
+            instruction.left_arg = instruction.left_arg.replace("(", "")
+            instruction.left_arg = instruction.left_arg.replace(")", "")
+            instruction.left_arg = instruction.left_arg.replace("c", "cf")
+            if instruction.right_arg:
+                instruction.right_arg = instruction.right_arg.replace("(", "")
+                instruction.right_arg = instruction.right_arg.replace(")", "")
+            else:
+                instruction.right_arg = instruction.left_arg
+                instruction.left_arg = None
         substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
         substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg)
         self.execute_instruction_base(instruction, substituted_left_arg, substituted_right_arg)
@@ -160,6 +165,8 @@ class Z80():
             self.push_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == POP:
             self.pop_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == JUMP:
+            self.jump_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -215,6 +222,13 @@ class Z80():
         high_value = self.memory.get_contents_value(self.stack_pointer.get_contents())
         substituted_left_arg.high.set_contents(high_value)
         self.stack_pointer.addition_with_flags(1)
+
+    def jump_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        if not substituted_left_arg:
+            self.program_counter.set_contents_value(substituted_right_arg)
+        elif substituted_left_arg == "z":
+            pass
+        
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

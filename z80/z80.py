@@ -167,6 +167,8 @@ class Z80():
             self.pop_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == JUMP:
             self.jump_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == JUMP_RELATIVE:
+            self.jump_relative_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -226,6 +228,12 @@ class Z80():
     def jump_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not substituted_left_arg:
             self.program_counter.set_contents_value(substituted_right_arg)
+        elif substituted_left_arg == "z":
+            pass
+
+    def jump_relative_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        if not substituted_left_arg:
+            self.program_counter.add_to_contents(substituted_right_arg - instruction.size)
         elif substituted_left_arg == "z":
             pass
         

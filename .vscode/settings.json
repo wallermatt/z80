@@ -1,0 +1,9 @@
+{
+    "python.pythonPath": "/home/matthew/.envs/note/bin/python",
+    "python.testing.pytestArgs": [
+        "z80"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
+}

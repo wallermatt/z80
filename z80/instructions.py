@@ -30,7 +30,7 @@ class Instruction:
     def __init__(self, opcode, instruction_base, left_arg, right_arg, size, time, flags, text, desc):
         self.opcode = opcode
         self.text = text
-        self.size = size
+        self.size = int(size)
         self.time = time
         self.flags = flags
         self.desc = desc

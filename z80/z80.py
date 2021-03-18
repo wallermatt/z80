@@ -226,16 +226,38 @@ class Z80():
         self.stack_pointer.addition_with_flags(1)
 
     def jump_execute(self, instruction, substituted_left_arg, substituted_right_arg):
-        if not substituted_left_arg:
-            self.program_counter.set_contents_value(substituted_right_arg)
-        elif substituted_left_arg == "z":
-            pass
+        if substituted_left_arg == "z":
+            if not self.flag_register.get_flag(ZERO_FLAG):
+                return
+        elif substituted_left_arg == "nz":
+            if self.flag_register.get_flag(ZERO_FLAG):
+                return
+        elif substituted_left_arg == "cf":
+            if not self.flag_register.get_flag(CARRY_FLAG):
+                return
+        elif substituted_left_arg == "NC":
+            if self.flag_register.get_flag(CARRY_FLAG):
+                return
+        elif substituted_left_arg == "PO":
+            if not self.flag_register.get_flag(PARITY_OVERFLOW_FLAG):
+                return
+        elif substituted_left_arg == "PE":
+            if self.flag_register.get_flag(PARITY_OVERFLOW_FLAG):
+                return
+        elif substituted_left_arg == "P":
+            if not self.flag_register.get_flag(SIGN_FLAG):
+                return
+        elif substituted_left_arg == "M":
+            if self.flag_register.get_flag(SIGN_FLAG):
+                return
+
+        self.program_counter.set_contents_value(substituted_right_arg)
 
     def jump_relative_execute(self, instruction, substituted_left_arg, substituted_right_arg):
-        if not substituted_left_arg:
-            self.program_counter.add_to_contents(substituted_right_arg - instruction.size)
-        elif substituted_left_arg == "z":
+        if substituted_left_arg == "z":
             pass
+        self.program_counter.add_to_contents(substituted_right_arg - instruction.size)
+            
         
 
     def substitute_arg(self, arg, opposite_arg):

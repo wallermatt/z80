@@ -646,7 +646,7 @@ def test_pop_execute():
 
 def test_jump_execute():
     z80 = Z80()
-    
+    '''
     z80.program_counter.set_contents_value(0)
     z80.memory.set_contents_value(0, 19)
     z80.memory.set_contents_value(1, 136)
@@ -659,27 +659,24 @@ def test_jump_execute():
     instruction = z80.instructions_by_text["jp (hl)"]
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 5000
-
-
-def test_jump_relative_execute():
-    z80 = Z80()
-
-    z80.program_counter.set_contents_value(1)
-    z80.memory.set_contents_value(1, 19)
-    instruction = z80.instructions_by_text["jr *"]
+    '''
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    z80.flag_register.set_flag(ZERO_FLAG)
+    instruction = z80.instructions_by_text["jp nz,**"]
     z80.execute_instruction(instruction)
-    assert z80.program_counter.get_contents() == 19
+    assert z80.program_counter.get_contents() == 2
+
 
 
 
 '''
-('jr *', 'The signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
-('jp **', '** is copied to pc.')
-('jp (hl)', 'Loads the value of hl into pc.')
+('jp nz,**', 'If condition cc is true, ** is copied to pc.')
 
 
 ('jr z,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
-('jp nz,**', 'If condition cc is true, ** is copied to pc.')
+
 ('jr nz,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
 ('jp nc,**', 'If condition cc is true, ** is copied to pc.')
 ('jp c,**', 'If condition cc is true, ** is copied to pc.')
@@ -712,3 +709,11 @@ Flag
 
 '''
 
+def test_jump_relative_execute():
+    z80 = Z80()
+
+    z80.program_counter.set_contents_value(1)
+    z80.memory.set_contents_value(1, 19)
+    instruction = z80.instructions_by_text["jr *"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 19

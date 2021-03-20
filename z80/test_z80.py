@@ -732,6 +732,8 @@ def test_jump_execute():
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 34835
 
+
+
 '''
 
 
@@ -759,3 +761,6 @@ def test_jump_relative_execute():
     instruction = z80.instructions_by_text["jr *"]
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 19
+
+def test_dec_jump_relative_execute():
+    z80 = Z80()

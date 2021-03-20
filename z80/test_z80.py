@@ -659,7 +659,7 @@ def test_jump_execute():
     instruction = z80.instructions_by_text["jp (hl)"]
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 5000
-    '''
+    
     z80.program_counter.set_contents_value(0)
     z80.memory.set_contents_value(0, 19)
     z80.memory.set_contents_value(1, 136)
@@ -668,6 +668,38 @@ def test_jump_execute():
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 2
 
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    z80.flag_register.reset_flag(ZERO_FLAG)
+    instruction = z80.instructions_by_text["jp nz,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 34835
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    z80.flag_register.set_flag(ZERO_FLAG)
+    instruction = z80.instructions_by_text["jp z,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 34835
+    '''
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    z80.flag_register.set_flag(CARRY_FLAG)
+    instruction = z80.instructions_by_text["jp c,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 34835
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    z80.flag_register.set_flag(CARRY_FLAG)
+    instruction = z80.instructions_by_text["jp nc,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 2
 
 
 

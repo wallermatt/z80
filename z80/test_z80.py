@@ -646,7 +646,7 @@ def test_pop_execute():
 
 def test_jump_execute():
     z80 = Z80()
-    '''
+    
     z80.program_counter.set_contents_value(0)
     z80.memory.set_contents_value(0, 19)
     z80.memory.set_contents_value(1, 136)
@@ -683,7 +683,6 @@ def test_jump_execute():
     instruction = z80.instructions_by_text["jp z,**"]
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 34835
-    '''
 
     z80.program_counter.set_contents_value(0)
     z80.memory.set_contents_value(0, 19)
@@ -701,29 +700,40 @@ def test_jump_execute():
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 2
 
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    z80.flag_register.set_flag(PARITY_OVERFLOW_FLAG)
+    instruction = z80.instructions_by_text["jp po,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 34835
 
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    z80.flag_register.set_flag(PARITY_OVERFLOW_FLAG)
+    instruction = z80.instructions_by_text["jp pe,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 2
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    z80.flag_register.set_flag(SIGN_FLAG)
+    instruction = z80.instructions_by_text["jp p,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 2
+
+    z80.program_counter.set_contents_value(0)
+    z80.memory.set_contents_value(0, 19)
+    z80.memory.set_contents_value(1, 136)
+    z80.flag_register.set_flag(SIGN_FLAG)
+    instruction = z80.instructions_by_text["jp m,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 34835
 
 '''
-('jp nz,**', 'If condition cc is true, ** is copied to pc.')
 
-
-('jr z,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
-
-('jr nz,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
-('jp nc,**', 'If condition cc is true, ** is copied to pc.')
-('jp c,**', 'If condition cc is true, ** is copied to pc.')
-('jp (iy)', 'Loads the value of iy into pc.')
-('jp pe,**', 'If condition cc is true, ** is copied to pc.')
-
-('jp po,**', 'If condition cc is true, ** is copied to pc.')
-
-('jp m,**', 'If condition cc is true, ** is copied to pc.')
-('jp (ix)', 'Loads the value of ix into pc.')
-('jp z,**', 'If condition cc is true, ** is copied to pc.')
-('jr nc,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
-('jr *', 'The signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
-('jr c,*', 'If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
-('jp p,**', 'If condition cc is true, ** is copied to pc.')
 
 ('djnz *', 'The b register is decremented, and if not zero, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
 

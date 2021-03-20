@@ -126,7 +126,8 @@ class Z80():
         if instruction.instruction_base in JUMP_INSTRUCTIONS:
             instruction.left_arg = instruction.left_arg.replace("(", "")
             instruction.left_arg = instruction.left_arg.replace(")", "")
-            instruction.left_arg = instruction.left_arg.replace("c", "cf")
+            if  instruction.left_arg == "c":
+                 instruction.left_arg = "cf"
             if instruction.right_arg:
                 instruction.right_arg = instruction.right_arg.replace("(", "")
                 instruction.right_arg = instruction.right_arg.replace(")", "")
@@ -225,37 +226,41 @@ class Z80():
         substituted_left_arg.high.set_contents(high_value)
         self.stack_pointer.addition_with_flags(1)
 
-    def jump_execute(self, instruction, substituted_left_arg, substituted_right_arg):
-        if substituted_left_arg == "z":
+    def check_flag_arg(self, flag_arg):
+        if flag_arg == "z":
             if not self.flag_register.get_flag(ZERO_FLAG):
-                return
-        elif substituted_left_arg == "nz":
+                return False
+        elif flag_arg == "nz":
             if self.flag_register.get_flag(ZERO_FLAG):
-                return
-        elif substituted_left_arg == "cf":
+                return False
+        elif flag_arg == "cf":
             if not self.flag_register.get_flag(CARRY_FLAG):
-                return
-        elif substituted_left_arg == "NC":
+                return False
+        elif flag_arg == "nc":
             if self.flag_register.get_flag(CARRY_FLAG):
-                return
-        elif substituted_left_arg == "PO":
+                return False
+        elif flag_arg == "po":
             if not self.flag_register.get_flag(PARITY_OVERFLOW_FLAG):
-                return
-        elif substituted_left_arg == "PE":
+                return False
+        elif flag_arg == "pe":
             if self.flag_register.get_flag(PARITY_OVERFLOW_FLAG):
-                return
-        elif substituted_left_arg == "P":
-            if not self.flag_register.get_flag(SIGN_FLAG):
-                return
-        elif substituted_left_arg == "M":
+                return False
+        elif flag_arg == "p":
             if self.flag_register.get_flag(SIGN_FLAG):
-                return
+                return False
+        elif flag_arg == "m":
+            if not self.flag_register.get_flag(SIGN_FLAG):
+                return False
+        return True
 
+    def jump_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        if substituted_left_arg and not self.check_flag_arg(substituted_left_arg):
+            return
         self.program_counter.set_contents_value(substituted_right_arg)
 
     def jump_relative_execute(self, instruction, substituted_left_arg, substituted_right_arg):
-        if substituted_left_arg == "z":
-            pass
+        if substituted_left_arg and not self.check_flag_arg(substituted_left_arg):
+            return
         self.program_counter.add_to_contents(substituted_right_arg - instruction.size)
             
         

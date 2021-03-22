@@ -4,7 +4,7 @@ from base import (
 from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
-    PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS
+    PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE
 )
 
 
@@ -124,18 +124,23 @@ class Z80():
         if instruction.instruction_base == NO_OPERATION:
             return
         if instruction.instruction_base in JUMP_INSTRUCTIONS:
-            instruction.left_arg = instruction.left_arg.replace("(", "")
-            instruction.left_arg = instruction.left_arg.replace(")", "")
-            if  instruction.left_arg == "c":
-                 instruction.left_arg = "cf"
-            if instruction.right_arg:
-                instruction.right_arg = instruction.right_arg.replace("(", "")
-                instruction.right_arg = instruction.right_arg.replace(")", "")
+            left_arg = instruction.left_arg
+            right_arg = instruction.right_arg
+            left_arg = left_arg.replace("(", "")
+            left_arg = left_arg.replace(")", "")
+            if  left_arg == "c":
+                 left_arg = "cf"
+            if right_arg:
+                right_arg = right_arg.replace("(", "")
+                right_arg = right_arg.replace(")", "")
             else:
-                instruction.right_arg = instruction.left_arg
-                instruction.left_arg = None
-        substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
-        substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg)
+                right_arg = left_arg
+                left_arg = None
+            substituted_left_arg = self.substitute_arg(left_arg, right_arg)
+            substituted_right_arg = self.substitute_right_arg(right_arg, left_arg)
+        else:
+            substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
+            substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg)
         self.execute_instruction_base(instruction, substituted_left_arg, substituted_right_arg)
 
     def execute_instruction_base(self, instruction, substituted_left_arg, substituted_right_arg):
@@ -170,6 +175,8 @@ class Z80():
             self.jump_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == JUMP_RELATIVE:
             self.jump_relative_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == DEC_JUMP_RELATIVE:
+            self.dec_jump_relative_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -263,7 +270,11 @@ class Z80():
             return
         self.program_counter.add_to_contents(substituted_right_arg - instruction.size)
             
-        
+    def dec_jump_relative_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        self.registers_by_name["B"].subtraction_with_flags(1)
+        if self.registers_by_name["B"].get_contents() == 0:
+            return
+        self.program_counter.add_to_contents(substituted_right_arg - instruction.size)
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

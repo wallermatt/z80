@@ -739,18 +739,6 @@ def test_jump_execute():
 
 ('djnz *', 'The b register is decremented, and if not zero, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
 
-cc Condition
-Relevant
-Flag
-000 Non-Zero (NZ) Z
-001 Zero (Z) Z
-010 No Carry (NC) C
-011 Carry (C) C
-100 Parity Odd (PO) P/V
-101 Parity Even (PE) P/V
-110 Sign Positive (P) S
-111 Sign Negative (M) S
-
 '''
 
 def test_jump_relative_execute():
@@ -762,5 +750,23 @@ def test_jump_relative_execute():
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 19
 
-def test_dec_jump_relative_execute():
+def test_dec_jump_relative_execute_zero():
     z80 = Z80()
+    
+    z80.program_counter.set_contents_value(1)
+    z80.registers_by_name["B"].set_contents(1)
+    z80.memory.set_contents_value(1, 19)
+    instruction = z80.instructions_by_text["djnz *"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 2
+    
+def test_dec_jump_relative_execute_non_zero():
+    z80 = Z80()
+
+    z80.program_counter.set_contents_value(1)
+    z80.registers_by_name["B"].set_contents(2)
+    z80.memory.set_contents_value(1, 19)
+    instruction = z80.instructions_by_text["djnz *"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 19
+    

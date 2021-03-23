@@ -760,6 +760,7 @@ def test_dec_jump_relative_execute_zero():
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 2
     
+
 def test_dec_jump_relative_execute_non_zero():
     z80 = Z80()
 
@@ -770,3 +771,46 @@ def test_dec_jump_relative_execute_non_zero():
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 19
     
+
+def test_call_nn_execute():
+    z80 = Z80()
+
+    z80.program_counter.set_contents_value(10)
+    z80.registers_by_name["B"].set_contents(2)
+    z80.memory.set_contents_value(1, 19)
+    instruction = z80.instructions_by_text["call **"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 19
+
+'''
+cp b
+cp e
+call p,**
+cp (iy+*)
+cp d
+cp (ix+*)
+cp c
+call nc,**
+cp h
+call z,**
+cp iyl
+cp l
+cp a
+call **
+cp *
+cpi
+cpl
+cpdr
+call nz,**
+call pe,**
+cp ixh
+ccf
+cp iyh
+cpir
+cp ixl
+call po,**
+cpd
+call c,**
+call m,**
+cp (hl)
+'''

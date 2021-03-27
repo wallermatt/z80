@@ -803,6 +803,49 @@ def test_call_nz_execute():
     assert z80.stack_pointer.get_contents() == 49998
     assert z80.memory.get_contents_value(49999) == 3
     assert z80.memory.get_contents_value(49998) == 234
+
+
+class Z80TestHandler:
+    def __init__(self, registers, flags, memory, instruction_text):
+        self.z80 = Z80()
+        self.test_registers = registers
+        self.test_flags = flags
+        self.test_memory = memory
+        self.instruction_text = instruction_text
+        self.set_registers()
+        self.set_flags()
+        self.set_memory()
+
+    def run_test(self):
+        instruction = self.z80.instruction_by_text[instruction_text]
+        self.z80.execute_instruction(instruction)
+        self.run_assertions()
+
+    def set_registers(self):
+        for r in self.test_registers:
+            initial_value = self.test_registers[r][0]
+            self.z80.registers_by_name[r].set_contents(initial_value)
+
+    def set_flags(self):
+        for f in self.test_flags:
+            if self.test_flags(f)[0]:
+                self.z80.flag_register.set_flag(f)
+            else:
+                self.z80.flag_register.reset_flag(f)
+
+    def set_memory(self):
+        for m in self.test_memory:
+            value = self.test_memory[m][0]
+            self.z80.memory.set_contents_value(m, value)
+
+
+
+def test_cp_n_execute():
+    z80 =Z80()
+
+    z80.registers_by_name["A"].set_contents(99)
+    z80.registers_by_name["B"].set_contents(99)
+
 '''
 cp b
 cp e

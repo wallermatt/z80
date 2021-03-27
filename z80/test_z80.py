@@ -775,12 +775,17 @@ def test_dec_jump_relative_execute_non_zero():
 def test_call_nn_execute():
     z80 = Z80()
 
-    z80.program_counter.set_contents_value(10)
-    z80.registers_by_name["B"].set_contents(2)
-    z80.memory.set_contents_value(1, 19)
+    z80.program_counter.set_contents_value(1000)
+    z80.stack_pointer.set_contents_value(50000)
+    z80.memory.set_contents_value(1000, 19)
+    z80.memory.set_contents_value(1001, 1)
     instruction = z80.instructions_by_text["call **"]
     z80.execute_instruction(instruction)
-    assert z80.program_counter.get_contents() == 19
+    assert z80.program_counter.get_contents() == 275
+    assert z80.stack_pointer.get_contents() == 49998
+    assert z80.memory.get_contents_value(49999) == 3
+    assert z80.memory.get_contents_value(49998) == 234
+
 
 '''
 cp b

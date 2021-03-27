@@ -733,14 +733,6 @@ def test_jump_execute():
     assert z80.program_counter.get_contents() == 34835
 
 
-
-'''
-
-
-('djnz *', 'The b register is decremented, and if not zero, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.')
-
-'''
-
 def test_jump_relative_execute():
     z80 = Z80()
 
@@ -787,6 +779,30 @@ def test_call_nn_execute():
     assert z80.memory.get_contents_value(49998) == 234
 
 
+def test_call_nz_execute():
+    z80 = Z80()
+
+    z80.program_counter.set_contents_value(1000)
+    z80.stack_pointer.set_contents_value(50000)
+    z80.memory.set_contents_value(1000, 19)
+    z80.memory.set_contents_value(1001, 1)
+    z80.flag_register.set_flag(ZERO_FLAG)
+    instruction = z80.instructions_by_text["call nz,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 1002
+    assert z80.stack_pointer.get_contents() == 50000
+
+    z80.program_counter.set_contents_value(1000)
+    z80.stack_pointer.set_contents_value(50000)
+    z80.memory.set_contents_value(1000, 19)
+    z80.memory.set_contents_value(1001, 1)
+    z80.flag_register.reset_flag(ZERO_FLAG)
+    instruction = z80.instructions_by_text["call nz,**"]
+    z80.execute_instruction(instruction)
+    assert z80.program_counter.get_contents() == 275
+    assert z80.stack_pointer.get_contents() == 49998
+    assert z80.memory.get_contents_value(49999) == 3
+    assert z80.memory.get_contents_value(49998) == 234
 '''
 cp b
 cp e

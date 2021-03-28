@@ -894,6 +894,28 @@ def test_dec_jump_relative_execute_non_zero_helper():
         "djnz *"
     )
 
+def test_dec_jump_relative_execute_zero_helper():
+        # Constant attributes - value, low, high
+    pc = DoubleByte(1)
+    b = DoubleByte(1)
+    var = DoubleByte(19)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "PC": (pc.value, pc.value + 1),
+            "B": (b.value, b.value - 1)
+        },
+        # Flag: (before, after)
+        {},
+        # Memory location: (before, after)
+        {
+            pc.value : (var.low, var.low),
+        },
+        # Command
+        "djnz *"
+    )
+
 '''
     z80.program_counter.set_contents_value(1)
     z80.registers_by_name["B"].set_contents(2)

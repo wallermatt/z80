@@ -7,6 +7,18 @@ from base import (
     SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG,
 )
 
+from helper import Z80TestHandler, DoubleByte
+
+
+def test_handler():
+    Z80TestHandler(
+        {"A": (0,0)},
+        {SIGN_FLAG: (0,0)},
+        {0: (0, 0)},
+        "ld a,*"
+    ).run_test()
+
+
 def test_initial():
     z80 = Z80()
     assert len(z80.registers) == 32
@@ -805,48 +817,53 @@ def test_call_nz_execute():
     assert z80.memory.get_contents_value(49998) == 234
 
 
-class Z80TestHandler:
-    def __init__(self, registers, flags, memory, instruction_text):
-        self.z80 = Z80()
-        self.test_registers = registers
-        self.test_flags = flags
-        self.test_memory = memory
-        self.instruction_text = instruction_text
-        self.set_registers()
-        self.set_flags()
-        self.set_memory()
+def test_call_nz_execute_non_zero():
+    pc = DoubleByte(1000)
+    sp = DoubleByte(50000)
+    var = DoubleByte(275)
 
-    def run_test(self):
-        instruction = self.z80.instruction_by_text[instruction_text]
-        self.z80.execute_instruction(instruction)
-        self.run_assertions()
+    Z80TestHandler(
+        {
+            "PC": (pc.value, var.value),
+            "SP": (sp.value, sp.value - 2)
+        },
+        {
+            ZERO_FLAG: (0,0)
+        },
+        {
+            pc.value : (var.low, var.low),
+            pc.value + 1: (var.high, var.high),
+            sp.value - 1: (0, pc.high),
+            sp.value - 2: (0, pc.low + 2)
+        },
+        "call nz,**"
+    ).run_test()
 
-    def set_registers(self):
-        for r in self.test_registers:
-            initial_value = self.test_registers[r][0]
-            self.z80.registers_by_name[r].set_contents(initial_value)
+def test_call_nz_execute_zero():
+    pc = DoubleByte(1000)
+    sp = DoubleByte(50000)
+    var = DoubleByte(275)
 
-    def set_flags(self):
-        for f in self.test_flags:
-            if self.test_flags(f)[0]:
-                self.z80.flag_register.set_flag(f)
-            else:
-                self.z80.flag_register.reset_flag(f)
-
-    def set_memory(self):
-        for m in self.test_memory:
-            value = self.test_memory[m][0]
-            self.z80.memory.set_contents_value(m, value)
-
-
-
-def test_cp_n_execute():
-    z80 =Z80()
-
-    z80.registers_by_name["A"].set_contents(99)
-    z80.registers_by_name["B"].set_contents(99)
+    Z80TestHandler(
+        {
+            "PC": (pc.value, pc.value + 2),
+            "SP": (sp.value, sp.value)
+        },
+        {
+            ZERO_FLAG: (1,1)
+        },
+        {
+            pc.value : (var.low, var.low),
+            pc.value + 1: (var.high, var.high),
+            sp.value - 1: (0, 0),
+            sp.value - 2: (0, 0)
+        },
+        "call nz,**"
+    ).run_test()
 
 '''
+
+
 cp b
 cp e
 call p,**

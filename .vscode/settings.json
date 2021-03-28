@@ -1,5 +1,4 @@
 {
-    "python.pythonPath": "/home/matthew/.envs/note/bin/python",
     "python.testing.pytestArgs": [
         "z80"
     ],

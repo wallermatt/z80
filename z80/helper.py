@@ -12,7 +12,7 @@ class DoubleByte:
 
 
 class Z80TestHandler:
-    def __init__(self, registers, flags, memory, instruction_text):
+    def __init__(self, registers, flags, memory, instruction_text, run=True):
         self.z80 = Z80()
         self.test_registers = registers
         self.test_flags = flags
@@ -21,6 +21,8 @@ class Z80TestHandler:
         self.set_registers()
         self.set_flags()
         self.set_memory()
+        if run:
+            self.run_test()
 
     def run_test(self):
         instruction = self.z80.instructions_by_text[self.instruction_text]

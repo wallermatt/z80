@@ -818,48 +818,58 @@ def test_call_nz_execute():
 
 
 def test_call_nz_execute_non_zero():
+    # Constant attributes - value, low, high
     pc = DoubleByte(1000)
     sp = DoubleByte(50000)
     var = DoubleByte(275)
 
     Z80TestHandler(
+        # Register: (before, after)
         {
             "PC": (pc.value, var.value),
             "SP": (sp.value, sp.value - 2)
         },
+        # Flag: (before, after)
         {
             ZERO_FLAG: (0,0)
         },
+        # Memory location: (before, after)
         {
             pc.value : (var.low, var.low),
             pc.value + 1: (var.high, var.high),
             sp.value - 1: (0, pc.high),
             sp.value - 2: (0, pc.low + 2)
         },
+        # Command
         "call nz,**"
-    ).run_test()
+    )
 
 def test_call_nz_execute_zero():
+    # Constant attributes - value, low, high
     pc = DoubleByte(1000)
     sp = DoubleByte(50000)
     var = DoubleByte(275)
 
     Z80TestHandler(
+        # Register: (before, after)
         {
             "PC": (pc.value, pc.value + 2),
             "SP": (sp.value, sp.value)
         },
+        # Flag: (before, after)
         {
             ZERO_FLAG: (1,1)
         },
+        # Memory location: (before, after)
         {
             pc.value : (var.low, var.low),
             pc.value + 1: (var.high, var.high),
             sp.value - 1: (0, 0),
             sp.value - 2: (0, 0)
         },
+        # Command
         "call nz,**"
-    ).run_test()
+    )
 
 '''
 

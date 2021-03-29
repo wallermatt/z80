@@ -986,24 +986,18 @@ def test_cp_iy_disp_mem_lt():
     )
 
 '''
-cp ixh
+cp
+S is set if result is negative; otherwise, it is reset.
+Z is set if result is 0; otherwise, it is reset.
+H is set if borrow from bit 4; otherwise, it is reset.
+P/V is set if overflow; otherwise, it is reset.
+N is set.
+C is set if borrow; otherwise, it is reset.
+
+
 cpdr
-cp iyh
-cp d
-cp b
-cp *
 cpl
-cp (ix+*)
-cp l
-cp ixl
 cpir
-cp a
-cp (hl)
 cpd
-cp iyl
-cp (iy+*)
 cpi
-cp c
-cp h
-cp e
 '''

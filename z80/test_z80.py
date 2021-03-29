@@ -895,7 +895,7 @@ def test_dec_jump_relative_execute_non_zero_helper():
     )
 
 def test_dec_jump_relative_execute_zero_helper():
-        # Constant attributes - value, low, high
+    # Constant attributes - value, low, high
     pc = DoubleByte(1)
     b = DoubleByte(1)
     var = DoubleByte(19)
@@ -916,42 +916,94 @@ def test_dec_jump_relative_execute_zero_helper():
         "djnz *"
     )
 
-'''
-    z80.program_counter.set_contents_value(1)
-    z80.registers_by_name["B"].set_contents(2)
-    z80.memory.set_contents_value(1, 19)
-    instruction = z80.instructions_by_text["djnz *"]
-    z80.execute_instruction(instruction)
-    assert z80.program_counter.get_contents() == 19
+def test_cp_e_equal():
+    # Constant attributes - value, low, high
+    pc = DoubleByte(0)
 
-cp b
-cp e
-call p,**
-cp (iy+*)
-cp d
-cp (ix+*)
-cp c
-call nc,**
-cp h
-call z,**
-cp iyl
-cp l
-cp a
-call **
-cp *
-cpi
-cpl
-cpdr
-call nz,**
-call pe,**
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "PC": (pc.value, pc.value),
+            "A": (10, 10),
+            "E": (10, 10)
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 1),
+            CARRY_FLAG: (0, 0)
+        },
+        {},
+        # Command
+        "cp e"
+    )
+
+def test_cp_b_gt():
+    # Constant attributes - value, low, high
+    pc = DoubleByte(0)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "PC": (pc.value, pc.value),
+            "A": (10, 10),
+            "B": (20, 20)
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 0),
+            CARRY_FLAG: (0, 1)
+        },
+        {},
+        # Command
+        "cp b"
+    )
+
+def test_cp_iy_disp_mem_lt():
+    # Constant attributes - value, low, high
+    pc = DoubleByte(0)
+    iy = DoubleByte(1000)
+    disp = 50
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "PC": (pc.value, pc.value + 1),
+            "A": (10, 10),
+            "IY": (iy.value, iy.value)
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 0),
+            CARRY_FLAG: (0, 0)
+        },
+        # Memory location: (before, after)
+        {
+            pc.value: (disp, disp),
+            iy.value + disp: (5, 5)
+        },
+        # Command
+        "cp (iy+*)"
+    )
+
+'''
 cp ixh
-ccf
+cpdr
 cp iyh
-cpir
+cp d
+cp b
+cp *
+cpl
+cp (ix+*)
+cp l
 cp ixl
-call po,**
-cpd
-call c,**
-call m,**
+cpir
+cp a
 cp (hl)
+cpd
+cp iyl
+cp (iy+*)
+cpi
+cp c
+cp h
+cp e
 '''

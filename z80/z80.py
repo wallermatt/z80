@@ -287,17 +287,12 @@ class Z80():
         self.program_counter.set_contents_value(substituted_right_arg)
 
     def compare_execute(self, instruction, substituted_left_arg):
-        cmp_value = substituted_left_arg.get_contents()
-        a_value = self.registers_by_name["A"].get_contents()
-        if  a_value == cmp_value:
-            self.flag_register.set_flag(ZERO_FLAG)
-            self.flag_register.reset_flag(CARRY_FLAG)
-        else:
-            self.flag_register.reset_flag(ZERO_FLAG)
-            if a_value > cmp_value:
-                self.flag_register.reset_flag(CARRY_FLAG)
-            else:
-                self.flag_register.set_flag(CARRY_FLAG) 
+        A = self.registers_by_name["A"]
+        A_original_contents = A.get_contents()
+        A.subtraction_with_flags(substituted_left_arg.get_contents())
+        A.set_potential_flags()
+        self.set_flags_if_required(instruction, A.potential_flags)
+        A.set_contents(A_original_contents)
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

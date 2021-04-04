@@ -4,7 +4,8 @@ from base import (
 from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
-    PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE
+    PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
+    COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT
 )
 
 
@@ -181,6 +182,14 @@ class Z80():
             self.call_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == COMPARE:
             self.compare_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == COMPARE_INC:
+            self.compare_inc_execute(instruction)
+        elif instruction.instruction_base == COMPARE_INC_REPEAT:
+            self.compare_inc_repeat_execute(instruction)
+        elif instruction.instruction_base == COMPARE_DEC:
+            self.compare_dec_execute(instruction)
+        elif instruction.instruction_base == COMPARE_DEC_REPEAT:
+            self.compare_dec_repeat_execute(instruction)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -287,12 +296,21 @@ class Z80():
         self.program_counter.set_contents_value(substituted_right_arg)
 
     def compare_execute(self, instruction, substituted_left_arg):
-        A = self.registers_by_name["A"]
-        A_original_contents = A.get_contents()
-        A.subtraction_with_flags(substituted_left_arg.get_contents())
-        A.set_potential_flags()
-        self.set_flags_if_required(instruction, A.potential_flags)
-        A.set_contents(A_original_contents)
+        a = self.registers_by_name["A"]
+        a_original_contents = a.get_contents()
+        a.subtraction_with_flags(substituted_left_arg.get_contents())
+        a.set_potential_flags()
+        self.set_flags_if_required(instruction, a.potential_flags)
+        a.set_contents(a_original_contents)
+
+    def compare_inc_execute(self, instruction):
+        hl = self.registers_by_name["HL"]
+        memory_loc = self.memory.get_contents(hl.get_contents())
+        self.compare_execute(instruction, memory_loc)
+        hl.add_to_contents(1)
+        self.registers_by_name["BC"].subtract_from_contents(1)
+
+
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

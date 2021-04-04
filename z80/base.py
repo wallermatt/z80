@@ -155,6 +155,10 @@ class DoubleComponent(Component):
         result = self.get_contents() + value
         self.set_contents_value(result % self.MAX_VALUE)
 
+    def subtract_from_contents(self, value):
+        result = self.get_contents() - value
+        self.set_contents_value(result % self.MAX_VALUE)
+
 
 class Memory:
 

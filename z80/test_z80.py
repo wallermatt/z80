@@ -985,16 +985,36 @@ def test_cp_iy_disp_mem_lt():
         "cp (iy+*)"
     )
 
+
+def test_cpi():
+    # Constant attributes - value, low, high
+    pc = DoubleByte(0)
+    hl = DoubleByte(1000)
+    bc = DoubleByte(2000)
+    disp = 50
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "PC": (pc.value, pc.value),
+            "A": (10, 10),
+            "HL": (hl.value, hl.value + 1),
+            "BC": (bc.value, bc.value - 1)
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 0),
+            CARRY_FLAG: (0, 0)
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (10, 10),
+            hl.value + 1: (0, 0)
+        },
+        # Command
+        "cpi"
+    )
 '''
-cp
-S is set if result is negative; otherwise, it is reset.
-Z is set if result is 0; otherwise, it is reset.
-H is set if borrow from bit 4; otherwise, it is reset.
-P/V is set if overflow; otherwise, it is reset.
-N is set.
-C is set if borrow; otherwise, it is reset.
-
-
 cpdr
 cpl
 cpir

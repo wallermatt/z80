@@ -991,7 +991,6 @@ def test_cpi():
     pc = DoubleByte(0)
     hl = DoubleByte(1000)
     bc = DoubleByte(2000)
-    disp = 50
 
     Z80TestHandler(
         # Register: (before, after)
@@ -1003,7 +1002,7 @@ def test_cpi():
         },
         # Flag: (before, after)
         {
-            ZERO_FLAG: (0, 0),
+            ZERO_FLAG: (0, 1),
             CARRY_FLAG: (0, 0)
         },
         # Memory location: (before, after)
@@ -1013,6 +1012,60 @@ def test_cpi():
         },
         # Command
         "cpi"
+    )
+
+
+def test_cpir_found():
+    # Constant attributes - value, low, high
+    pc = DoubleByte(0)
+    hl = DoubleByte(1000)
+    bc = DoubleByte(5)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "PC": (pc.value, pc.value),
+            "A": (10, 10),
+            "HL": (hl.value, hl.value + bc.value - 1),
+            "BC": (bc.value, 1)
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 1),
+            CARRY_FLAG: (0, 0)
+        },
+        # Memory location: (before, after)
+        {
+            hl.value + bc.value - 2: (10, 10)
+        },
+        # Command
+        "cpir"
+    )
+
+
+def test_cpir_not_found():
+    # Constant attributes - value, low, high
+    pc = DoubleByte(0)
+    hl = DoubleByte(1000)
+    bc = DoubleByte(5)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "PC": (pc.value, pc.value),
+            "A": (10, 10),
+            "HL": (hl.value, hl.value + bc.value),
+            "BC": (bc.value, 0)
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 0),
+            CARRY_FLAG: (0, 0)
+        },
+        # Memory location: (before, after)
+        {},
+        # Command
+        "cpir"
     )
 '''
 cpdr

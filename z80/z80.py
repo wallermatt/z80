@@ -310,6 +310,13 @@ class Z80():
         hl.add_to_contents(1)
         self.registers_by_name["BC"].subtract_from_contents(1)
 
+    def compare_inc_repeat_execute(self, instruction):
+        hl = self.registers_by_name["HL"]
+        bc = self.registers_by_name["BC"]
+        self.compare_inc_execute(instruction)
+        while not self.flag_register.get_flag(ZERO_FLAG) and bc.get_contents() != 0:
+            self.compare_inc_execute(instruction)
+
 
 
     def substitute_arg(self, arg, opposite_arg):

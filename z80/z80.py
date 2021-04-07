@@ -317,6 +317,19 @@ class Z80():
         while not self.flag_register.get_flag(ZERO_FLAG) and bc.get_contents() != 0:
             self.compare_inc_execute(instruction)
 
+    def compare_dec_execute(self, instruction):
+        hl = self.registers_by_name["HL"]
+        memory_loc = self.memory.get_contents(hl.get_contents())
+        self.compare_execute(instruction, memory_loc)
+        hl.subtract_from_contents(1)
+        self.registers_by_name["BC"].subtract_from_contents(1)
+
+    def compare_dec_repeat_execute(self, instruction):
+        hl = self.registers_by_name["HL"]
+        bc = self.registers_by_name["BC"]
+        self.compare_dec_execute(instruction)
+        while not self.flag_register.get_flag(ZERO_FLAG) and bc.get_contents() != 0:
+            self.compare_dec_execute(instruction)
 
 
     def substitute_arg(self, arg, opposite_arg):

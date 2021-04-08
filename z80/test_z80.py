@@ -1149,6 +1149,28 @@ def test_cpdr_not_found():
         # Command
         "cpdr"
     )
+
+
+def test_cpl():
+    # Constant attributes - value, low, high
+    a_initial = 254
+    a_complement = 1
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a_initial, a_complement),
+        },
+        # Flag: (before, after)
+        {
+            HALF_CARRY_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (0, 1)
+        },
+        # Memory location: (before, after)
+        {},
+        # Command
+        "cpl"
+    )
 '''
 cpdr
 cpl

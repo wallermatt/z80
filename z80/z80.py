@@ -5,7 +5,7 @@ from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
-    COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT
+    COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION
 )
 
 
@@ -192,6 +192,9 @@ class Z80():
             self.compare_dec_repeat_execute(instruction)
         elif instruction.instruction_base == COMPLEMENT:
             self.complement_execute(instruction)
+        elif instruction.instruction_base == NEGATION:
+            self.negation_execute(instruction)
+
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -337,6 +340,14 @@ class Z80():
         a = self.registers_by_name["A"]
         a.set_contents(a.MAX_VALUE - 1 - a.get_contents())
         self.set_flags_if_required(instruction, {})
+
+    def negation_execute(self, instruction):
+        a = self.registers_by_name["A"]
+        a_value = a.get_contents()
+        a.set_contents(0)
+        a.subtraction_with_flags(a_value)
+        a.set_potential_flags()
+        self.set_flags_if_required(instruction, a.potential_flags)
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

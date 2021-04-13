@@ -97,7 +97,7 @@ for instruction in instruction_list:
             instruction.opcode, instruction.instruction_base, instruction.left_arg, instruction.right_arg,
             instruction.size, instruction.time, instruction.flags, instruction.text, instruction.desc))
     '''
-    if instruction.instruction_base[:2] == "cp":
+    if instruction.instruction_base[:2] == "ld" and len(instruction.instruction_base) >= 3:
         instruction_set.add((instruction.text, instruction.desc))
 
 for e in instruction_set:

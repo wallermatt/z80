@@ -1172,7 +1172,8 @@ def test_cpl():
         "cpl"
     )
 '''
-cpdr
-cpl
-cpd
+ldir
+ldi
+ldd
+lddr
 '''

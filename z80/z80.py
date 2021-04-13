@@ -424,12 +424,18 @@ class Z80():
             if action in ["-", " "]:
                 continue
             flag = INSTRUCTION_FLAG_POSITIONS[i]
-            if action in ["+", "V", "P", "*"]:
+            if action in ["+", "V", "P"]:
                 set_flag = potential_flags[flag]
                 if set_flag:
                     self.flag_register.set_flag(flag)
                 else:
                     self.flag_register.reset_flag(flag)
+            elif action == "*":
+                if flag == PARITY_OVERFLOW_FLAG:
+                    if self.registers_by_name["BC"].get_contents_value() - 1 == 0:
+                        self.flag_register.reset_flag(flag)
+                    else:
+                        self.flag_register.set_flag(flag)
             elif action == "0":
                 self.flag_register.reset_flag(flag)
             elif action == "1":

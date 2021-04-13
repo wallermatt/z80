@@ -432,7 +432,7 @@ class Z80():
                     self.flag_register.reset_flag(flag)
             elif action == "*":
                 if flag == PARITY_OVERFLOW_FLAG:
-                    if self.registers_by_name["BC"].get_contents_value() - 1 == 0:
+                    if self.registers_by_name["BC"].get_contents() - 1 == 0:
                         self.flag_register.reset_flag(flag)
                     else:
                         self.flag_register.set_flag(flag)

@@ -1171,6 +1171,38 @@ def test_cpl():
         # Command
         "cpl"
     )
+
+
+def test_ldi():
+    # Constant attributes - value, low, high
+    pc = DoubleByte(0)
+    hl = DoubleByte(1000)
+    de = DoubleByte(20000)
+    bc = DoubleByte(5)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "PC": (pc.value, pc.value),
+            "HL": (hl.value, hl.value + 1),
+            "DE": (de.value, de.value + 1),
+            "BC": (bc.value, bc.value - 1)
+        },
+        # Flag: (before, after)
+        {
+            HALF_CARRY_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {
+            h1.value: (99, 99),
+            de.value: (0, 99)
+        },
+        # Command
+        "cpdr"
+    )
+
 '''
 ldir
 ldi

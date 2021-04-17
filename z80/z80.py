@@ -5,7 +5,8 @@ from instructions import (
     instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
-    COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION
+    COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
+    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT
 )
 
 
@@ -194,6 +195,10 @@ class Z80():
             self.complement_execute(instruction)
         elif instruction.instruction_base == NEGATION:
             self.negation_execute(instruction)
+        elif instruction.instruction_base == LOAD_INC:
+            self.load_inc_execute(instruction)
+        elif instruction.instruction_base == LOAD_DEC:
+            self.load_dec_execute(instruction)
 
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
@@ -316,7 +321,6 @@ class Z80():
         self.registers_by_name["BC"].subtract_from_contents(1)
 
     def compare_inc_repeat_execute(self, instruction):
-        hl = self.registers_by_name["HL"]
         bc = self.registers_by_name["BC"]
         self.compare_inc_execute(instruction)
         while not self.flag_register.get_flag(ZERO_FLAG) and bc.get_contents() != 0:
@@ -330,7 +334,6 @@ class Z80():
         self.registers_by_name["BC"].subtract_from_contents(1)
 
     def compare_dec_repeat_execute(self, instruction):
-        hl = self.registers_by_name["HL"]
         bc = self.registers_by_name["BC"]
         self.compare_dec_execute(instruction)
         while not self.flag_register.get_flag(ZERO_FLAG) and bc.get_contents() != 0:
@@ -348,6 +351,22 @@ class Z80():
         a.subtraction_with_flags(a_value)
         a.set_potential_flags()
         self.set_flags_if_required(instruction, a.potential_flags)
+
+    def load_inc_execute(self, instruction):
+        memory_value = self.memory.get_contents_value(self.HL.get_contents())
+        self.memory.set_contents_value(self.DE.get_contents(), memory_value)
+        self.HL.add_to_contents(1)
+        self.DE.add_to_contents(1)
+        self.BC.subtract_from_contents(1)
+        self.set_flags_if_required(instruction, {})
+
+    def load_dec_execute(self, instruction):
+        memory_value = self.memory.get_contents_value(self.HL.get_contents())
+        self.memory.set_contents_value(self.DE.get_contents(), memory_value)
+        self.HL.subtract_from_contents(1)
+        self.DE.subtract_from_contents(1)
+        self.BC.subtract_from_contents(1)
+        self.set_flags_if_required(instruction, {})
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

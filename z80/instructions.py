@@ -6,6 +6,10 @@ SPECIAL_ARGS = ["0", "1", "p", "m", "po", "pe", "z", "nc", "nz", "pe", "pp", "00
 
 NO_OPERATION = "nop"
 LOAD = "ld"
+LOAD_INC = "ldi"
+LOAD_DEC = "ldd"
+LOAD_INC_REPEAT = "ldir"
+LOAD_DEC_REPEAT = "lddr"
 EXCHANGE_MULTI = "exx"
 EXCHANGE = "ex"
 ADD = "add"

@@ -1184,10 +1184,9 @@ def test_cpl():
         "cpl"
     )
 
-'''
+
 def test_ldi():
     # Constant attributes - value, low, high
-    pc = DoubleByte(0)
     hl = DoubleByte(1000)
     de = DoubleByte(20000)
     bc = DoubleByte(5)
@@ -1195,7 +1194,6 @@ def test_ldi():
     Z80TestHandler(
         # Register: (before, after)
         {
-            "PC": (pc.value, pc.value),
             "HL": (hl.value, hl.value + 1),
             "DE": (de.value, de.value + 1),
             "BC": (bc.value, bc.value - 1)
@@ -1208,15 +1206,81 @@ def test_ldi():
         },
         # Memory location: (before, after)
         {
-            h1.value: (99, 99),
+            hl.value: (99, 99),
             de.value: (0, 99)
         },
         # Command
-        "cpdr"
+        "ldi"
     )
-'''
+
+def test_ldd():
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    de = DoubleByte(20000)
+    bc = DoubleByte(5)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "HL": (hl.value, hl.value - 1),
+            "DE": (de.value, de.value - 1),
+            "BC": (bc.value, bc.value - 1)
+        },
+        # Flag: (before, after)
+        {
+            HALF_CARRY_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (99, 99),
+            de.value: (0, 99)
+        },
+        # Command
+        "ldd"
+    )
+
+def test_ldir():
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    de = DoubleByte(20000)
+    bc = DoubleByte(5)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "HL": (hl.value, hl.value + bc.value - 1),
+            "DE": (de.value, de.value + bc.value - 1),
+            "BC": (bc.value, 0)
+        },
+        # Flag: (before, after)
+        {
+            HALF_CARRY_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (99, 99),
+            hl.value: (99, 99),
+            hl.value: (99, 99),
+            hl.value: (99, 99),
+            de.value: (0, 99),
+            de.value: (0, 99),
+            de.value: (0, 99),
+            de.value: (0, 99)
+        },
+        # Command
+        "ldir"
+    )
 
 '''
+HALF_CARRY_FLAG = "H"
+PARITY_OVERFLOW_FLAG = "P/V"
+ADD_SUBTRACT_FLAG = "N"
+
+
 ldir
 ldi
 ldd

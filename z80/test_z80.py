@@ -12,11 +12,11 @@ from helper import Z80TestHandler, DoubleByte
 
 def test_handler():
     Z80TestHandler(
-        {"A": (0,0)},
+        {"A": (0,0), "PC": (0,1)},
         {SIGN_FLAG: (0,0)},
         {0: (0, 0)},
         "ld a,*"
-    ).run_test()
+    )
 
 
 def test_initial():
@@ -930,7 +930,8 @@ def test_cp_e_equal():
         # Flag: (before, after)
         {
             ZERO_FLAG: (0, 1),
-            CARRY_FLAG: (0, 0)
+            CARRY_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
         },
         {},
         # Command
@@ -950,8 +951,10 @@ def test_cp_b_gt():
         },
         # Flag: (before, after)
         {
+            SIGN_FLAG: (0, 1),
             ZERO_FLAG: (0, 0),
-            CARRY_FLAG: (0, 1)
+            CARRY_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (0, 1),
         },
         {},
         # Command
@@ -974,7 +977,8 @@ def test_cp_iy_disp_mem_lt():
         # Flag: (before, after)
         {
             ZERO_FLAG: (0, 0),
-            CARRY_FLAG: (0, 0)
+            CARRY_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {
@@ -1003,7 +1007,9 @@ def test_cpi():
         # Flag: (before, after)
         {
             ZERO_FLAG: (0, 1),
-            CARRY_FLAG: (0, 0)
+            CARRY_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
+            PARITY_OVERFLOW_FLAG: (0, 1)
         },
         # Memory location: (before, after)
         {
@@ -1032,7 +1038,8 @@ def test_cpir_found():
         # Flag: (before, after)
         {
             ZERO_FLAG: (0, 1),
-            CARRY_FLAG: (0, 0)
+            CARRY_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {
@@ -1060,7 +1067,8 @@ def test_cpir_not_found():
         # Flag: (before, after)
         {
             ZERO_FLAG: (0, 0),
-            CARRY_FLAG: (0, 0)
+            CARRY_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {},
@@ -1086,7 +1094,9 @@ def test_cpd():
         # Flag: (before, after)
         {
             ZERO_FLAG: (0, 1),
-            CARRY_FLAG: (0, 0)
+            CARRY_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
+            PARITY_OVERFLOW_FLAG: (0, 1)
         },
         # Memory location: (before, after)
         {
@@ -1114,7 +1124,8 @@ def test_cpdr_found():
         # Flag: (before, after)
         {
             ZERO_FLAG: (0, 1),
-            CARRY_FLAG: (0, 0)
+            CARRY_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {
@@ -1142,7 +1153,8 @@ def test_cpdr_not_found():
         # Flag: (before, after)
         {
             ZERO_FLAG: (0, 0),
-            CARRY_FLAG: (0, 0)
+            CARRY_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {},
@@ -1172,7 +1184,7 @@ def test_cpl():
         "cpl"
     )
 
-
+'''
 def test_ldi():
     # Constant attributes - value, low, high
     pc = DoubleByte(0)
@@ -1202,6 +1214,7 @@ def test_ldi():
         # Command
         "cpdr"
     )
+'''
 
 '''
 ldir

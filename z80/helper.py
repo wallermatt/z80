@@ -1,6 +1,20 @@
 import unittest
 
 from z80 import Z80
+from base import (
+    SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG
+)
+
+
+FLAGS = [
+    SIGN_FLAG,
+    ZERO_FLAG,
+    HALF_CARRY_FLAG,
+    PARITY_OVERFLOW_FLAG,
+    ADD_SUBTRACT_FLAG,
+    CARRY_FLAG,
+]
+
 
 class DoubleByte:
     BYTE = 256
@@ -52,14 +66,32 @@ class Z80TestHandler:
             self.z80.memory.set_contents_value(m, value)
 
     def assert_registers(self):
+        additional_test_registers = set()
         for r in self.test_registers:
-            expected_value = self.test_registers[r][1]
-            actual_value =  self.z80.registers_by_name[r].get_contents()
+            reg = self.z80.registers_by_name[r]
+            if reg.SIZE == 2:
+                additional_test_registers.add(reg.low.name)
+                additional_test_registers.add(reg.high.name)
+
+        for r in self.z80.registers_by_name:
+            if r in ["F", "AF"] and r not in self.test_registers:
+                continue
+            if r in additional_test_registers:
+                continue
+            reg = self.z80.registers_by_name[r]
+            if reg.SIZE == 2 and (reg.low.name in self.test_registers or reg.high.name in self.test_registers):
+                continue
+            expected_value = 0
+            if r in self.test_registers:
+                expected_value = self.test_registers[r][1]
+            actual_value =  reg.get_contents()
             assert expected_value == actual_value, f"Instruction: {self.instruction_text}, Register: {r}, expected value: {expected_value}, actual value: {actual_value}"
 
     def assert_flags(self):
-        for f in self.test_flags:
-            expected_value = self.test_flags[f][1]
+        for f in FLAGS:
+            expected_value = 0 
+            if f in self.test_flags:
+                expected_value = self.test_flags[f][1]
             actual_value =  self.z80.flag_register.get_flag(f)
             assert expected_value == actual_value, f"Instruction: {self.instruction_text}, Flag: {f}, expected value: {expected_value}, actual value: {actual_value}"
 

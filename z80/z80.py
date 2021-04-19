@@ -199,6 +199,8 @@ class Z80():
             self.load_inc_execute(instruction)
         elif instruction.instruction_base == LOAD_DEC:
             self.load_dec_execute(instruction)
+        elif instruction.instruction_base == LOAD_INC_REPEAT:
+            self.load_inc_repeat_execute(instruction)
 
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
@@ -314,6 +316,12 @@ class Z80():
         a.set_contents(a_original_contents)
 
     def compare_inc_execute(self, instruction):
+        memory_value = self.memory.get_contents_value(self.HL.get_contents())
+        self.memory.set_contents_value(self.DE.get_contents(), memory_value)
+        self.HL.add_to_contents(1)
+        self.DE.add_to_contents(1)
+        self.BC.subtract_from_contents(1)
+        self.set_flags_if_required(instruction, {})
         hl = self.registers_by_name["HL"]
         memory_loc = self.memory.get_contents(hl.get_contents())
         self.compare_execute(instruction, memory_loc)
@@ -367,6 +375,10 @@ class Z80():
         self.DE.subtract_from_contents(1)
         self.BC.subtract_from_contents(1)
         self.set_flags_if_required(instruction, {})
+
+    def load_inc_repeat_execute(self, instruction):
+        while self.BC.get_contents() != 0:
+            self.load_inc_execute(instruction)
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

@@ -1245,7 +1245,7 @@ def test_ldir():
     # Constant attributes - value, low, high
     hl = DoubleByte(1000)
     de = DoubleByte(20000)
-    bc = DoubleByte(5)
+    bc = DoubleByte(4)
 
     Z80TestHandler(
         # Register: (before, after)
@@ -1275,6 +1275,43 @@ def test_ldir():
         },
         # Command
         "ldir"
+    )
+
+
+def test_lddr():
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    de = DoubleByte(20000)
+    bc = DoubleByte(4)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "HL": (hl.value, hl.value - bc.value),
+            "DE": (de.value, de.value - bc.value),
+            "BC": (bc.value, 0)
+        },
+        # Flag: (before, after)
+        {
+            HALF_CARRY_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (99, 99),
+            hl.value - 1: (98, 98),
+            hl.value - 2: (97, 97),
+            hl.value - 3: (96, 96),
+            hl.value - 4: (95, 95),
+            de.value: (0, 99),
+            de.value - 1: (0, 98),
+            de.value - 2: (0, 97),
+            de.value - 3: (0, 96),
+            de.value - 4: (0, 0)
+        },
+        # Command
+        "lddr"
     )
 
 '''

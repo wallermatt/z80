@@ -6,7 +6,7 @@ from instructions import (
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
-    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT
+    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR
 )
 
 
@@ -201,6 +201,14 @@ class Z80():
             self.load_dec_execute(instruction)
         elif instruction.instruction_base == LOAD_INC_REPEAT:
             self.load_inc_repeat_execute(instruction)
+        elif instruction.instruction_base == LOAD_DEC_REPEAT:
+            self.load_dec_repeat_execute(instruction)
+        elif instruction.instruction_base == AND:
+            self.and_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == OR:
+            self.or_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == XOR:
+            self.xor_execute(instruction, substituted_left_arg)
 
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
@@ -378,7 +386,11 @@ class Z80():
 
     def load_inc_repeat_execute(self, instruction):
         while self.BC.get_contents() != 0:
-            self.load_inc_execute(instruction)
+            self.load_dec_execute(instruction)
+
+    def load_dec_repeat_execute(self, instruction):
+        while self.BC.get_contents() != 0:
+            self.load_dec_execute(instruction)
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

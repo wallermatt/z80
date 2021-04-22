@@ -392,6 +392,13 @@ class Z80():
         while self.BC.get_contents() != 0:
             self.load_dec_execute(instruction)
 
+    def and_execute(self, instruction, substituted_left_arg):
+        a_original_contents = self.A.get_contents()
+        self.A.set_contents(a_original_contents & substituted_left_arg.get_contents())
+        a.set_potential_flags()
+        self.set_flags_if_required(instruction, a.potential_flags)
+        a.set_contents(a_original_contents)
+
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:
             return arg

@@ -1322,7 +1322,7 @@ def test_and():
     Z80TestHandler(
         # Register: (before, after)
         {
-            "A": (a.value, a.value & const.value),
+            "A": (a.value, a.value & const.value),   # 0
             "PC": (0, 1),
         },
         # Flag: (before, after)

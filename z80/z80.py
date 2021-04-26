@@ -391,7 +391,6 @@ class Z80():
         self.A.set_contents(a_original_contents & substituted_left_arg)
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
-        self.A.set_contents(a_original_contents)
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:
@@ -468,12 +467,17 @@ class Z80():
             if action in ["-", " "]:
                 continue
             flag = INSTRUCTION_FLAG_POSITIONS[i]
-            if action in ["+", "V", "P"]:
+            if action in ["+", "V"]:
                 set_flag = potential_flags[flag]
                 if set_flag:
                     self.flag_register.set_flag(flag)
                 else:
                     self.flag_register.reset_flag(flag)
+            elif action == "P":
+                if self.A.parity():
+                   self.flag_register.set_flag(flag)
+                else:
+                    self.flag_register.reset_flag(flag) 
             elif action == "*":
                 if flag == PARITY_OVERFLOW_FLAG:
                     if self.registers_by_name["BC"].get_contents() - 1 == 0:

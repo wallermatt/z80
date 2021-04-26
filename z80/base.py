@@ -123,6 +123,8 @@ class Component:
         bit_list[flag_position] = 0
         self.convert_bit_list_to_contents(bit_list)
 
+    def parity(self):
+        return sum(self.convert_contents_to_bit_list()) == 4
 
 class DoubleComponent(Component):
 

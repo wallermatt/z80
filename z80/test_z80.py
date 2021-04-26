@@ -1327,9 +1327,12 @@ def test_and():
         },
         # Flag: (before, after)
         {
-            HALF_CARRY_FLAG: (1, 0),
-            PARITY_OVERFLOW_FLAG: (0, 1),
-            ADD_SUBTRACT_FLAG: (1, 0)
+            SIGN_FLAG: (1, 0),
+            HALF_CARRY_FLAG: (0, 1),
+            PARITY_OVERFLOW_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            ZERO_FLAG: (0, 1),
+            CARRY_FLAG: (1, 0)
         },
         # Memory location: (before, after)
         {

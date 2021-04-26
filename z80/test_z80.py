@@ -1314,7 +1314,7 @@ def test_lddr():
         "lddr"
     )
 
-def test_and():
+def test_and_const():
     # Constant attributes - value, low, high
     a = DoubleByte(170)
     const = DoubleByte(85)
@@ -1340,6 +1340,35 @@ def test_and():
         },
         # Command
         "and *"
+    )
+
+def test_and_hl():
+    # Constant attributes - value, low, high
+    a = DoubleByte(255)
+    hl = DoubleByte(10000)
+    const = DoubleByte(85)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, a.value & const.value),   # 0
+            "HL": (hl.value, hl.value),
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (1, 0),
+            HALF_CARRY_FLAG: (0, 1),
+            PARITY_OVERFLOW_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            ZERO_FLAG: (1, 0),
+            CARRY_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (const.value, const.value),
+        },
+        # Command
+        "and (hl)"
     )
 
 '''

@@ -387,10 +387,17 @@ class Z80():
             self.load_dec_execute(instruction)
 
     def and_execute(self, instruction, substituted_left_arg):
-        a_original_contents = self.A.get_contents()
-        self.A.set_contents(a_original_contents & substituted_left_arg)
+        if type(substituted_left_arg) is not int:
+            substituted_left_arg = substituted_left_arg.get_contents()
+        self.A.set_contents(self.A.get_contents() & substituted_left_arg)
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
+
+    def or_execute(self, instruction, substituted_left_arg):
+        pass
+
+    def xor_execute(self, instruction, substituted_left_arg):
+        pass
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

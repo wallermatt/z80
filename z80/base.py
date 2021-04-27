@@ -103,7 +103,7 @@ class Component:
     def convert_bit_list_to_contents(self, bit_list):
         self.contents = 0
         bit_list.reverse()
-        for i, bit in enumerate(bit_list):
+        for _, bit in enumerate(bit_list):
             self.contents = (self.contents << 1) | bit
 
     def get_flag(self, flag):

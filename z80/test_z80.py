@@ -1351,7 +1351,7 @@ def test_and_hl():
     Z80TestHandler(
         # Register: (before, after)
         {
-            "A": (a.value, a.value & const.value),   # 0
+            "A": (a.value, a.value & const.value),  
             "HL": (hl.value, hl.value),
         },
         # Flag: (before, after)
@@ -1369,6 +1369,30 @@ def test_and_hl():
         },
         # Command
         "and (hl)"
+    )
+
+def test_and_a():
+    # Constant attributes - value, low, high
+    a = DoubleByte(255)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, a.value & a.value),   # a
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (0, 1),
+            PARITY_OVERFLOW_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            ZERO_FLAG: (1, 0),
+            CARRY_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {},
+        # Command
+        "and a"
     )
 
 '''

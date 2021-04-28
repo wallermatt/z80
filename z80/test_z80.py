@@ -1395,76 +1395,58 @@ def test_and_a():
         "and a"
     )
 
-'''
-and (iy+*)
-and e
-and a
-and *
-and iyh
-and ixh
-and c
-and (hl)
-and ixl
-and (ix+*)
-and l
-and b
-and h
-and iyl
-and d
+def test_or_const():
+    # Constant attributes - value, low, high
+    a = DoubleByte(170)
+    const = DoubleByte(85)
 
-S is set if result is negative; otherwise, it is reset.
-Z is set if result is 0; otherwise, it is reset.
-H is set.
-P/V is reset if overflow; otherwise, it is reset.
-N is reset.
-C is reset.
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, a.value | const.value),   
+            "PC": (0, 1),
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            ZERO_FLAG: (1, 0),
+            CARRY_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {
+            0: (const.value, const.value),
+        },
+        # Command
+        "or *"
+    )
 
+def test_xor_const():
+    # Constant attributes - value, low, high
+    a = DoubleByte(170)
+    const = DoubleByte(100)
 
-or d
-or iyl
-or (ix+*)
-or h
-or ixl
-or b
-or *
-or iyh
-or ixh
-or e
-or (hl)
-or c
-or (iy+*)
-or a
-or l
-
-S is set if result is negative; otherwise, it is reset.
-Z is set if result is 0; otherwise, it is reset.
-H is reset.
-P/V is set if overflow; otherwise, it is reset.
-N is reset.
-C is reset.
-
-
-xor (hl)
-xor iyl
-xor c
-xor (iy+*)
-xor (ix+*)
-xor ixh
-xor iyh
-xor l
-xor *
-xor ixl
-xor b
-xor h
-xor e
-xor a
-xor d
-
-S is set if result is negative; otherwise, it is reset.
-Z is set if result is 0; otherwise, it is reset.
-H is reset.
-P/V is set if parity even; otherwise, it is reset.
-N is reset.
-C is reset.
-
-'''
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, a.value ^ const.value),   
+            "PC": (0, 1),
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (0, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            ZERO_FLAG: (1, 0),
+            CARRY_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {
+            0: (const.value, const.value),
+        },
+        # Command
+        "xor *"
+    )

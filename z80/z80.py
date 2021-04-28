@@ -394,10 +394,18 @@ class Z80():
         self.set_flags_if_required(instruction, self.A.potential_flags)
 
     def or_execute(self, instruction, substituted_left_arg):
-        pass
+        if type(substituted_left_arg) is not int:
+            substituted_left_arg = substituted_left_arg.get_contents()
+        self.A.set_contents(self.A.get_contents() | substituted_left_arg)
+        self.A.set_potential_flags()
+        self.set_flags_if_required(instruction, self.A.potential_flags)
 
     def xor_execute(self, instruction, substituted_left_arg):
-        pass
+        if type(substituted_left_arg) is not int:
+            substituted_left_arg = substituted_left_arg.get_contents()
+        self.A.set_contents(self.A.get_contents() ^ substituted_left_arg)
+        self.A.set_potential_flags()
+        self.set_flags_if_required(instruction, self.A.potential_flags)
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:
@@ -482,7 +490,7 @@ class Z80():
                     self.flag_register.reset_flag(flag)
             elif action == "P":
                 if self.A.parity():
-                   self.flag_register.set_flag(flag)
+                    self.flag_register.set_flag(flag)
                 else:
                     self.flag_register.reset_flag(flag) 
             elif action == "*":

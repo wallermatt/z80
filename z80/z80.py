@@ -209,7 +209,8 @@ class Z80():
             self.or_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == XOR:
             self.xor_execute(instruction, substituted_left_arg)
-
+        elif instruction.instruction_base == DAA:
+            self.daa_execute(instruction)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -406,6 +407,21 @@ class Z80():
         self.A.set_contents(self.A.get_contents() ^ substituted_left_arg)
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
+
+    def daa_execute(instruction):
+        if not self.F.get_flag(ADD_SUBTRACT_FLAG):
+            if self.F.get_flag(HALF_CARRY_FLAG) or (self.A.get_contents() & 15) > 9:
+                self.A.addition_with_flags(6)
+            if self.F.get_flag(CARRY_FLAG) or self.A.get_contents() > 99:
+                self.A.addition_with_flags(60)
+        else:
+            if self.F.get_flag(HALF_CARRY_FLAG) or (self.A.get_contents() & 15) > 9:
+                self.A.subtraction_with_flags(6)
+            if self.F.get_flag(CARRY_FLAG) or self.A.get_contents() > 99:
+                self.A.subtraction_with_flags(60)
+        self.A.set_potential_flags()
+        self.set_flags_if_required(instruction, self.A.potential_flags)
+
 
     def substitute_arg(self, arg, opposite_arg):
         if not arg or arg in SPECIAL_ARGS:

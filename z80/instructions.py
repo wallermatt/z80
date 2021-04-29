@@ -34,6 +34,7 @@ NEGATION = "neg"
 AND = "and"
 OR = "or"
 XOR = "xor"
+DAA = "daa"
 
 JUMP_INSTRUCTIONS = [JUMP, JUMP_RELATIVE, DEC_JUMP_RELATIVE, CALL]
 

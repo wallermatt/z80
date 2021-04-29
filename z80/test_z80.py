@@ -1450,3 +1450,23 @@ def test_xor_const():
         # Command
         "xor *"
     )
+
+def test_daa_add_h():
+    # Constant attributes - value, low, high
+    a = DoubleByte(12)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, a.value + 6),   
+        },
+        # Flag: (before, after)
+        {
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (0, 0),
+        },
+        # Memory location: (before, after)
+        {},
+        # Command
+        "daa"
+    )

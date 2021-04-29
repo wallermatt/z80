@@ -6,7 +6,7 @@ from instructions import (
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
-    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR
+    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA
 )
 
 
@@ -408,7 +408,7 @@ class Z80():
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
 
-    def daa_execute(instruction):
+    def daa_execute(self, instruction):
         if not self.F.get_flag(ADD_SUBTRACT_FLAG):
             if self.F.get_flag(HALF_CARRY_FLAG) or (self.A.get_contents() & 15) > 9:
                 self.A.addition_with_flags(6)

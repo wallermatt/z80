@@ -1462,8 +1462,49 @@ def test_daa_add_h():
         },
         # Flag: (before, after)
         {
-            HALF_CARRY_FLAG: (1, 0),
+            HALF_CARRY_FLAG: (1, 1),
             ADD_SUBTRACT_FLAG: (0, 0),
+        },
+        # Memory location: (before, after)
+        {},
+        # Command
+        "daa"
+    )
+
+def test_daa_add_h():
+    # Constant attributes - value, low, high
+    a = DoubleByte(12)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, a.value + 6),   
+        },
+        # Flag: (before, after)
+        {
+            HALF_CARRY_FLAG: (1, 1),
+            ADD_SUBTRACT_FLAG: (0, 0),
+        },
+        # Memory location: (before, after)
+        {},
+        # Command
+        "daa"
+    )
+
+def test_daa_add_c():
+    # Constant attributes - value, low, high
+    a = DoubleByte(18)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, a.value + 96),   
+        },
+        # Flag: (before, after)
+        {
+            CARRY_FLAG: (1, 1),
+            ADD_SUBTRACT_FLAG: (0, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {},

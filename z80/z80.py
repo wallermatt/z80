@@ -413,12 +413,12 @@ class Z80():
             if self.F.get_flag(HALF_CARRY_FLAG) or (self.A.get_contents() & 15) > 9:
                 self.A.addition_with_flags(6)
             if self.F.get_flag(CARRY_FLAG) or self.A.get_contents() > 99:
-                self.A.addition_with_flags(60)
+                self.A.addition_with_flags(96)
         else:
             if self.F.get_flag(HALF_CARRY_FLAG) or (self.A.get_contents() & 15) > 9:
                 self.A.subtraction_with_flags(6)
             if self.F.get_flag(CARRY_FLAG) or self.A.get_contents() > 99:
-                self.A.subtraction_with_flags(60)
+                self.A.subtraction_with_flags(96)
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
 

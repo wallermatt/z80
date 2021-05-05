@@ -97,14 +97,16 @@ for instruction in instruction_list:
             instruction.opcode, instruction.instruction_base, instruction.left_arg, instruction.right_arg,
             instruction.size, instruction.time, instruction.flags, instruction.text, instruction.desc))
     '''
-    if instruction.instruction_base[:3] == "xor":
+    if instruction.instruction_base == "ret":
         instruction_set.add((instruction.text, instruction.desc))
+    #instruction_set.add(instruction.instruction_base)
 
-for e in instruction_set:
-    print(e[0])
+#l = sorted(list(instruction_set))
+#for e in l:
+#    print(e)
 
-#for instruction in instruction_set:
-#    print(instruction)
+for instruction in instruction_set:
+    print(instruction)
 
 #print(len(instruction_set))
 

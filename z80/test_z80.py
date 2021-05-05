@@ -1492,3 +1492,56 @@ def test_daa_add_c():
         # Command
         "daa"
     )
+
+'''
+('ret p', 'If condition cc is true, the top stack entry is popped into pc.')
+('ret nc', 'If condition cc is true, the top stack entry is popped into pc.')
+('ret', 'The top stack entry is popped into pc.')
+('ret pe', 'If condition cc is true, the top stack entry is popped into pc.')
+('ret po', 'If condition cc is true, the top stack entry is popped into pc.')
+('ret nz', 'If condition cc is true, the top stack entry is popped into pc.')
+('ret z', 'If condition cc is true, the top stack entry is popped into pc.')
+('ret c', 'If condition cc is true, the top stack entry is popped into pc.')
+('ret m', 'If condition cc is true, the top stack entry is popped into pc.')
+
+
+bit
+ccf
+di
+ei
+halt
+im
+in
+ind
+indr
+ini
+inir
+nop
+otdr
+otir
+out
+outd
+outi
+res
+ret
+reti
+retn
+rl
+rla
+rlc
+rlca
+rld
+rr
+rra
+rrc
+rrca
+rrd
+rst
+scf
+set
+sla
+sll
+sra
+srl
+'''
+

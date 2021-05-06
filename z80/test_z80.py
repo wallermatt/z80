@@ -1493,6 +1493,30 @@ def test_daa_add_c():
         "daa"
     )
 
+
+def test_ret():
+    # Constant attributes - value, low, high
+    sp = DoubleByte(1000)
+    low = DoubleByte(100)
+    high = DoubleByte(2)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "SP": (sp.value, sp.value + 2),   
+            "PC": (0, 612),
+        },
+        # Flag: (before, after)
+        {},
+        # Memory location: (before, after)
+        {
+            sp.value: (low.value, low.value),
+            sp.value + 1: (high.value, high.value),
+        },
+        # Command
+        "ret"
+    )
+
 '''
 ('ret p', 'If condition cc is true, the top stack entry is popped into pc.')
 ('ret nc', 'If condition cc is true, the top stack entry is popped into pc.')

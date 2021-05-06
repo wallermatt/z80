@@ -6,7 +6,7 @@ from instructions import (
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
-    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA
+    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN
 )
 
 
@@ -181,6 +181,8 @@ class Z80():
             self.dec_jump_relative_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == CALL:
             self.call_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == RETURN:
+            self.return_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == COMPARE:
             self.compare_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == COMPARE_INC:
@@ -315,6 +317,11 @@ class Z80():
             return
         self.push_execute(instruction, self.program_counter)
         self.program_counter.set_contents_value(substituted_right_arg)
+
+    def return_execute(self, instruction, substituted_left_arg):
+        if substituted_left_arg and not self.check_flag_arg(substituted_left_arg):
+            return
+        self.pop_execute(instruction, self.program_counter)
 
     def compare_execute(self, instruction, substituted_left_arg):
         a = self.registers_by_name["A"]

@@ -1517,16 +1517,45 @@ def test_ret():
         "ret"
     )
 
+def test_ret_m_1():
+    # Constant attributes - value, low, high
+    sp = DoubleByte(1000)
+    low = DoubleByte(100)
+    high = DoubleByte(2)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "SP": (sp.value, sp.value + 2),   
+            "PC": (0, 612),
+        },
+        # Flag: (before, after)
+        {SIGN_FLAG: (1,1)},
+        # Memory location: (before, after)
+        {
+            sp.value: (low.value, low.value),
+            sp.value + 1: (high.value, high.value),
+        },
+        # Command
+        "ret m"
+    )
+
+def test_ret_m_0():
+    # Constant attributes - value, low, high
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {},
+        # Flag: (before, after)
+        {SIGN_FLAG: (0,0)},
+        # Memory location: (before, after)
+        {},
+        # Command
+        "ret m"
+    )
 '''
-('ret p', 'If condition cc is true, the top stack entry is popped into pc.')
-('ret nc', 'If condition cc is true, the top stack entry is popped into pc.')
-('ret', 'The top stack entry is popped into pc.')
-('ret pe', 'If condition cc is true, the top stack entry is popped into pc.')
-('ret po', 'If condition cc is true, the top stack entry is popped into pc.')
-('ret nz', 'If condition cc is true, the top stack entry is popped into pc.')
-('ret z', 'If condition cc is true, the top stack entry is popped into pc.')
-('ret c', 'If condition cc is true, the top stack entry is popped into pc.')
-('ret m', 'If condition cc is true, the top stack entry is popped into pc.')
+reti
+retn
 
 
 bit
@@ -1547,9 +1576,7 @@ out
 outd
 outi
 res
-ret
-reti
-retn
+
 rl
 rla
 rlc

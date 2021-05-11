@@ -431,6 +431,8 @@ class Z80():
 
 
     def substitute_arg(self, arg, opposite_arg):
+        if arg and arg.isdigit():
+            return int(arg)
         if not arg or arg in SPECIAL_ARGS:
             return arg
         if arg.upper() in self.registers_by_name:

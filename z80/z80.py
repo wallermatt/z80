@@ -6,7 +6,7 @@ from instructions import (
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
-    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN
+    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN, BIT
 )
 
 
@@ -213,6 +213,8 @@ class Z80():
             self.xor_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == DAA:
             self.daa_execute(instruction)
+        elif instruction.instruction_base == BIT:
+            self.bit_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -428,6 +430,14 @@ class Z80():
                 self.A.subtraction_with_flags(96)
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
+
+    def bit_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        potential_flags = {}
+        if 2 ** (7 - substituted_left_arg) & substituted_right_arg == 0:
+            potential_flags[ZERO_FLAG] = 1
+        else:
+            potential_flags[ZERO_FLAG] = 0
+        self.set_flags_if_required(instruction, potential_flags)
 
 
     def substitute_arg(self, arg, opposite_arg):

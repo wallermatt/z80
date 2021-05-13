@@ -36,6 +36,7 @@ AND = "and"
 OR = "or"
 XOR = "xor"
 DAA = "daa"
+BIT = "bit"
 
 JUMP_INSTRUCTIONS = [JUMP, JUMP_RELATIVE, DEC_JUMP_RELATIVE, CALL]
 

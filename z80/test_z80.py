@@ -1558,6 +1558,8 @@ def test_ret_m_0():
     )
 
 def test_bit_0_d():
+    # 'bit 0,d', 'Tests bit 0 of d.'
+    
     # Constant attributes - value, low, high
 
     Z80TestHandler(
@@ -1575,6 +1577,32 @@ def test_bit_0_d():
         {},
         # Command
         "bit 0,d"
+    )
+
+def test_bit_0_d():
+    # Tests bit 5 of the memory location pointed to by ix plus *.'
+    
+    # Constant attributes - value, low, high
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "IX": (1000, 1000),
+            "PC": (0, 1)   
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (1,0),
+            HALF_CARRY_FLAG: (0,1),
+            ADD_SUBTRACT_FLAG: (1,0),
+        },
+        # Memory location: (before, after)
+        { 
+            0: (20, 20),
+            1020: (4, 4)
+        },
+        # Command
+        "bit 5,(ix+*)"
     )
 
 '''

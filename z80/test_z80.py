@@ -1579,7 +1579,7 @@ def test_bit_0_d():
         "bit 0,d"
     )
 
-def test_bit_0_d():
+def test_bit_ix():
     # Tests bit 5 of the memory location pointed to by ix plus *.'
     
     # Constant attributes - value, low, high
@@ -1606,99 +1606,41 @@ def test_bit_0_d():
     )
 
 '''
-('bit 1,l', 'Tests bit 1 of l.')
-('bit 7,d', 'Tests bit 7 of d.')
-('bit 3,(ix+*)', 'Tests bit 3 of the memory location pointed to by ix plus *.')
-('bit 4,d', 'Tests bit 4 of d.')
-('bit 5,(ix+*)', 'Tests bit 5 of the memory location pointed to by ix plus *.')
-('bit 3,(iy+*)', 'Tests bit 3 of the memory location pointed to by iy plus *.')
-('bit 2,(hl)', 'Tests bit 2 of (hl).')
-('bit 4,e', 'Tests bit 4 of e.')
-('bit 5,(hl)', 'Tests bit 5 of (hl).')
-('bit 0,l', 'Tests bit 0 of l.')
-('bit 3,l', 'Tests bit 3 of l.')
-('bit 4,h', 'Tests bit 4 of h.')
-('bit 6,e', 'Tests bit 6 of e.')
-('bit 2,(iy+*)', 'Tests bit 2 of the memory location pointed to by iy plus *.')
-('bit 0,(hl)', 'Tests bit 0 of (hl).')
-('bit 4,c', 'Tests bit 4 of c.')
-('bit 4,(hl)', 'Tests bit 4 of (hl).')
-('bit 5,e', 'Tests bit 5 of e.')
-('bit 5,a', 'Tests bit 5 of a.')
-('bit 2,(ix+*)', 'Tests bit 2 of the memory location pointed to by ix plus *.')
-('bit 6,(iy+*)', 'Tests bit 6 of the memory location pointed to by iy plus *.')
-('bit 2,e', 'Tests bit 2 of e.')
-('bit 7,c', 'Tests bit 7 of c.')
-('bit 0,h', 'Tests bit 0 of h.')
-('bit 7,b', 'Tests bit 7 of b.')
-('bit 4,l', 'Tests bit 4 of l.')
-('bit 3,d', 'Tests bit 3 of d.')
-('bit 4,b', 'Tests bit 4 of b.')
-('bit 0,e', 'Tests bit 0 of e.')
-('bit 2,d', 'Tests bit 2 of d.')
-('bit 7,a', 'Tests bit 7 of a.')
-('bit 1,(hl)', 'Tests bit 1 of (hl).')
-('bit 3,h', 'Tests bit 3 of h.')
-('bit 5,d', 'Tests bit 5 of d.')
-('bit 6,b', 'Tests bit 6 of b.')
-('bit 5,l', 'Tests bit 5 of l.')
-('bit 7,(ix+*)', 'Tests bit 7 of the memory location pointed to by ix plus *.')
-('bit 5,b', 'Tests bit 5 of b.')
-('bit 0,c', 'Tests bit 0 of c.')
-('bit 7,e', 'Tests bit 7 of e.')
-('bit 4,(iy+*)', 'Tests bit 4 of the memory location pointed to by iy plus *.')
-('bit 1,c', 'Tests bit 1 of c.')
-('bit 6,a', 'Tests bit 6 of a.')
-('bit 0,a', 'Tests bit 0 of a.')
-('bit 7,l', 'Tests bit 7 of l.')
-('bit 6,(ix+*)', 'Tests bit 6 of the memory location pointed to by ix plus *.')
-('bit 7,(iy+*)', 'Tests bit 7 of the memory location pointed to by iy plus *.')
-('bit 3,b', 'Tests bit 3 of b.')
-('bit 2,h', 'Tests bit 2 of h.')
-('bit 3,e', 'Tests bit 3 of e.')
-('bit 6,(hl)', 'Tests bit 6 of (hl).')
-('bit 6,d', 'Tests bit 6 of d.')
-('bit 3,(hl)', 'Tests bit 3 of (hl).')
-('bit 0,(iy+*)', 'Tests bit 0 of the memory location pointed to by iy plus *.')
-('bit 2,a', 'Tests bit 2 of a.')
-('bit 3,c', 'Tests bit 3 of c.')
-('bit 2,b', 'Tests bit 2 of b.')
-('bit 0,d', 'Tests bit 0 of d.')
-('bit 1,b', 'Tests bit 1 of b.')
-('bit 0,b', 'Tests bit 0 of b.')
-('bit 5,(iy+*)', 'Tests bit 5 of the memory location pointed to by iy plus *.')
-('bit 6,h', 'Tests bit 6 of h.')
-('bit 4,a', 'Tests bit 4 of a.')
-('bit 1,d', 'Tests bit 1 of d.')
-('bit 7,h', 'Tests bit 7 of h.')
-('bit 4,(ix+*)', 'Tests bit 4 of the memory location pointed to by ix plus *.')
-('bit 2,c', 'Tests bit 2 of c.')
-('bit 1,(ix+*)', 'Tests bit 1 of the memory location pointed to by ix plus *.')
-('bit 0,(ix+*)', 'Tests bit 0 of the memory location pointed to by ix plus *.')
-('bit 7,(hl)', 'Tests bit 7 of (hl).')
-('bit 1,e', 'Tests bit 1 of e.')
-('bit 1,h', 'Tests bit 1 of h.')
-('bit 6,c', 'Tests bit 6 of c.')
-('bit 1,a', 'Tests bit 1 of a.')
-('bit 5,h', 'Tests bit 5 of h.')
-('bit 2,l', 'Tests bit 2 of l.')
-('bit 6,l', 'Tests bit 6 of l.')
-('bit 5,c', 'Tests bit 5 of c.')
-('bit 1,(iy+*)', 'Tests bit 1 of the memory location pointed to by iy plus *.')
-('bit 3,a', 'Tests bit 3 of a.')
+('in d,(c)', 'A byte from port c is written to c.')
+('in e,(c)', 'A byte from port c is written to e.')
+('in a,(*)', 'A byte from port * is written to a.')
+('in (c)', 'Inputs a byte from port c and affects flags only.')
+('in b,(c)', 'A byte from port c is written to b.')
+('in c,(c)', 'A byte from port c is written to c.')
+('in h,(c)', 'A byte from port c is written to h.')
+('in l,(c)', 'A byte from port c is written to l.')
+('in a,(c)', 'A byte from port c is written to a.')
 
+('out (c),b', 'The value of b is written to port c.')
+('out (c),c', 'The value of c is written to port c.')
+('out (*),a', 'The value of a is written to port *.')
+('out (c),l', 'The value of l is written to port c.')
+('out (c),e', 'The value of e is written to port c.')
+('out (c),a', 'The value of a is written to port c.')
+('out (c),h', 'The value of h is written to port c.')
+('out (c),0', 'Outputs a zero to port c.')
+('out (c),d', 'The value of c is written to port c.')
 
-bit
-ccf
-di
-ei
-halt
-im
+out
+outd
+outi
 in
 ind
 indr
 ini
 inir
+
+ccf
+di
+ei
+halt
+im
+
 nop
 otdr
 otir

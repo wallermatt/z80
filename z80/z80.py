@@ -16,6 +16,7 @@ class Z80():
 
     def __init__(self):
         self.memory = Memory(self.MEMORY_SIZE)
+        self.ports = Memory(256)
         self._define_registers()
         self.instructions_by_opcode = instructions_by_opcode
         self.instructions_by_text = instructions_by_text

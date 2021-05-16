@@ -26,15 +26,17 @@ class DoubleByte:
 
 
 class Z80TestHandler:
-    def __init__(self, registers, flags, memory, instruction_text, run=True):
+    def __init__(self, registers, flags, memory, ports, instruction_text, run=True):
         self.z80 = Z80()
         self.test_registers = registers
         self.test_flags = flags
         self.test_memory = memory
+        self.test_ports = ports
         self.instruction_text = instruction_text
         self.set_registers()
         self.set_flags()
         self.set_memory()
+        self.set_ports()
         if run:
             self.run_test()
 
@@ -64,6 +66,11 @@ class Z80TestHandler:
         for m in self.test_memory:
             value = self.test_memory[m][0]
             self.z80.memory.set_contents_value(m, value)
+
+    def set_ports(self):
+        for p in self.test_ports:
+            value = self.test_ports[p][0]
+            self.z80.ports.set_contents_value(p, value)
 
     def assert_registers(self):
         additional_test_registers = set()
@@ -100,3 +107,9 @@ class Z80TestHandler:
             expected_value = self.test_memory[m][1]
             actual_value =  self.z80.memory.get_contents_value(m)
             assert expected_value == actual_value, f"Instruction: {self.instruction_text}, Memory: {m}, expected value: {expected_value}, actual value: {actual_value}"
+
+    def assert_ports(self):
+        for p in self.test_ports:
+            expected_value = self.test_ports[p][1]
+            actual_value =  self.z80.ports.get_contents_value(p)
+            assert expected_value == actual_value, f"Instruction: {self.instruction_text}, Port: {p}, expected value: {expected_value}, actual value: {actual_value}"

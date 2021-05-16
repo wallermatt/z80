@@ -6,7 +6,7 @@ from instructions import (
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
-    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN, BIT
+    LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN, BIT, IN
 )
 
 
@@ -216,6 +216,8 @@ class Z80():
             self.daa_execute(instruction)
         elif instruction.instruction_base == BIT:
             self.bit_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == IN:
+            self.in_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -440,6 +442,12 @@ class Z80():
             potential_flags[ZERO_FLAG] = 0
         self.set_flags_if_required(instruction, potential_flags)
 
+    def in_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        if type(substituted_left_arg) is not int:
+            value = self.ports.get_content_value(substituted_right_arg)
+            substituted_left_arg.set_contents(value)
+        self.set_flags_if_required(instruction, None)
+
 
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():
@@ -452,6 +460,8 @@ class Z80():
             arg = arg[1:-1]
             if arg == "c":   # in/out (c) specifies port
                 return self.registers_by_name["C"].get_contents()
+            if arg == "*":   # in/out (*) specifies port
+                return self.read_memory_and_increment_pc()
             if arg.upper() in self.registers_by_name:
                 address = self.registers_by_name[arg.upper()].get_contents()
                 if not opposite_arg or opposite_arg == "*" or self.registers_by_name[opposite_arg.upper()].SIZE == 1:

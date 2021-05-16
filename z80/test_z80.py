@@ -843,6 +843,8 @@ def test_call_nz_execute_non_zero():
             sp.value - 1: (0, pc.high),
             sp.value - 2: (0, pc.low + 2)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "call nz,**"
     )
@@ -870,6 +872,8 @@ def test_call_nz_execute_zero():
             sp.value - 1: (0, 0),
             sp.value - 2: (0, 0)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "call nz,**"
     )
@@ -893,6 +897,8 @@ def test_dec_jump_relative_execute_non_zero_helper():
         {
             pc.value : (var.low, var.low),
         },
+        # Ports: (before, after)
+        {},
         # Command
         "djnz *"
     )
@@ -915,6 +921,8 @@ def test_dec_jump_relative_execute_zero_helper():
         {
             pc.value : (var.low, var.low),
         },
+        # Ports: (before, after)
+        {},
         # Command
         "djnz *"
     )
@@ -936,6 +944,8 @@ def test_cp_e_equal():
             CARRY_FLAG: (0, 0),
             ADD_SUBTRACT_FLAG: (0, 1),
         },
+        {},
+        # Ports: (before, after)
         {},
         # Command
         "cp e"
@@ -959,6 +969,8 @@ def test_cp_b_gt():
             CARRY_FLAG: (0, 1),
             ADD_SUBTRACT_FLAG: (0, 1),
         },
+        {},
+        # Ports: (before, after)
         {},
         # Command
         "cp b"
@@ -988,6 +1000,8 @@ def test_cp_iy_disp_mem_lt():
             pc.value: (disp, disp),
             iy.value + disp: (5, 5)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "cp (iy+*)"
     )
@@ -1019,6 +1033,8 @@ def test_cpi():
             hl.value: (10, 10),
             hl.value + 1: (0, 0)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "cpi"
     )
@@ -1048,6 +1064,8 @@ def test_cpir_found():
         {
             hl.value + bc.value - 2: (10, 10)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "cpir"
     )
@@ -1074,6 +1092,8 @@ def test_cpir_not_found():
             ADD_SUBTRACT_FLAG: (0, 1),
         },
         # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
         {},
         # Command
         "cpir"
@@ -1105,6 +1125,8 @@ def test_cpd():
         {
             hl.value: (10, 10),
         },
+        # Ports: (before, after)
+        {},
         # Command
         "cpd"
     )
@@ -1134,6 +1156,8 @@ def test_cpdr_found():
         {
             hl.value - bc.value + 2: (10, 10)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "cpdr"
     )
@@ -1161,6 +1185,8 @@ def test_cpdr_not_found():
         },
         # Memory location: (before, after)
         {},
+        # Ports: (before, after)
+        {},
         # Command
         "cpdr"
     )
@@ -1182,6 +1208,8 @@ def test_cpl():
             ADD_SUBTRACT_FLAG: (0, 1)
         },
         # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
         {},
         # Command
         "cpl"
@@ -1212,6 +1240,8 @@ def test_ldi():
             hl.value: (99, 99),
             de.value: (0, 99)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "ldi"
     )
@@ -1240,6 +1270,8 @@ def test_ldd():
             hl.value: (99, 99),
             de.value: (0, 99)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "ldd"
     )
@@ -1276,6 +1308,8 @@ def test_ldir():
             de.value + 3: (0, 96),
             de.value + 4: (0, 0)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "ldir"
     )
@@ -1313,6 +1347,8 @@ def test_lddr():
             de.value - 3: (0, 96),
             de.value - 4: (0, 0)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "lddr"
     )
@@ -1341,6 +1377,8 @@ def test_and_const():
         {
             0: (const.value, const.value),
         },
+        # Ports: (before, after)
+        {},
         # Command
         "and *"
     )
@@ -1370,6 +1408,8 @@ def test_and_hl():
         {
             hl.value: (const.value, const.value),
         },
+        # Ports: (before, after)
+        {},
         # Command
         "and (hl)"
     )
@@ -1393,6 +1433,8 @@ def test_and_a():
             CARRY_FLAG: (1, 0)
         },
         # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
         {},
         # Command
         "and a"
@@ -1422,6 +1464,8 @@ def test_or_const():
         {
             0: (const.value, const.value),
         },
+        # Ports: (before, after)
+        {},
         # Command
         "or *"
     )
@@ -1450,6 +1494,8 @@ def test_xor_const():
         {
             0: (const.value, const.value),
         },
+        # Ports: (before, after)
+        {},
         # Command
         "xor *"
     )
@@ -1469,6 +1515,8 @@ def test_daa_add_h():
             ADD_SUBTRACT_FLAG: (0, 0),
         },
         # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
         {},
         # Command
         "daa"
@@ -1491,6 +1539,8 @@ def test_daa_add_c():
             PARITY_OVERFLOW_FLAG: (0, 1),
         },
         # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
         {},
         # Command
         "daa"
@@ -1516,6 +1566,8 @@ def test_ret():
             sp.value: (low.value, low.value),
             sp.value + 1: (high.value, high.value),
         },
+        # Ports: (before, after)
+        {},
         # Command
         "ret"
     )
@@ -1539,6 +1591,8 @@ def test_ret_m_1():
             sp.value: (low.value, low.value),
             sp.value + 1: (high.value, high.value),
         },
+        # Ports: (before, after)
+        {},
         # Command
         "ret m"
     )
@@ -1552,6 +1606,8 @@ def test_ret_m_0():
         # Flag: (before, after)
         {SIGN_FLAG: (0,0)},
         # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
         {},
         # Command
         "ret m"
@@ -1574,6 +1630,8 @@ def test_bit_0_d():
             ADD_SUBTRACT_FLAG: (1,0),
         },
         # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
         {},
         # Command
         "bit 0,d"
@@ -1601,10 +1659,41 @@ def test_bit_ix():
             0: (20, 20),
             1020: (4, 4)
         },
+        # Ports: (before, after)
+        {},
         # Command
         "bit 5,(ix+*)"
     )
 
+def test_in_a_val():
+    # in a,(*)', 'A byte from port * is written to a
+    
+    # Constant attributes - value, low, high
+    port = DoubleByte(150)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (0, 99),
+            "PC": (0, 1)   
+        },
+        # Flag: (before, after)
+        {
+            #ZERO_FLAG: (1,0),
+            #HALF_CARRY_FLAG: (0,1),
+            #ADD_SUBTRACT_FLAG: (1,0),
+        },
+        # Memory location: (before, after)
+        { 
+            0: (port.value, port.value),
+        },
+        # Ports: (before, after)
+        {
+            port.value: (99, 99)
+        },
+        # Command
+        "in a,(*)"
+    )
 '''
 ('in d,(c)', 'A byte from port c is written to c.')
 ('in e,(c)', 'A byte from port c is written to e.')

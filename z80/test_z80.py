@@ -1705,6 +1705,13 @@ def test_in_a_val():
 ('in l,(c)', 'A byte from port c is written to l.')
 ('in a,(c)', 'A byte from port c is written to a.')
 
+S is set if input data is negative; otherwise, it is reset.
+Z is set if input data is 0; otherwise, it is reset.
+H is reset.
+P/V is set if parity is even; otherwise, it is reset.
+N is reset.
+C is not affected.
+
 ('out (c),b', 'The value of b is written to port c.')
 ('out (c),c', 'The value of c is written to port c.')
 ('out (*),a', 'The value of a is written to port *.')

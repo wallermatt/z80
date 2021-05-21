@@ -444,7 +444,7 @@ class Z80():
 
     def in_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if type(substituted_left_arg) is not int:
-            value = self.ports.get_content_value(substituted_right_arg)
+            value = self.ports.get_contents_value(substituted_right_arg)
             substituted_left_arg.set_contents(value)
         self.set_flags_if_required(instruction, None)
 
@@ -461,7 +461,7 @@ class Z80():
             if arg == "c":   # in/out (c) specifies port
                 return self.registers_by_name["C"].get_contents()
             if arg == "*":   # in/out (*) specifies port
-                return self.read_memory_and_increment_pc()
+                return self.read_memory_and_increment_pc()[0]
             if arg.upper() in self.registers_by_name:
                 address = self.registers_by_name[arg.upper()].get_contents()
                 if not opposite_arg or opposite_arg == "*" or self.registers_by_name[opposite_arg.upper()].SIZE == 1:

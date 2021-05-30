@@ -445,9 +445,13 @@ class Z80():
     def in_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if type(substituted_left_arg) is not int:
             value = self.ports.get_contents_value(substituted_right_arg)
-            substituted_left_arg.set_contents(value)
-            substituted_left_arg.set_potential_flags()
-            self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+        else:
+            value = self.ports.get_contents_value(substituted_left_arg)
+            substituted_left_arg = Component("temp")
+        substituted_left_arg.set_contents(value)
+        substituted_left_arg.set_potential_flags()
+        self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+
 
 
     def substitute_arg(self, arg, opposite_arg):

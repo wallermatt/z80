@@ -15,6 +15,7 @@ def test_handler():
         {"A": (0,0), "PC": (0,1)},
         {SIGN_FLAG: (0,0)},
         {0: (0, 0)},
+        {0: (0, 0)},
         "ld a,*"
     )
 
@@ -1666,7 +1667,7 @@ def test_bit_ix():
     )
 
 def test_in_a_val():
-    # in a,(*)', 'A byte from port * is written to a
+    # in a,(*), a byte from port * is written to a
     
     # Constant attributes - value, low, high
     port = DoubleByte(150)
@@ -1678,40 +1679,7 @@ def test_in_a_val():
             "PC": (0, 1)   
         },
         # Flag: (before, after)
-        {
-            #ZERO_FLAG: (1,0),
-            #HALF_CARRY_FLAG: (0,1),
-            #ADD_SUBTRACT_FLAG: (1,0),
-        },
-        # Memory location: (before, after)
-        { 
-            0: (port.value, port.value),
-        },
-        # Ports: (before, after)
-        {
-            port.value: (99, 99)
-        },
-        # Command
-        "in a,(*)"
-    )
-def test_in_a_val():
-    # in a,(*)', 'A byte from port * is written to a
-    
-    # Constant attributes - value, low, high
-    port = DoubleByte(150)
-
-    Z80TestHandler(
-        # Register: (before, after)
-        {
-            "A": (0, 99),
-            "PC": (0, 1)   
-        },
-        # Flag: (before, after)
-        {
-            #ZERO_FLAG: (1,0),
-            #HALF_CARRY_FLAG: (0,1),
-            #ADD_SUBTRACT_FLAG: (1,0),
-        },
+        {},
         # Memory location: (before, after)
         { 
             0: (port.value, port.value),
@@ -1725,7 +1693,7 @@ def test_in_a_val():
     )
 
 def test_in_e_c():
-    # in a,(*)', 'A byte from port * is written to a
+    # in e,(c), a byte from port (c) is written to e
     
     # Constant attributes - value, low, high
     c = DoubleByte(5000)
@@ -1736,7 +1704,7 @@ def test_in_e_c():
         # Register: (before, after)
         {
             "E": (0, input.value),
-            "C": (c.value, c.value)
+            "C": (port.value, port.value)
         },
         # Flag: (before, after)
         {
@@ -1745,9 +1713,7 @@ def test_in_e_c():
             ADD_SUBTRACT_FLAG: (1,0),
         },
         # Memory location: (before, after)
-        { 
-            c.value: (port.value, port.value),
-        },
+        {},
         # Ports: (before, after)
         {
             port.value: (input.value, input.value)
@@ -1757,7 +1723,7 @@ def test_in_e_c():
     )
 
 def test_in_c():
-    # in a,(*)', 'A byte from port * is written to a
+    # in (c) - just changes flags
     
     # Constant attributes - value, low, high
     c = DoubleByte(5000)
@@ -1786,16 +1752,58 @@ def test_in_c():
         # Command
         "in (c)"
     )
+
+def test_out_val_a():
+    # out (*),a', 'The value of a is written to port *
+    
+    # Constant attributes - value, low, high
+    port = DoubleByte(150)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (99, 99),
+            "PC": (0, 1)   
+        },
+        # Flag: (before, after)
+        {},
+        # Memory location: (before, after)
+        { 
+            0: (port.value, port.value),
+        },
+        # Ports: (before, after)
+        {
+            port.value: (0, 99)
+        },
+        # Command
+        "out (*),a"
+    )
+
+def test_out_c_h():
+    # out (c),h', 'The value of h is written to port (c)
+    
+    # Constant attributes - value, low, high
+    h = DoubleByte(99)
+    port = DoubleByte(150)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "C": (port.value, port.value),
+            "H": (h.value, h.value),
+        },
+        # Flag: (before, after)
+        {},
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {
+            port.value: (0, h.value)
+        },
+        # Command
+        "out (c),h"
+    )
 '''
-('in d,(c)', 'A byte from port c is written to c.')
-('in e,(c)', 'A byte from port c is written to e.')
-('in a,(*)', 'A byte from port * is written to a.')
-('in (c)', 'Inputs a byte from port c and affects flags only.')
-('in b,(c)', 'A byte from port c is written to b.')
-('in c,(c)', 'A byte from port c is written to c.')
-('in h,(c)', 'A byte from port c is written to h.')
-('in l,(c)', 'A byte from port c is written to l.')
-('in a,(c)', 'A byte from port c is written to a.')
 
 S is set if input data is negative; otherwise, it is reset.
 Z is set if input data is 0; otherwise, it is reset.

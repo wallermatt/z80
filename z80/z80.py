@@ -7,7 +7,7 @@ from instructions import (
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
     LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN, BIT, IN,
-    OUT
+    OUT, OUT_INC
 )
 
 
@@ -221,6 +221,8 @@ class Z80():
             self.in_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == OUT:
             self.out_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == OUT_INC:
+            self.out_inc_execute(instruction)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -458,7 +460,12 @@ class Z80():
     def out_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         self.ports.set_contents_value(substituted_left_arg, substituted_right_arg)
 
-
+    def out_inc_execute(self, instruction):
+        out_value = self.memory.get_contents_value(self.HL.get_contents())
+        self.B.subtraction_with_flags(1, False)
+        self.ports.set_contents_value(self.C.get_contents(), out_value)
+        self.HL.add_to_contents(1)
+        self.set_flags_if_required(instruction, None)
 
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():
@@ -551,6 +558,13 @@ class Z80():
                 else:
                     self.flag_register.reset_flag(flag) 
             elif action == "*":
+                if instruction.text == OUT_INC:
+                    if flag == ZERO_FLAG:
+                        if self.B.get_contents() - 1 == 0:
+                            self.flag_register.set_flag(flag)
+                        else:
+                            self.flag_register.reset_flag(flag)
+                        continue
                 if flag == PARITY_OVERFLOW_FLAG:
                     if self.registers_by_name["BC"].get_contents() - 1 == 0:
                         self.flag_register.reset_flag(flag)

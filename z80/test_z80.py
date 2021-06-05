@@ -1803,26 +1803,77 @@ def test_out_c_h():
         # Command
         "out (c),h"
     )
+
+def test_outi():
+    # A byte from the memory location pointed to by hl is written to port c. 
+    # Then hl is incremented and b is decremented.
+    
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    b = DoubleByte(10)
+    port = DoubleByte(150)
+    out = DoubleByte(99)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "B": (b.value, b.value - 1),
+            "C": (port.value, port.value),
+            "HL": (hl.value, hl.value + 1),
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (out.value, out.value)
+        },
+        # Ports: (before, after)
+        {
+            port.value: (0, b.value)
+        },
+        # Command
+        "outi"
+    )
+
+def test_outi_zero_flag_set():
+    # A byte from the memory location pointed to by hl is written to port c. 
+    # Then hl is incremented and b is decremented.
+    
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    b = DoubleByte(2)
+    port = DoubleByte(150)
+    out = DoubleByte(99)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "B": (b.value, b.value - 1),
+            "C": (port.value, port.value),
+            "HL": (hl.value, hl.value + 1),
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (out.value, out.value)
+        },
+        # Ports: (before, after)
+        {
+            port.value: (0, b.value)
+        },
+        # Command
+        "outi"
+    )
 '''
 
-S is set if input data is negative; otherwise, it is reset.
-Z is set if input data is 0; otherwise, it is reset.
-H is reset.
-P/V is set if parity is even; otherwise, it is reset.
-N is reset.
-C is not affected.
 
-('out (c),b', 'The value of b is written to port c.')
-('out (c),c', 'The value of c is written to port c.')
-('out (*),a', 'The value of a is written to port *.')
-('out (c),l', 'The value of l is written to port c.')
-('out (c),e', 'The value of e is written to port c.')
-('out (c),a', 'The value of a is written to port c.')
-('out (c),h', 'The value of h is written to port c.')
-('out (c),0', 'Outputs a zero to port c.')
-('out (c),d', 'The value of c is written to port c.')
-
-out
 outd
 outi
 in

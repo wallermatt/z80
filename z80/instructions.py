@@ -39,6 +39,7 @@ DAA = "daa"
 BIT = "bit"
 IN = "in"
 OUT = "out"
+OUT_INC = "outi"
 
 JUMP_INSTRUCTIONS = [JUMP, JUMP_RELATIVE, DEC_JUMP_RELATIVE, CALL]
 

@@ -49,6 +49,7 @@ class Z80TestHandler:
         self.assert_registers()
         self.assert_flags()
         self.assert_memory()
+        self.assert_ports()
 
     def set_registers(self):
         for r in self.test_registers:

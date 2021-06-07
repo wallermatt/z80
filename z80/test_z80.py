@@ -1869,9 +1869,8 @@ def test_outi_zero_flag_set():
         "outi"
     )
 
-def test_outir():
-    # A byte from the memory location pointed to by hl is written to port c. 
-    # Then hl is incremented and b is decremented.
+def test_otir():
+    # A byte from the memory location pointed to by hl is written to port c. Then hl is incremented and b is decremented. If b is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing
     
     # Constant attributes - value, low, high
     hl = DoubleByte(1000)
@@ -1888,7 +1887,7 @@ def test_outir():
         },
         # Flag: (before, after)
         {
-            ZERO_FLAG: (1, 0),
+            ZERO_FLAG: (0, 1),
             ADD_SUBTRACT_FLAG: (0, 1),
         },
         # Memory location: (before, after)
@@ -1896,14 +1895,82 @@ def test_outir():
             hl.value: (out.value, out.value),
             hl.value + 1: (out.value + 1, out.value + 1),
             hl.value + 2: (out.value + 2, out.value + 2),
-            hl.value + 3: (out.value + 3, out.value + 3)
         },
         # Ports: (before, after)
         {
-            port.value: (0, out.value + b.value)
+            port.value: (0, out.value + b.value - 1)
         },
         # Command
         "otir"
+    )
+
+def test_outd():
+    # A byte from the memory location pointed to by hl is written to port c. 
+    # Then hl is decremented and b is decremented.
+    
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    b = DoubleByte(10)
+    port = DoubleByte(150)
+    out = DoubleByte(99)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "B": (b.value, b.value - 1),
+            "C": (port.value, port.value),
+            "HL": (hl.value, hl.value - 1),
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (out.value, out.value)
+        },
+        # Ports: (before, after)
+        {
+            port.value: (0, out.value)
+        },
+        # Command
+        "outd"
+    )
+
+def test_otdr():
+    # A byte from the memory location pointed to by hl is written to port c. Then hl and b are decremented. If b is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing.
+    
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    b = DoubleByte(3)
+    port = DoubleByte(150)
+    out = DoubleByte(99)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "B": (b.value, 0),
+            "C": (port.value, port.value),
+            "HL": (hl.value, hl.value - b.value),
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (out.value, out.value),
+            hl.value - 1: (out.value + 1, out.value + 1),
+            hl.value - 2: (out.value + 2, out.value + 2),
+        },
+        # Ports: (before, after)
+        {
+            port.value: (0, out.value + b.value - 1)
+        },
+        # Command
+        "otdr"
     )
 
 '''

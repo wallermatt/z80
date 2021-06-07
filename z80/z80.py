@@ -7,7 +7,7 @@ from instructions import (
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
     LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN, BIT, IN,
-    OUT, OUT_INC
+    OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT
 )
 
 
@@ -223,6 +223,12 @@ class Z80():
             self.out_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == OUT_INC:
             self.out_inc_execute(instruction)
+        elif instruction.instruction_base == OUT_INC_REPEAT:
+            self.out_inc_repeat_execute(instruction)
+        elif instruction.instruction_base == OUT_DEC:
+            self.out_dec_execute(instruction)
+        elif instruction.instruction_base == OUT_DEC_REPEAT:
+            self.out_dec_repeat_execute(instruction)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -467,6 +473,21 @@ class Z80():
         self.HL.add_to_contents(1)
         self.set_flags_if_required(instruction, None)
 
+    def out_inc_repeat_execute(self, instruction):
+        while self.B.get_contents() != 0:
+            self.out_inc_execute(instruction) 
+
+    def out_dec_execute(self, instruction):
+        out_value = self.memory.get_contents_value(self.HL.get_contents())
+        self.B.subtraction_with_flags(1, False)
+        self.ports.set_contents_value(self.C.get_contents(), out_value)
+        self.HL.subtraction_with_flags(1, False)
+        self.set_flags_if_required(instruction, None)
+
+    def out_dec_repeat_execute(self, instruction):
+        while self.B.get_contents() != 0:
+            self.out_dec_execute(instruction) 
+
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():
             return int(arg)
@@ -558,7 +579,7 @@ class Z80():
                 else:
                     self.flag_register.reset_flag(flag) 
             elif action == "*":
-                if instruction.text == OUT_INC:
+                if instruction.text in [OUT_INC, OUT_DEC]:
                     if flag == ZERO_FLAG:
                         if self.B.get_contents() - 1 == 0:
                             self.flag_register.set_flag(flag)

@@ -40,6 +40,10 @@ BIT = "bit"
 IN = "in"
 OUT = "out"
 OUT_INC = "outi"
+OUT_DEC = "outd"
+OUT_INC_REPEAT = "otir"
+OUT_DEC_REPEAT = "otdr"
+
 
 JUMP_INSTRUCTIONS = [JUMP, JUMP_RELATIVE, DEC_JUMP_RELATIVE, CALL]
 

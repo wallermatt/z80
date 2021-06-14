@@ -1973,6 +1973,38 @@ def test_otdr():
         "otdr"
     )
 
+def test_ini():
+    
+    
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    b = DoubleByte(10)
+    port = DoubleByte(150)
+    in_ = DoubleByte(99)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "B": (b.value, b.value - 1),
+            "C": (port.value, port.value),
+            "HL": (hl.value, hl.value + 1),
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (0, in_.value)
+        },
+        # Ports: (before, after)
+        {
+            port.value: (in_.value, in_.value)
+        },
+        # Command
+        "ini"
+    )
 '''
 
 

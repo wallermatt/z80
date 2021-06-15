@@ -7,7 +7,8 @@ from instructions import (
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
     LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN, BIT, IN,
-    OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT
+    OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
+    IN_DEC_REPEAT
 )
 
 
@@ -219,6 +220,14 @@ class Z80():
             self.bit_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == IN:
             self.in_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == IN_INC:
+            self.in_inc_execute(instruction)
+        elif instruction.instruction_base == IN_INC_REPEAT:
+            self.in_inc_repeat_execute(instruction)
+        elif instruction.instruction_base == IN_DEC:
+            self.in_dec_execute(instruction)
+        elif instruction.instruction_base == IN_DEC_REPEAT:
+            self.in_dec_repeat_execute(instruction)
         elif instruction.instruction_base == OUT:
             self.out_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == OUT_INC:
@@ -463,6 +472,28 @@ class Z80():
         substituted_left_arg.set_potential_flags()
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
 
+    def in_inc_execute(self, instruction):
+        in_value = self.ports.get_contents_value(self.C.get_contents())
+        self.B.subtraction_with_flags(1, False)
+        self.memory.set_contents_value(self.HL.get_contents(), in_value)
+        self.HL.add_to_contents(1)
+        self.set_flags_if_required(instruction, None)
+
+    def in_inc_repeat_execute(self, instruction):
+        while self.B.get_contents() != 0:
+            self.in_inc_execute(instruction) 
+
+    def in_dec_execute(self, instruction):
+        in_value = self.ports.get_contents_value(self.C.get_contents())
+        self.B.subtraction_with_flags(1, False)
+        self.memory.set_contents_value(self.HL.get_contents(), in_value)
+        self.HL.subtraction_with_flags(1, False)
+        self.set_flags_if_required(instruction, None)
+
+    def in_dec_repeat_execute(self, instruction):
+        while self.B.get_contents() != 0:
+            self.in_dec_execute(instruction) 
+
     def out_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         self.ports.set_contents_value(substituted_left_arg, substituted_right_arg)
 
@@ -470,7 +501,7 @@ class Z80():
         out_value = self.memory.get_contents_value(self.HL.get_contents())
         self.B.subtraction_with_flags(1, False)
         self.ports.set_contents_value(self.C.get_contents(), out_value)
-        self.HL.add_to_contents(1)
+        self.HL.subtraction_with_flags(1, False)
         self.set_flags_if_required(instruction, None)
 
     def out_inc_repeat_execute(self, instruction):
@@ -579,7 +610,7 @@ class Z80():
                 else:
                     self.flag_register.reset_flag(flag) 
             elif action == "*":
-                if instruction.text in [OUT_INC, OUT_DEC]:
+                if instruction.text in [OUT_INC, OUT_DEC, IN_INC, IN_DEC]:
                     if flag == ZERO_FLAG:
                         if self.B.get_contents() - 1 == 0:
                             self.flag_register.set_flag(flag)

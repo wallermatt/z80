@@ -1974,7 +1974,7 @@ def test_otdr():
     )
 
 def test_ini():
-    
+    # A byte from port c is written to the memory location pointed to by hl. Then hl is incremented and b is decremented.
     
     # Constant attributes - value, low, high
     hl = DoubleByte(1000)
@@ -2005,16 +2005,111 @@ def test_ini():
         # Command
         "ini"
     )
+
+def test_ind():
+    # A byte from port c is written to the memory location pointed to by hl. Then hl and b are decremented.
+    
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    b = DoubleByte(10)
+    port = DoubleByte(150)
+    in_ = DoubleByte(99)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "B": (b.value, b.value - 1),
+            "C": (port.value, port.value),
+            "HL": (hl.value, hl.value - 1),
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (0, in_.value)
+        },
+        # Ports: (before, after)
+        {
+            port.value: (in_.value, in_.value)
+        },
+        # Command
+        "ind"
+    )
+
+def test_inir():
+    # A byte from port c is written to the memory location pointed to by hl. Then hl is incremented and b is decremented. If b is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing.
+    
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    b = DoubleByte(3)
+    port = DoubleByte(150)
+    in_ = DoubleByte(99)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "B": (b.value, 0),
+            "C": (port.value, port.value),
+            "HL": (hl.value, hl.value + b.value),
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (0, in_.value),
+            hl.value + 1: (0, in_.value),
+            hl.value + 2: (0, in_.value),
+        },
+        # Ports: (before, after)
+        {
+            port.value: (in_.value, in_.value)
+        },
+        # Command
+        "inir"
+    )
+
+def test_indr():
+    # A byte from port c is written to the memory location pointed to by hl. Then hl and b are decremented. If b is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing.
+    
+    # Constant attributes - value, low, high
+    hl = DoubleByte(1000)
+    b = DoubleByte(3)
+    port = DoubleByte(150)
+    in_ = DoubleByte(99)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "B": (b.value, 0),
+            "C": (port.value, port.value),
+            "HL": (hl.value, hl.value - b.value),
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (0, in_.value),
+            hl.value - 1: (0, in_.value),
+            hl.value - 2: (0, in_.value),
+        },
+        # Ports: (before, after)
+        {
+            port.value: (in_.value, in_.value)
+        },
+        # Command
+        "indr"
+    )
 '''
 
-
-outd
-
-in
-ind
-indr
-ini
-inir
 
 ccf
 di
@@ -2023,11 +2118,7 @@ halt
 im
 
 nop
-otdr
-otir
-out
-outd
-outi
+
 res
 
 rl

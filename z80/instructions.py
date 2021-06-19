@@ -47,7 +47,20 @@ OUT_INC = "outi"
 OUT_DEC = "outd"
 OUT_INC_REPEAT = "otir"
 OUT_DEC_REPEAT = "otdr"
-
+ROT_LEFT = "rl"
+ROT_LEFT_ACC = "rla"
+ROT_LEFT_C = "rlc"
+ROT_LEFT_C_ACC = "rlca"
+ROT_LEFT_DEC = "rld"
+ROT_RIGHT = "rr"
+ROT_RIGHT_ACC = "rra"
+ROT_RIGHT_C = "rrc"
+ROT_RIGHT_C_ACC = "rrca"
+ROT_RIGHT_DEC = "rrd"
+SHIFT_LEFT_A = "sla"
+SHIFT_LEFT_L = "sll"
+SHIFT_RIGHT_A = "sra"
+SHIFT_RIGHT_L = "srl"
 
 JUMP_INSTRUCTIONS = [JUMP, JUMP_RELATIVE, DEC_JUMP_RELATIVE, CALL]
 

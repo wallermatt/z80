@@ -97,12 +97,12 @@ class Component:
 
     def convert_contents_to_bit_list(self):
         bit_list = [int(x) for x in '{:08b}'.format(self.contents)]
-        bit_list.reverse()
+        #bit_list.reverse()
         return bit_list
 
     def convert_bit_list_to_contents(self, bit_list):
         self.contents = 0
-        bit_list.reverse()
+        #bit_list.reverse()
         for _, bit in enumerate(bit_list):
             self.contents = (self.contents << 1) | bit
 

@@ -8,7 +8,7 @@ from instructions import (
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
     LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN, BIT, IN,
     OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
-    IN_DEC_REPEAT
+    IN_DEC_REPEAT, ROT_LEFT
 )
 
 
@@ -238,6 +238,8 @@ class Z80():
             self.out_dec_execute(instruction)
         elif instruction.instruction_base == OUT_DEC_REPEAT:
             self.out_dec_repeat_execute(instruction)
+        elif instruction.instruction_base == ROT_LEFT:
+            self.rot_left_execute(instruction, substituted_left_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):

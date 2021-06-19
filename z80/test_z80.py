@@ -2108,6 +2108,30 @@ def test_indr():
         # Command
         "indr"
     )
+
+def test_rl():
+    # The contents of e are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0
+
+    # Constant attributes - value, low, high
+    e = DoubleByte(99)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "E": (e.value, 0),
+        },
+        # Flag: (before, after)
+        {
+            ZERO_FLAG: (0, 1),
+            ADD_SUBTRACT_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "rl e"
+    )
 '''
 
 

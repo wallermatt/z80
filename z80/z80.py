@@ -521,6 +521,16 @@ class Z80():
         while self.B.get_contents() != 0:
             self.out_dec_execute(instruction) 
 
+    def rot_left_execute(self, instruction, substituted_left_arg):
+        bl = substituted_left_arg.convert_contents_to_bit_list()
+        c_flag = self.flag_register.get_flag(CARRY_FLAG)
+        c_value = bl[0]
+        rot_bl = bl[1:] + [c_flag]
+        substituted_left_arg.convert_bit_list_to_contents(rot_bl)
+        substituted_left_arg.set_potential_flags()
+        substituted_left_arg.potential_flags[CARRY_FLAG] = c_value
+        self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():
             return int(arg)
@@ -599,7 +609,7 @@ class Z80():
         for i, action in enumerate(instruction.flags):
             if action in ["-", " "]:
                 continue
-            flag = INSTRUCTION_FLAG_POSITIONS[i]
+            flag = INSTRUCTION_FLAG_POSITIONS[i]   # pos 7 at lhs
             if action in ["+", "V"]:
                 set_flag = potential_flags[flag]
                 if set_flag:

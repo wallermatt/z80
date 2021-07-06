@@ -6,21 +6,22 @@ ADD_SUBTRACT_FLAG = "N"
 CARRY_FLAG = "C"
 
 
+FLAG_POSITIONS = {
+    SIGN_FLAG: 7,
+    ZERO_FLAG: 6,
+    HALF_CARRY_FLAG: 4,
+    PARITY_OVERFLOW_FLAG: 2,
+    ADD_SUBTRACT_FLAG: 1,
+    CARRY_FLAG: 0,
+}
+
+
 class Component:
 
     SIZE = 1
     MAX_VALUE = 256
     HALF_MAX_VALUE = MAX_VALUE / 2
     MAX_NIBBLE_VALUE = 16
-
-    FLAG_POSITIONS = {
-        SIGN_FLAG: 7,
-        ZERO_FLAG: 6,
-        HALF_CARRY_FLAG: 4,
-        PARITY_OVERFLOW_FLAG: 2,
-        ADD_SUBTRACT_FLAG: 1,
-        CARRY_FLAG: 0,
-    }
 
     def __init__(self, name):
         self.name = name
@@ -107,18 +108,18 @@ class Component:
             self.contents = (self.contents << 1) | bit
 
     def get_flag(self, flag):
-        flag_position = self.FLAG_POSITIONS[flag]
+        flag_position = FLAG_POSITIONS[flag]
         bit_list = self.convert_contents_to_bit_list()
         return bit_list[flag_position]
         
     def set_flag(self, flag):
-        flag_position = self.FLAG_POSITIONS[flag]
+        flag_position = FLAG_POSITIONS[flag]
         bit_list = self.convert_contents_to_bit_list()
         bit_list[flag_position] = 1
         self.convert_bit_list_to_contents(bit_list)
 
     def reset_flag(self, flag):
-        flag_position = self.FLAG_POSITIONS[flag]
+        flag_position = FLAG_POSITIONS[flag]
         bit_list = self.convert_contents_to_bit_list()
         bit_list[flag_position] = 0
         self.convert_bit_list_to_contents(bit_list)

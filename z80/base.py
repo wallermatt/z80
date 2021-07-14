@@ -97,13 +97,17 @@ class Component:
         self.set_contents(overflow_result)
 
     def convert_contents_to_bit_list(self):
+        '''
+        bit 7 is at list index 0, bit 0 is at list index 7
+        '''
         bit_list = [int(x) for x in '{:08b}'.format(self.contents)]
-        #bit_list.reverse()
         return bit_list
 
     def convert_bit_list_to_contents(self, bit_list):
+        '''
+        bit 7 is at list index 0, bit 0 is at list index 7
+        '''
         self.contents = 0
-        #bit_list.reverse()
         for _, bit in enumerate(bit_list):
             self.contents = (self.contents << 1) | bit
 

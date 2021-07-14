@@ -503,7 +503,7 @@ class Z80():
         out_value = self.memory.get_contents_value(self.HL.get_contents())
         self.B.subtraction_with_flags(1, False)
         self.ports.set_contents_value(self.C.get_contents(), out_value)
-        self.HL.subtraction_with_flags(1, False)
+        self.HL.add_to_contents(1)
         self.set_flags_if_required(instruction, None)
 
     def out_inc_repeat_execute(self, instruction):

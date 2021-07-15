@@ -2166,6 +2166,35 @@ def test_rla():
         # Command
         "rla"
     )
+
+def test_rlc():
+    # The contents of register r are rotated left 1 bit position. The contents of bit 7 are copied to
+    # the Carry flag and also to bit 0. 
+
+    # Constant attributes - value, low, high
+    c = DoubleByte(99)  # [0, 1, 1, 0, 0, 0, 1, 1]
+                        # [1, 1, 0, 0, 0, 1, 1, 0]
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "C": (c.value, 198),
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (0, 1),
+            CARRY_FLAG: (1, 0),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "rlc c"
+    )
+
 '''
 
 
@@ -2179,9 +2208,8 @@ nop
 
 res
 
-rl
-rla
-rlc
+
+rlc p227
 rlca
 rld
 rr

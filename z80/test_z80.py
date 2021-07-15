@@ -2110,7 +2110,9 @@ def test_indr():
     )
 
 def test_rl():
-    # The contents of e are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0
+    # The contents of e are rotated left one bit position. The contents of bit 7
+    # are copied to the carry flag and the previous contents of the carry flag 
+    # are copied to bit 0
 
     # Constant attributes - value, low, high
     e = DoubleByte(99)  # [0, 1, 1, 0, 0, 0, 1, 1]
@@ -2134,6 +2136,35 @@ def test_rl():
         {},
         # Command
         "rl e"
+    )
+
+def test_rla():
+    # The contents of the Accumulator (Register A) are rotated left 1 bit position through the
+    # Carry flag. The previous contents of the Carry flag are copied to bit 0. Bit 0 is the 
+    # least significant bit.
+
+    # Constant attributes - value, low, high
+    a = DoubleByte(99)  # [0, 1, 1, 0, 0, 0, 1, 1]
+                        # [1, 1, 0, 0, 0, 1, 1, 1]
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, 199),
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (0, 0),
+            CARRY_FLAG: (1, 0),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "rla"
     )
 '''
 

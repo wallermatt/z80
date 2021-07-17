@@ -2195,6 +2195,69 @@ def test_rlc():
         "rlc c"
     )
 
+def test_rlca():
+    # The contents of register A are rotated left 1 bit position. The contents of bit 7 are copied to
+    # the Carry flag and also to bit 0. 
+
+    # Constant attributes - value, low, high
+    a = DoubleByte(99)  # [0, 1, 1, 0, 0, 0, 1, 1]
+                        # [1, 1, 0, 0, 0, 1, 1, 0]
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, 198),
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (1, 1),
+            CARRY_FLAG: (1, 0),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "rlca"
+    )
+
+def test_rld():
+    # The contents of the low-order four bits (bits 3, 2, 1, and 0) of the memory location (HL)
+    # are copied to the high-order four bits (7, 6, 5, and 4) of that same memory location; the
+    # previous contents of those high-order four bits are copied to the low-order four bits of the
+    # Accumulator (Register A); and the previous contents of the low-order four bits of the
+    # Accumulator are copied to the low-order four bits of memory location (HL). The contents
+    # of the high-order bits of the Accumulator are unaffected     
+
+    # Constant attributes - value, low, high
+    a = DoubleByte(129)
+    hl = DoubleByte(1000)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, 8),  # [1, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 1, 0, 0, 0]
+            "HL": (hl.value, hl.value),
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (1, 0),
+            CARRY_FLAG: (1, 0),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+        },
+        # Memory location: (before, after)
+        {
+            hl.value: (15, 241)  # [0, 0, 0, 0, 1, 1, 1, 1], [1, 1, 1, 1, 0, 0, 0, 1]
+        },
+        # Ports: (before, after)
+        {},
+        # Command
+        "rld"
+    )
+
 '''
 
 

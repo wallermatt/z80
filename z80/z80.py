@@ -8,7 +8,7 @@ from instructions import (
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
     LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN, BIT, IN,
     OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
-    IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC
+    IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC
 )
 
 
@@ -246,6 +246,8 @@ class Z80():
             self.rot_left_c_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == ROT_LEFT_C_ACC:
             self.rot_left_c_execute(instruction, self.A)
+        elif instruction.instruction_base == ROT_LEFT_DEC:
+            self.rot_left_dec_execute(instruction)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -545,6 +547,18 @@ class Z80():
         substituted_left_arg.set_potential_flags()
         substituted_left_arg.potential_flags[CARRY_FLAG] = c_value
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+
+    def rot_left_dec_execute(self, instruction):
+        mem_loc = self.memory.get_contents(self.HL.get_contents())
+        mem_bl = mem_loc.convert_contents_to_bit_list()
+        a_bl = self.A.convert_contents_to_bit_list()
+        mem_bl_hi = list(mem_bl[:4])
+        mem_bl = mem_bl[4:] + a_bl[4:]
+        a_bl = a_bl[:4] + mem_bl_hi
+        mem_loc.convert_bit_list_to_contents(mem_bl)
+        self.A.convert_bit_list_to_contents(a_bl)
+        self.A.set_potential_flags()
+        self.set_flags_if_required(instruction, self.A.potential_flags)
 
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():

@@ -1753,7 +1753,7 @@ def test_in_c():
 def test_out_val_a():
     # out (*),a', 'The value of a is written to port *
     
-    # Constant attributes - value, low, high
+    # Constant attributes - value, low, highPARITY_OVERFLOW_FLAG: (0, 1)
     port = DoubleByte(150)
 
     Z80TestHandler(
@@ -2238,15 +2238,16 @@ def test_rld():
     Z80TestHandler(
         # Register: (before, after)
         {
-            "A": (a.value, 8),  # [1, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 1, 0, 0, 0]
+            "A": (a.value, 128),  # [1, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 1]
             "HL": (hl.value, hl.value),
         },
         # Flag: (before, after)
         {
-            SIGN_FLAG: (1, 0),
-            CARRY_FLAG: (1, 0),
+            SIGN_FLAG: (0, 1),
+            CARRY_FLAG: (1, 1),
             HALF_CARRY_FLAG: (1, 0),
             ADD_SUBTRACT_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (1, 0)
         },
         # Memory location: (before, after)
         {
@@ -2272,9 +2273,7 @@ nop
 res
 
 
-rlc p227
-rlca
-rld
+
 rr
 rra
 rrc

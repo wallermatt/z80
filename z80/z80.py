@@ -8,7 +8,9 @@ from instructions import (
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
     LOAD_INC, LOAD_DEC, LOAD_INC_REPEAT, LOAD_DEC_REPEAT, AND, OR, XOR, DAA, RETURN, BIT, IN,
     OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
-    IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC
+    IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC, ROT_RIGHT,
+    ROT_RIGHT_ACC, ROT_RIGHT_C, ROT_RIGHT_C_ACC, ROT_RIGHT_DEC, SHIFT_LEFT_A, SHIFT_LEFT_L, 
+    SHIFT_RIGHT_A, SHIFT_RIGHT_L
 )
 
 
@@ -248,6 +250,8 @@ class Z80():
             self.rot_left_c_execute(instruction, self.A)
         elif instruction.instruction_base == ROT_LEFT_DEC:
             self.rot_left_dec_execute(instruction)
+        elif instruction.instruction_base == ROT_RIGHT:
+            self.rot_right_execute(instruction, substituted_left_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -559,6 +563,16 @@ class Z80():
         self.A.convert_bit_list_to_contents(a_bl)
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
+
+    def rot_right_execute(self, instruction, substituted_left_arg):
+        bl = substituted_left_arg.convert_contents_to_bit_list()
+        c_flag = self.flag_register.get_flag(CARRY_FLAG)
+        c_value = bl[7]
+        rot_bl = [c_flag] + bl[:7]
+        substituted_left_arg.convert_bit_list_to_contents(rot_bl)
+        substituted_left_arg.set_potential_flags()
+        substituted_left_arg.potential_flags[CARRY_FLAG] = c_value
+        self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
 
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():

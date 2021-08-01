@@ -2259,6 +2259,38 @@ def test_rld():
         "rld"
     )
 
+def test_rr():
+    # The contents of e are rotated right one bit position. The contents of bit 0
+    # are copied to the carry flag and the previous contents of the carry flag 
+    # are copied to bit 7
+
+    # Constant attributes - value, low, high
+    e = DoubleByte(99)  # [0, 1, 1, 0, 0, 0, 1, 1]
+                        # [0, 0, 1, 1, 0, 0, 0, 1]
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "E": (e.value, 49),
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (1, 0),
+            CARRY_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            ZERO_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "rr e"
+    )
+
+
 '''
 
 

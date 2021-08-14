@@ -2162,7 +2162,12 @@ def test_rla():
         {},
         # Ports: (before, after)
         {},
-        # Command
+        # Command            SIGN_FLAG: (1, 0),
+            CARRY_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            ZERO_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (1, 0)
         "rla"
     )
 
@@ -2315,6 +2320,36 @@ def test_rra():
         {},
         # Command
         "rra"
+    )
+
+def test_rrc():
+    # The contents of the m operand are rotated right 1 bit position. The contents of bit 0 are
+    # copied to the Carry flag and also to bit 7. Bit 0 is the least-significant bit.
+
+    # Constant attributes - value, low, high
+    e = DoubleByte(99)  # [0, 1, 1, 0, 0, 0, 1, 1]
+                        # [0, 0, 1, 1, 0, 0, 0, 1]
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "E": (e.value, 49),
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (1, 0),
+            CARRY_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            ZERO_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "rrc e"
     )
 '''
 

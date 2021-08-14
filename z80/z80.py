@@ -252,6 +252,8 @@ class Z80():
             self.rot_left_dec_execute(instruction)
         elif instruction.instruction_base == ROT_RIGHT:
             self.rot_right_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == ROT_RIGHT_ACC:
+            self.rot_right_execute(instruction, self.A)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):

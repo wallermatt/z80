@@ -2162,12 +2162,7 @@ def test_rla():
         {},
         # Ports: (before, after)
         {},
-        # Command            SIGN_FLAG: (1, 0),
-            CARRY_FLAG: (0, 1),
-            HALF_CARRY_FLAG: (1, 0),
-            ADD_SUBTRACT_FLAG: (1, 0),
-            ZERO_FLAG: (1, 0),
-            PARITY_OVERFLOW_FLAG: (1, 0)
+        # Command
         "rla"
     )
 
@@ -2328,21 +2323,21 @@ def test_rrc():
 
     # Constant attributes - value, low, high
     e = DoubleByte(99)  # [0, 1, 1, 0, 0, 0, 1, 1]
-                        # [0, 0, 1, 1, 0, 0, 0, 1]
+                        # [1, 0, 1, 1, 0, 0, 0, 1]
 
     Z80TestHandler(
         # Register: (before, after)
         {
-            "E": (e.value, 49),
+            "E": (e.value, 177),
         },
         # Flag: (before, after)
         {
-            SIGN_FLAG: (1, 0),
-            CARRY_FLAG: (0, 1),
-            HALF_CARRY_FLAG: (1, 0),
-            ADD_SUBTRACT_FLAG: (1, 0),
+            SIGN_FLAG: (0, 1),
             ZERO_FLAG: (1, 0),
-            PARITY_OVERFLOW_FLAG: (1, 0)
+            HALF_CARRY_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            CARRY_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {},
@@ -2351,6 +2346,34 @@ def test_rrc():
         # Command
         "rrc e"
     )
+
+def test_rrca():
+    # The contents of the Accumulator (Register A) are rotated right 1 bit position. 
+    # Bit 0 is copied to the Carry flag and also to bit 7. Bit 0 is the least-significant bit.
+
+    # Constant attributes - value, low, high
+    a = DoubleByte(99)  # [0, 1, 1, 0, 0, 0, 1, 1]
+                        # [1, 0, 1, 1, 0, 0, 0, 1]
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "A": (a.value, 177),
+        },
+        # Flag: (before, after)
+        {
+            CARRY_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "rrca"
+    )
+
 '''
 
 

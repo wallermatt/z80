@@ -254,6 +254,10 @@ class Z80():
             self.rot_right_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == ROT_RIGHT_ACC:
             self.rot_right_execute(instruction, self.A)
+        elif instruction.instruction_base == ROT_RIGHT_C:
+            self.rot_right_c_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == ROT_RIGHT_C_ACC:
+            self.rot_right_c_execute(instruction, self.A)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -571,6 +575,15 @@ class Z80():
         c_flag = self.flag_register.get_flag(CARRY_FLAG)
         c_value = bl[7]
         rot_bl = [c_flag] + bl[:7]
+        substituted_left_arg.convert_bit_list_to_contents(rot_bl)
+        substituted_left_arg.set_potential_flags()
+        substituted_left_arg.potential_flags[CARRY_FLAG] = c_value
+        self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+
+    def rot_right_c_execute(self, instruction, substituted_left_arg):
+        bl = substituted_left_arg.convert_contents_to_bit_list()
+        c_value = bl[7]
+        rot_bl = [c_value] + bl[:7]
         substituted_left_arg.convert_bit_list_to_contents(rot_bl)
         substituted_left_arg.set_potential_flags()
         substituted_left_arg.potential_flags[CARRY_FLAG] = c_value

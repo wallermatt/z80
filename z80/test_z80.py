@@ -2401,7 +2401,7 @@ def test_rrd():
         },
         # Memory location: (before, after)
         {
-            hl.value: (15, 128)  # [0, 0, 0, 0, 1, 1, 1, 1], [1, 0, 0, 0, 0, 0, 0, 0]
+            hl.value: (15, 16)  # [0, 0, 0, 0, 1, 1, 1, 1], [ 0, 0, 0, 1 0, 0, 0, 0]
         },
         # Ports: (before, after)
         {},

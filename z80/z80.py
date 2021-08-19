@@ -596,8 +596,8 @@ class Z80():
         mem_bl = mem_loc.convert_contents_to_bit_list()
         a_bl = self.A.convert_contents_to_bit_list()
         mem_bl_low = list(mem_bl[4:])
-        mem_bl = mem_bl[4:] + a_bl[4:]
-        a_bl = a_bl[:4] + mem_bl_hi
+        mem_bl = a_bl[4:] + mem_bl[:4]
+        a_bl = a_bl[:4] + mem_bl_low
         mem_loc.convert_bit_list_to_contents(mem_bl)
         self.A.convert_bit_list_to_contents(a_bl)
         self.A.set_potential_flags()

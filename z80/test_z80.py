@@ -2410,6 +2410,10 @@ def test_rrd():
     )
 
 '''
+sla
+sll
+sra
+srl
 
 
 ccf
@@ -2424,18 +2428,10 @@ res
 
 
 
-rr
-rra
-rrc
-rrca
-rrd
 rst
 scf
 set
-sla
-sll
-sra
-srl
+
 
 
 interrupt gubbins

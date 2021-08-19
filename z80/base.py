@@ -111,6 +111,17 @@ class Component:
         for _, bit in enumerate(bit_list):
             self.contents = (self.contents << 1) | bit
 
+    def get_bit_position(self, bit_pos):
+        bit_list = self.convert_contents_to_bit_list()
+        return bit_list[7 - bit_pos]
+
+    def split_bit_list_at_bit_pos(self, bit_pos):
+        bit_list = self.convert_contents_to_bit_list()
+        return bit_list[:7 - bit_pos], bit_list[7 - bit_pos:]
+
+    def split_bit_list_into_nibbles(self):
+        return self.split_bit_list_at_bit_pos(3)
+
     def get_flag(self, flag):
         flag_position = FLAG_POSITIONS[flag]
         bit_list = self.convert_contents_to_bit_list()

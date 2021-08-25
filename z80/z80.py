@@ -260,6 +260,14 @@ class Z80():
             self.rot_right_c_execute(instruction, self.A)
         elif instruction.instruction_base == ROT_RIGHT_DEC:
             self.rot_right_dec_execute(instruction)
+        elif instruction.instruction_base == SHIFT_LEFT_A:
+            self.shift_left_a_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == SHIFT_LEFT_L:
+            self.shift_left_l_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == SHIFT_RIGHT_A:
+            self.shift_right_a_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == SHIFT_RIGHT_L:
+            self.shift_right_l_execute(instruction, substituted_left_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -602,6 +610,13 @@ class Z80():
         self.A.convert_bit_list_to_contents(a_bl)
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
+
+    def shift_left_a_execute(self, instruction, substituted_left_arg):
+        new_c, bl  = substituted_left_arg.split_bit_list_at_bit_pos(6)
+        substituted_left_arg.convert_bit_list_to_contents(bl + [0])
+        substituted_left_arg.set_potential_flags()
+        substituted_left_arg.potential_flags[CARRY_FLAG] = new_c
+        self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
 
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():

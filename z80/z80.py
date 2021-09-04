@@ -616,6 +616,8 @@ class Z80():
         substituted_left_arg.convert_bit_list_to_contents(bl + [0])
         substituted_left_arg.set_potential_flags()
         substituted_left_arg.potential_flags[CARRY_FLAG] = new_c
+        if substituted_left_arg.parity():
+            substituted_left_arg.potential_flags[PARITY_OVERFLOW_FLAG] = True
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
 
     def substitute_arg(self, arg, opposite_arg):
@@ -704,6 +706,10 @@ class Z80():
                 else:
                     self.flag_register.reset_flag(flag)
             elif action == "P":
+                if instruction.instruction_base == SHIFT_LEFT_A:
+                    if potential_flags[PARITY_OVERFLOW_FLAG]:
+                        self.flag_register.set_flag(flag)
+                        continue
                 if self.A.parity():
                     self.flag_register.set_flag(flag)
                 else:

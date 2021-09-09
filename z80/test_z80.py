@@ -2437,9 +2437,39 @@ def test_sla():
         # Command
         "sla e"
     )
+
+def test_sra():
+    # An arithmetic right left 1 bit position is performed on the contents of operand m. The con-
+    # tents of bit 0 are copied to the Carry flag and the previous contents of bit 7 remain
+    # unchanged. Bit 0 is the least-significant bit.     
+
+    # Constant attributes - value, low, high
+    e = DoubleByte(143)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "E": (e.value, 199),  # [1, 0, 0, 0, 1, 1, 1, 1], [1, 1, 0, 0, 0, 1, 1, 1]
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (0, 1),
+            ZERO_FLAG: (1, 0),
+            CARRY_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "sra e"
+    )
 '''
-sla
-sll
+
+sll <- missing in manual?
 sra
 srl
 

@@ -2496,6 +2496,37 @@ def test_sra():
         # Command
         "sra e"
     )
+
+
+def test_srl():
+    # The contents of operand m are shifted right 1 bit position. The contents of bit 0 are copied
+    # to the Carry flag, and bit 7 is reset. Bit 0 is the least-significant bit.  
+
+    # Constant attributes - value, low, high
+    e = DoubleByte(143)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "E": (e.value, 71),  # [1, 0, 0, 0, 1, 1, 1, 1], [0, 1, 0, 0, 0, 1, 1, 1]
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (1, 0),
+            ZERO_FLAG: (1, 0),
+            CARRY_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1)
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "srl e"
+    )
+
 '''
 
 sll <- missing in manual?

@@ -633,6 +633,17 @@ class Z80():
              substituted_left_arg.potential_flags[PARITY_OVERFLOW_FLAG] = False
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
 
+    def shift_right_l_execute(self, instruction, substituted_left_arg):
+        bl, new_c  = substituted_left_arg.split_bit_list_at_bit_pos(0)
+        substituted_left_arg.convert_bit_list_to_contents([0] + bl)
+        substituted_left_arg.set_potential_flags()
+        substituted_left_arg.potential_flags[CARRY_FLAG] = new_c
+        if substituted_left_arg.parity():
+            substituted_left_arg.potential_flags[PARITY_OVERFLOW_FLAG] = True
+        else:
+             substituted_left_arg.potential_flags[PARITY_OVERFLOW_FLAG] = False
+        self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():
             return int(arg)
@@ -719,7 +730,7 @@ class Z80():
                 else:
                     self.flag_register.reset_flag(flag)
             elif action == "P":
-                if instruction.instruction_base in [SHIFT_LEFT_A, SHIFT_RIGHT_A]:
+                if instruction.instruction_base in [SHIFT_LEFT_A, SHIFT_RIGHT_A, SHIFT_RIGHT_L]:
                     if potential_flags[PARITY_OVERFLOW_FLAG]:
                         self.flag_register.set_flag(flag)
                     else:

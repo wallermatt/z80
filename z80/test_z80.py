@@ -2467,6 +2467,35 @@ def test_sla():
         "sla e"
     )
 
+def test_sll():
+    # The contents of e are shifted left one bit position. The contents of bit 7 are put into the carry flag 
+    # and a one is put into bit 0.   
+
+    # Constant attributes - value, low, high
+    e = DoubleByte(143)
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {
+            "E": (e.value, 31),  # [1, 0, 0, 0, 1, 1, 1, 1], [0, 0, 1, 1, 1, 1, 1]
+        },
+        # Flag: (before, after)
+        {
+            SIGN_FLAG: (1, 0),
+            ZERO_FLAG: (1, 0),
+            CARRY_FLAG: (0, 1),
+            HALF_CARRY_FLAG: (1, 0),
+            ADD_SUBTRACT_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (1, 0)
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "sll e"
+    )
+
 def test_sra():
     # An arithmetic right left 1 bit position is performed on the contents of operand m. The con-
     # tents of bit 0 are copied to the Carry flag and the previous contents of bit 7 remain
@@ -2528,11 +2557,6 @@ def test_srl():
     )
 
 '''
-
-sll <- missing in manual?
-sra
-srl
-
 
 ccf
 di

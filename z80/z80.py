@@ -2,7 +2,7 @@ from base import (
     Component, Memory, DoubleComponent, SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG,
 )
 from instructions import (
-    instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
+    CONVERT_CARRY_FLAG, instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
     EXCHANGE, EXCHANGE_MULTI, ADD, INSTRUCTION_FLAG_POSITIONS, SUB, ADC, SBC, INC, DEC,
     PUSH, POP, JUMP, JUMP_RELATIVE, JUMP_INSTRUCTIONS, DEC_JUMP_RELATIVE, CALL, COMPARE,
     COMPARE_INC, COMPARE_INC_REPEAT, COMPARE_DEC, COMPARE_DEC_REPEAT, COMPLEMENT, NEGATION,
@@ -10,7 +10,7 @@ from instructions import (
     OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
     IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC, ROT_RIGHT,
     ROT_RIGHT_ACC, ROT_RIGHT_C, ROT_RIGHT_C_ACC, ROT_RIGHT_DEC, SHIFT_LEFT_A, SHIFT_LEFT_L, 
-    SHIFT_RIGHT_A, SHIFT_RIGHT_L
+    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG
 )
 
 
@@ -268,6 +268,8 @@ class Z80():
             self.shift_right_a_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == SHIFT_RIGHT_L:
             self.shift_right_l_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == CONVERT_CARRY_FLAG:
+            self.convert_carry_flag_execute(instruction)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -654,6 +656,13 @@ class Z80():
         else:
              substituted_left_arg.potential_flags[PARITY_OVERFLOW_FLAG] = False
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+
+    def convert_carry_flag_execute(self, instruction):
+        if self.flag_register.get_flag(CARRY_FLAG):
+            self.flag_register.reset_flag(CARRY_FLAG)
+        else:
+            self.flag_register.set_flag(CARRY_FLAG)
+
 
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():

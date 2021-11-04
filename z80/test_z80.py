@@ -2556,6 +2556,46 @@ def test_srl():
         "srl e"
     )
 
+def test_ccf_0():
+    # The Carry flag in the F Register is inverted
+
+    # Constant attributes - value, low, high
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {},
+        # Flag: (before, after)
+        {
+            CARRY_FLAG: (0, 1),
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "ccf"
+    )
+
+def test_ccf_1():
+    # The Carry flag in the F Register is inverted
+
+    # Constant attributes - value, low, high
+
+    Z80TestHandler(
+        # Register: (before, after)
+        {},
+        # Flag: (before, after)
+        {
+            CARRY_FLAG: (1, 0),
+        },
+        # Memory location: (before, after)
+        {},
+        # Ports: (before, after)
+        {},
+        # Command
+        "ccf"
+    )
+
 '''
 
 ccf

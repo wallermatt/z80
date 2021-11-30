@@ -1,6 +1,23 @@
 # load test.in
 
 in_order = ["name", "registers", "states", "memory", "-1"]
+
+REGISTERS = [
+    "AF",
+    "BC",
+    "DE",
+    "HL", 
+    "AF'",
+    "BC'", 
+    "DE'", 
+    "HL'",
+    "IX",
+    "IY",
+    "SP",
+    "PC"
+]
+
+
 class State:
     def __init__(self, name, registers='', states='', memory=''):
         self.name = name
@@ -10,9 +27,29 @@ class State:
             self.memory = []
         else:
             self.memory = memory
+        self.test_registers = {}
+        self.test_memory = {}
+        self.test_ports = {}
+        self.instruction_text = ''
 
     def __str__(self):
         return 'name: {}\n registers: {}\n states: {}\n memory: {}\n'.format(self.name, self.registers, self.states, self.memory)
+
+    def load_test_registers(self):
+        for i, e in enumerate(self.registers.split(' ')):
+            self.test_registers[REGISTERS[i]] = e
+
+    def load_test_memory(self):
+        for m in self.memory:
+            print(m)
+            m = m.split(' ')
+            start = int(m[0])
+            print(start, m[1:])
+            for e in m[1:]:
+                if e == '-1':
+                    break
+                self.test_memory[start] = e
+                start += 1
 
 before = {}
 after = {}
@@ -66,8 +103,17 @@ with open('./tests.expected', 'r') as f:
             new_test.memory.append(l)
     print(len(before))
 
-    print(before['00'])
-    print(after['00'])
+    #print(before['00'])
+    #print(after['00'])
+
+    b = before['00']
+    print(b.registers)
+    b.load_test_registers()
+    print(b.test_registers)
+
+    print(b.memory)
+    b.load_test_memory()
+    print(b.test_memory)
     
     '''
     for e in after:

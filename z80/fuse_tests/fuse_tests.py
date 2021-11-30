@@ -37,18 +37,22 @@ class State:
 
     def load_test_registers(self):
         for i, e in enumerate(self.registers.split(' ')):
-            self.test_registers[REGISTERS[i]] = e
+            high = int(e[:2], 16)
+            low = int(e[2:], 16)
+            self.test_registers[REGISTERS[i]] = high * 256 + low
 
     def load_test_memory(self):
         for m in self.memory:
             print(m)
             m = m.split(' ')
-            start = int(m[0])
+            high = int(m[0][:2], 16)
+            low = int(m[0][2:], 16)
+            start = high * 256 + low
             print(start, m[1:])
             for e in m[1:]:
                 if e == '-1':
                     break
-                self.test_memory[start] = e
+                self.test_memory[start] = int(e, 16)
                 start += 1
 
 before = {}

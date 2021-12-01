@@ -157,7 +157,7 @@ with open('./tests.expected', 'r') as f:
     memory = create_z80_memory(b.test_memory, a.test_memory)
     print(memory)
 
-    Z80TestHandler(registers, {}, memory, {}, '')
+    Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
     '''
     b = before['00']

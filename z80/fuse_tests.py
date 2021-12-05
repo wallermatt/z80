@@ -1,4 +1,5 @@
 from helper import Z80TestHandler
+from instructions import instructions_by_opcode
 
 in_order = ["name", "registers", "states", "memory", "-1"]
 
@@ -54,6 +55,8 @@ class State:
                     break
                 self.test_memory[start] = int(e, 16)
                 start += 1
+
+        
 
 before = {}
 after = {}
@@ -120,18 +123,21 @@ with open('./tests.expected', 'r') as f:
             if m in after:
                 v = after[m]
             else:
-                v = 0
-            memory[m] = (before[m], v)
+                v = before[m]
+            memory[m] = (v, v)
 
         for m in after:
             if m not in before:
                 memory[m] = (0, after[m])
         return memory
 
-    def get_instruction(registers, memory):
-        pass
+    def get_opcode_and_instruction(registers, memory):
+        opcode = hex(memory[registers['PC'][0]][0])
+        opcode = str(opcode)[2:]
+        return opcode, (instructions_by_opcode[opcode]).text
 
-    TEST = '00'
+
+    TEST = '02'
 
     b = before[TEST]
     #print(b.registers)
@@ -156,6 +162,8 @@ with open('./tests.expected', 'r') as f:
 
     memory = create_z80_memory(b.test_memory, a.test_memory)
     print(memory)
+
+    print(get_opcode_and_instruction(registers, memory))
 
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 

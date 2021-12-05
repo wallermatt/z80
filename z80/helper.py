@@ -65,7 +65,11 @@ class Z80TestHandler:
     def set_registers(self):
         for r in self.test_registers:
             initial_value = self.test_registers[r][0]
-            self.z80.registers_by_name[r].set_contents(initial_value)
+            register = self.z80.registers_by_name[r]
+            if register.SIZE == 1:
+                register.set_contents(initial_value)
+            else:
+                register.set_contents_value(initial_value)
 
     def set_flags(self):
         for f in self.test_flags:

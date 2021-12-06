@@ -1,5 +1,6 @@
 from helper import Z80TestHandler
 from instructions import instructions_by_opcode
+from base import FLAG_POSITIONS
 
 in_order = ["name", "registers", "states", "memory", "-1"]
 
@@ -136,8 +137,17 @@ with open('./tests.expected', 'r') as f:
         opcode = str(opcode)[2:]
         return opcode, (instructions_by_opcode[opcode]).text
 
+    def get_flags(f_value):
+        flags = {}
+        bit_list = [int(x) for x in '{:08b}'.format(f_value)]
+        #print(bit_list)
+        for flag in FLAG_POSITIONS:
+            flags[flag] = bit_list[7 - FLAG_POSITIONS[flag]]
+        return flags
 
-    TEST = '02'
+
+
+    TEST = '04'
 
     b = before[TEST]
     #print(b.registers)
@@ -164,6 +174,12 @@ with open('./tests.expected', 'r') as f:
     print(memory)
 
     print(get_opcode_and_instruction(registers, memory))
+
+    for v in registers['AF']:
+        low = v % 256
+        print(get_flags(low))
+
+    print(get_flags(10))
 
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 

@@ -123,18 +123,18 @@ class Component:
         return self.split_bit_list_at_bit_pos(3)
 
     def get_flag(self, flag):
-        flag_position = FLAG_POSITIONS[flag]
+        flag_position = 7 - FLAG_POSITIONS[flag]
         bit_list = self.convert_contents_to_bit_list()
         return bit_list[flag_position]
         
     def set_flag(self, flag):
-        flag_position = FLAG_POSITIONS[flag]
+        flag_position = 7 - FLAG_POSITIONS[flag]
         bit_list = self.convert_contents_to_bit_list()
         bit_list[flag_position] = 1
         self.convert_bit_list_to_contents(bit_list)
 
     def reset_flag(self, flag):
-        flag_position = FLAG_POSITIONS[flag]
+        flag_position = 7 - FLAG_POSITIONS[flag]
         bit_list = self.convert_contents_to_bit_list()
         bit_list[flag_position] = 0
         self.convert_bit_list_to_contents(bit_list)

@@ -10,22 +10,22 @@ def test_set_flag():
     flag_register = Component("F")
 
     flag_register.set_flag(SIGN_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [0, 0, 0, 0, 0, 0, 0, 1]
+    assert flag_register.convert_contents_to_bit_list() == [1, 0, 0, 0, 0, 0, 0, 0]
 
     flag_register.set_flag(ZERO_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [0, 0, 0, 0, 0, 0, 1, 1]
+    assert flag_register.convert_contents_to_bit_list() == [1, 1, 0, 0, 0, 0, 0, 0]
 
     flag_register.set_flag(HALF_CARRY_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [0, 0, 0, 0, 1, 0, 1, 1]
+    assert flag_register.convert_contents_to_bit_list() == [1, 1, 0, 1, 0, 0, 0, 0]
     
     flag_register.set_flag(PARITY_OVERFLOW_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [0, 0, 1, 0, 1, 0, 1, 1]
-    
+    assert flag_register.convert_contents_to_bit_list() == [1, 1, 0, 1, 0, 1, 0, 0]
+
     flag_register.set_flag(ADD_SUBTRACT_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [0, 1, 1, 0, 1, 0, 1, 1]
+    assert flag_register.convert_contents_to_bit_list() == [1, 1, 0, 1, 0, 1, 1, 0]
 
     flag_register.set_flag(CARRY_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [1, 1, 1, 0, 1, 0, 1, 1]
+    assert flag_register.convert_contents_to_bit_list() == [1, 1, 0, 1, 0, 1, 1, 1]
 
 
 def test_reset_flag():
@@ -33,22 +33,22 @@ def test_reset_flag():
     flag_register.set_contents(255)
 
     flag_register.reset_flag(SIGN_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [1, 1, 1, 1, 1, 1, 1, 0]
+    assert flag_register.convert_contents_to_bit_list() == [0, 1, 1, 1, 1, 1, 1, 1]
 
     flag_register.reset_flag(ZERO_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [1, 1, 1, 1, 1, 1, 0, 0]
+    assert flag_register.convert_contents_to_bit_list() == [0, 0, 1, 1, 1, 1, 1, 1]
 
     flag_register.reset_flag(HALF_CARRY_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [1, 1, 1, 1, 0, 1, 0, 0]
+    assert flag_register.convert_contents_to_bit_list() == [0, 0, 1, 0, 1, 1, 1, 1]
     
     flag_register.reset_flag(PARITY_OVERFLOW_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [1, 1, 0, 1, 0, 1, 0, 0]
+    assert flag_register.convert_contents_to_bit_list() == [0, 0, 1, 0, 1, 0, 1, 1]
     
     flag_register.reset_flag(ADD_SUBTRACT_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [1, 0, 0, 1, 0, 1, 0, 0]
+    assert flag_register.convert_contents_to_bit_list() == [0, 0, 1, 0, 1, 0, 0, 1]
 
     flag_register.reset_flag(CARRY_FLAG)
-    assert flag_register.convert_contents_to_bit_list() == [0, 0, 0, 1, 0, 1, 0, 0]
+    assert flag_register.convert_contents_to_bit_list() == [0, 0, 1, 0, 1, 0, 0, 0]
 
 
 def test_addition_with_flags():

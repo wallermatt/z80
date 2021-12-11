@@ -53,7 +53,8 @@ class Z80TestHandler:
             raise Exception("Opcode {} not recognised!!!".format(opcode))
         instruction = self.z80.instructions_by_opcode[str(opcode)]
         self.z80.execute_instruction(instruction)
-        self.run_assertions()
+        self.assert_registers()
+        self.assert_memory()
 
 
     def run_assertions(self):

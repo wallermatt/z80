@@ -154,3 +154,14 @@ def test_set_potential_flags():
     register.set_potential_flags()
     assert register.potential_flags[SIGN_FLAG] == True
     assert register.potential_flags[ZERO_FLAG] == False
+
+
+def test_set_bit_position():
+    register =  Component("A")
+    register.set_contents(0)
+    register.set_bit_position(0, 1)
+    assert register.get_contents() == 1
+
+    register.set_contents(0)
+    register.set_bit_position(7, 1)
+    assert register.get_contents() == 128

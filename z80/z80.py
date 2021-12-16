@@ -149,6 +149,7 @@ class Z80():
             substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
             substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg)
         self.execute_instruction_base(instruction, substituted_left_arg, substituted_right_arg)
+        self.undocumented_behaviour(instruction, substituted_left_arg, substituted_right_arg)
 
     def execute_instruction_base(self, instruction, substituted_left_arg, substituted_right_arg):
         if instruction.instruction_base == LOAD:
@@ -778,3 +779,8 @@ class Z80():
             elif action == "1":
                 self.flag_register.set_flag(flag)
         potential_flags = {}
+
+    def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
+        if instruction.instruction_base in [INC, DEC]:
+            self.F.set_bit_position(5, substituted_left_arg.get_bit_position(5))
+            self.F.set_bit_position(3, substituted_left_arg.get_bit_position(3))

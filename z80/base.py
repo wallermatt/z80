@@ -115,6 +115,11 @@ class Component:
         bit_list = self.convert_contents_to_bit_list()
         return bit_list[7 - bit_pos]
 
+    def set_bit_position(self, bit_pos, bit)    :
+        bit_list = self.convert_contents_to_bit_list()
+        bit_list[7 - bit_pos] = bit
+        self.convert_bit_list_to_contents(bit_list)
+
     def split_bit_list_at_bit_pos(self, bit_pos):
         bit_list = self.convert_contents_to_bit_list()
         return bit_list[:7 - bit_pos], bit_list[7 - bit_pos:]

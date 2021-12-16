@@ -147,7 +147,7 @@ with open('./tests.expected', 'r') as f:
 
 
 
-    TEST = '05'
+    TEST = '09'
 
     b = before[TEST]
     #print(b.registers)
@@ -179,7 +179,7 @@ with open('./tests.expected', 'r') as f:
         low = v % 256
         print(get_flags(low))
 
-    print(get_flags(186))
+    print(get_flags(16))
 
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 

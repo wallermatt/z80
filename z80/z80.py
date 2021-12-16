@@ -781,6 +781,9 @@ class Z80():
         potential_flags = {}
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC]:
+            if substituted_left_arg.SIZE == 2:
+                import pdb; pdb.set_trace()
+                substituted_left_arg = substituted_left_arg.high
             self.F.set_bit_position(5, substituted_left_arg.get_bit_position(5))
             self.F.set_bit_position(3, substituted_left_arg.get_bit_position(3))

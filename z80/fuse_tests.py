@@ -133,8 +133,10 @@ with open('./tests.expected', 'r') as f:
         return memory
 
     def get_opcode_and_instruction(registers, memory):
-        opcode = hex(memory[registers['PC'][0]][0])
-        opcode = str(opcode)[2:]
+        #import pdb; pdb.set_trace()
+        #opcode = hex(memory[registers['PC'][0]][0])
+        #opcode = str(opcode)[2:]
+        opcode = str(memory[registers['PC'][0]][0])
         return opcode, (instructions_by_opcode[opcode]).text
 
     def get_flags(f_value):
@@ -147,7 +149,7 @@ with open('./tests.expected', 'r') as f:
 
 
 
-    TEST = '09'
+    TEST = '11'
 
     b = before[TEST]
     #print(b.registers)
@@ -179,7 +181,7 @@ with open('./tests.expected', 'r') as f:
         low = v % 256
         print(get_flags(low))
 
-    print(get_flags(16))
+    print(get_flags(66))
 
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 

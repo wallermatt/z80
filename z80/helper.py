@@ -27,12 +27,12 @@ class DoubleByte:
 
 class Z80TestHandler:
     def __init__(self, registers, flags, memory, ports, instruction_text, run=True, run_fuse=False):
-        self.z80 = Z80()
         self.test_registers = registers
         self.test_flags = flags
         self.test_memory = memory
         self.test_ports = ports
         self.instruction_text = instruction_text
+        self.z80 = Z80()
         self.set_registers()
         self.set_flags()
         self.set_memory()
@@ -51,8 +51,17 @@ class Z80TestHandler:
         opcode, end_of_memory_reached = self.z80.read_memory_and_increment_pc()
         if str(opcode) not in self.z80.instructions_by_opcode:
             raise Exception("Opcode {} not recognised!!!".format(opcode))
-        instruction = self.z80.instructions_by_opcode[str(opcode)]
-        self.z80.execute_instruction(instruction)
+        #instruction = self.z80.instructions_by_opcode[str(opcode)]
+        #self.z80.execute_instruction(instruction)
+        self.z80.run()
+        if self.z80.program_counter.get_contents() == 65535:
+            last = -1
+            for e in sorted(self.test_memory.keys()):
+                if e == last + 1:
+                    last = e
+                else:
+                    break
+            self.z80.program_counter.set_contents_value(last + 1)
         self.assert_registers()
         self.assert_memory()
 

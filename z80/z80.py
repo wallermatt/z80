@@ -18,8 +18,8 @@ class Z80():
 
     MEMORY_SIZE = 256 * 256
 
-    def __init__(self):
-        self.memory = Memory(self.MEMORY_SIZE)
+    def __init__(self, memory_size=MEMORY_SIZE):
+        self.memory = Memory(memory_size)
         self.ports = Memory(256)
         self._define_registers()
         self.instructions_by_opcode = instructions_by_opcode
@@ -129,7 +129,7 @@ class Z80():
         
     def execute_instruction(self, instruction):
         if instruction.instruction_base == NO_OPERATION:
-            return
+            pass
         if instruction.instruction_base in JUMP_INSTRUCTIONS:
             left_arg = instruction.left_arg
             right_arg = instruction.right_arg
@@ -146,13 +146,19 @@ class Z80():
             substituted_left_arg = self.substitute_arg(left_arg, right_arg)
             substituted_right_arg = self.substitute_right_arg(right_arg, left_arg)
         else:
-            substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
-            substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg)
+            if instruction.instruction_base in [ROT_RIGHT_C_ACC, ROT_LEFT_ACC, ROT_LEFT_C_ACC, ROT_RIGHT_ACC, ROT_RIGHT_DEC]:
+                substituted_left_arg = self.A
+                substituted_right_arg = None
+            else:
+                substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
+                substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg)
         self.execute_instruction_base(instruction, substituted_left_arg, substituted_right_arg)
         self.undocumented_behaviour(instruction, substituted_left_arg, substituted_right_arg)
 
     def execute_instruction_base(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base == LOAD:
+        if instruction.instruction_base == NO_OPERATION:
+            return
+        elif instruction.instruction_base == LOAD:
             self.load_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == EXCHANGE_MULTI:
             self.exchange_execute(self.registers_by_name["BC"], self.registers_by_name["BC'"])
@@ -258,7 +264,7 @@ class Z80():
         elif instruction.instruction_base == ROT_RIGHT_C:
             self.rot_right_c_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == ROT_RIGHT_C_ACC:
-            self.rot_right_c_execute(instruction, self.A)
+            self.rot_right_c_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == ROT_RIGHT_DEC:
             self.rot_right_dec_execute(instruction)
         elif instruction.instruction_base == SHIFT_LEFT_A:
@@ -362,13 +368,21 @@ class Z80():
     def jump_relative_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if substituted_left_arg and not self.check_flag_arg(substituted_left_arg):
             return
-        self.program_counter.add_to_contents(substituted_right_arg - instruction.size)
+        displacement = self.twos_complement(substituted_right_arg)
+        if displacement > 0:
+            self.program_counter.add_to_contents(displacement + 1)
+        else:
+            self.program_counter.subtract_from_contents(displacement * -1)
             
     def dec_jump_relative_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         self.registers_by_name["B"].subtraction_with_flags(1)
         if self.registers_by_name["B"].get_contents() == 0:
             return
-        self.program_counter.add_to_contents(substituted_right_arg - instruction.size)
+        displacement = self.twos_complement(substituted_right_arg)
+        if displacement > 0:
+            self.program_counter.add_to_contents(displacement + 1)
+        else:
+            self.program_counter.subtract_from_contents(displacement * -1)
 
     def call_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if substituted_left_arg and not self.check_flag_arg(substituted_left_arg):
@@ -780,10 +794,16 @@ class Z80():
                 self.flag_register.set_flag(flag)
         potential_flags = {}
 
+    def twos_complement(self, value):
+        if value < 128:
+            return value
+        return value - 256
+
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC]:
+            if instruction.flags == "------":
+                return
             if substituted_left_arg.SIZE == 2:
-                import pdb; pdb.set_trace()
                 substituted_left_arg = substituted_left_arg.high
             self.F.set_bit_position(5, substituted_left_arg.get_bit_position(5))
             self.F.set_bit_position(3, substituted_left_arg.get_bit_position(3))

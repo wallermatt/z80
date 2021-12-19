@@ -68,7 +68,10 @@ class Component:
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
 
-        self.set_contents(overflow_result)
+        if self.SIZE == 2:
+            self.set_contents_value(overflow_result)
+        else:
+            self.set_contents(overflow_result)
         
     def subtraction_with_flags(self, value, set_flags=True):
         result = self.get_contents() - value
@@ -93,8 +96,10 @@ class Component:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
-
-        self.set_contents(overflow_result)
+        if self.SIZE == 2:
+            self.set_contents_value(overflow_result)
+        else:
+            self.set_contents(overflow_result)
 
     def convert_contents_to_bit_list(self):
         '''
@@ -165,7 +170,6 @@ class DoubleComponent(Component):
         return self.high.get_contents() * self.low.MAX_VALUE + self.low.get_contents()
 
     def set_contents_value(self, value):
-        import pdb; pdb.set_trace()
         low_value = value % self.low.MAX_VALUE
         high_value = value // self.low.MAX_VALUE
         self.low.set_contents(low_value)

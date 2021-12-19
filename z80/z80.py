@@ -370,7 +370,7 @@ class Z80():
             return
         displacement = self.twos_complement(substituted_right_arg)
         if displacement > 0:
-            self.program_counter.add_to_contents(displacement + 1)
+            self.program_counter.add_to_contents(displacement + instruction.size)
         else:
             self.program_counter.subtract_from_contents(displacement * -1)
             
@@ -380,7 +380,8 @@ class Z80():
             return
         displacement = self.twos_complement(substituted_right_arg)
         if displacement > 0:
-            self.program_counter.add_to_contents(displacement + 1)
+            import pdb; pdb.set_trace()
+            self.program_counter.add_to_contents(displacement + instruction.size)
         else:
             self.program_counter.subtract_from_contents(displacement * -1)
 

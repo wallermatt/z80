@@ -118,7 +118,7 @@ class Z80():
             end_of_memory_reached = True
         return memory_contents, end_of_memory_reached
 
-    def run(self):
+    def run(self, code_end=-1):
         end_of_memory_reached = False
         while not end_of_memory_reached:
             opcode, end_of_memory_reached = self.read_memory_and_increment_pc()
@@ -126,6 +126,9 @@ class Z80():
                 raise Exception("Opcode {} not recognised!!!".format(opcode))
             instruction = self.instructions_by_opcode[str(opcode)]
             self.execute_instruction(instruction)
+            if code_end > -1:
+                if self.program_counter.get_contents() >= code_end:
+                    return
         
     def execute_instruction(self, instruction):
         if instruction.instruction_base == NO_OPERATION:
@@ -310,7 +313,7 @@ class Z80():
 
     def sub_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         substituted_left_arg.subtraction_with_flags(substituted_right_arg)
-        substituted_left_arg.set_potential_flags()
+        substituted_left_arg.set_potential_flags(instruction=instruction)
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
 
     def push_execute(self, instruction, substituted_left_arg):
@@ -370,7 +373,7 @@ class Z80():
             return
         displacement = self.twos_complement(substituted_right_arg)
         if displacement > 0:
-            self.program_counter.add_to_contents(displacement + instruction.size)
+            self.program_counter.add_to_contents(displacement)
         else:
             self.program_counter.subtract_from_contents(displacement * -1)
             
@@ -380,8 +383,7 @@ class Z80():
             return
         displacement = self.twos_complement(substituted_right_arg)
         if displacement > 0:
-            import pdb; pdb.set_trace()
-            self.program_counter.add_to_contents(displacement + instruction.size)
+            self.program_counter.add_to_contents(displacement)
         else:
             self.program_counter.subtract_from_contents(displacement * -1)
 

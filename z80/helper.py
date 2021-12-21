@@ -48,20 +48,17 @@ class Z80TestHandler:
         self.run_assertions()
 
     def run_fuse_test(self):
-        opcode, end_of_memory_reached = self.z80.read_memory_and_increment_pc()
-        if str(opcode) not in self.z80.instructions_by_opcode:
-            raise Exception("Opcode {} not recognised!!!".format(opcode))
         #instruction = self.z80.instructions_by_opcode[str(opcode)]
         #self.z80.execute_instruction(instruction)
-        self.z80.run()
-        if self.z80.program_counter.get_contents() == 65535:
-            last = -1
-            for e in sorted(self.test_memory.keys()):
-                if e == last + 1:
-                    last = e
-                else:
-                    break
-            self.z80.program_counter.set_contents_value(last + 1)
+        last = -1
+        for e in sorted(self.test_memory.keys()):
+            if e == last + 1:
+                last = e
+            else:
+                break
+        if self.test_memory[last][0] != 0:
+            last += 1
+        self.z80.run(code_end=last)
         self.assert_registers()
         self.assert_memory()
 

@@ -131,4 +131,6 @@ dmypy.json
 *.pyc 
 *.png
 
-.vscode 
+.vscode
+.DS_Store
+vendor/ 

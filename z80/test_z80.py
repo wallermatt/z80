@@ -756,7 +756,7 @@ def test_jump_relative_execute():
     z80.memory.set_contents_value(1, 19)
     instruction = z80.instructions_by_text["jr *"]
     z80.execute_instruction(instruction)
-    assert z80.program_counter.get_contents() == 19
+    assert z80.program_counter.get_contents() == 21
 
 def test_dec_jump_relative_execute_zero():
     z80 = Z80()
@@ -777,7 +777,7 @@ def test_dec_jump_relative_execute_non_zero():
     z80.memory.set_contents_value(1, 19)
     instruction = z80.instructions_by_text["djnz *"]
     z80.execute_instruction(instruction)
-    assert z80.program_counter.get_contents() == 19
+    assert z80.program_counter.get_contents() == 21
     
 
 def test_call_nn_execute():
@@ -889,7 +889,7 @@ def test_dec_jump_relative_execute_non_zero_helper():
     Z80TestHandler(
         # Register: (before, after)
         {
-            "PC": (pc.value, var.low),
+            "PC": (pc.value, var.low + 2),
             "B": (b.value, b.value - 1)
         },
         # Flag: (before, after)

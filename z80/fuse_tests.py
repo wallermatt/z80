@@ -148,9 +148,41 @@ with open('./tests.expected', 'r') as f:
         return flags
 
 
+def run_test(before, after, test):
+    b = before[test]
+    b.load_test_registers()
+    b.load_test_memory()
 
-    TEST = '11'
+    a = after[test]
+    a.load_test_registers()
+    a.load_test_memory()
 
+    registers = create_z80_registers(b.test_registers, a.test_registers)
+    print(registers)
+
+    memory = create_z80_memory(b.test_memory, a.test_memory)
+    print(memory)
+
+    print(get_opcode_and_instruction(registers, memory))
+
+    for v in registers['AF']:
+        low = v % 256
+        print(get_flags(low))
+
+    print(get_flags(174))
+
+    Z80TestHandler(registers, {}, memory, {}, '', False, True)
+
+
+TEST = '27_1'
+if TEST:
+    run_test(before, after, TEST)
+else:
+    for test in before:
+        print('TEST: {}'.format(test))
+        run_test(before, after, test)
+
+'''
     b = before[TEST]
     #print(b.registers)
     b.load_test_registers()
@@ -185,7 +217,7 @@ with open('./tests.expected', 'r') as f:
 
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
-    '''
+    
     b = before['00']
     print(b.registers)
     b.load_test_registers()
@@ -208,7 +240,7 @@ with open('./tests.expected', 'r') as f:
     for e in after:
         print(e)
         print(after[e])
-    '''
+'''
 
 
 

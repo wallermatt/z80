@@ -41,7 +41,7 @@ class Component:
         self.contents += value
         self.contents = self.contents % self.HALF_MAX_VALUE
 
-    def set_potential_flags(self):
+    def set_potential_flags(self, instruction=False):
         if self.get_contents() >= self.MAX_VALUE / 2:
             self.potential_flags[SIGN_FLAG] = True
         else:
@@ -51,6 +51,13 @@ class Component:
             self.potential_flags[ZERO_FLAG] = True
         else:
             self.potential_flags[ZERO_FLAG] = False
+
+        if instruction:
+            if instruction.instruction_base == "dec":
+                if self.get_contents() == 127:
+                    self.potential_flags[PARITY_OVERFLOW_FLAG] = True
+                else:
+                    self.potential_flags[PARITY_OVERFLOW_FLAG] = False
 
     def addition_with_flags(self, value):
         result = self.get_contents() + value

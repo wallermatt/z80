@@ -1,3 +1,4 @@
+from types import DynamicClassAttribute
 from base import (
     Component, Memory, DoubleComponent, SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG,
 )
@@ -496,11 +497,17 @@ class Z80():
                 self.A.addition_with_flags(6)
             if self.F.get_flag(CARRY_FLAG) or self.A.get_contents() > 99:
                 self.A.addition_with_flags(96)
+                self.A.set_flag(CARRY_FLAG)
+            else:
+                self.A.reset_flag(CARRY_FLAG)
         else:
             if self.F.get_flag(HALF_CARRY_FLAG) or (self.A.get_contents() & 15) > 9:
                 self.A.subtraction_with_flags(6)
             if self.F.get_flag(CARRY_FLAG) or self.A.get_contents() > 99:
                 self.A.subtraction_with_flags(96)
+                self.F.set_flag(CARRY_FLAG)
+            else:
+                self.F.reset_flag(CARRY_FLAG)
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
 
@@ -803,9 +810,11 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA]:
             if instruction.flags == "------":
                 return
+            if instruction.instruction_base == DAA:
+                substituted_left_arg = self.A
             if substituted_left_arg.SIZE == 2:
                 substituted_left_arg = substituted_left_arg.high
             self.F.set_bit_position(5, substituted_left_arg.get_bit_position(5))

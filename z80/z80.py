@@ -11,7 +11,7 @@ from instructions import (
     OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
     IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC, ROT_RIGHT,
     ROT_RIGHT_ACC, ROT_RIGHT_C, ROT_RIGHT_C_ACC, ROT_RIGHT_DEC, SHIFT_LEFT_A, SHIFT_LEFT_L, 
-    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG
+    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG
 )
 
 
@@ -281,6 +281,8 @@ class Z80():
             self.shift_right_l_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == CONVERT_CARRY_FLAG:
             self.convert_carry_flag_execute(instruction)
+        elif instruction.instruction_base == SET_CARRY_FLAG:
+            self.set_carry_flag_execute(instruction)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -700,6 +702,9 @@ class Z80():
         else:
             self.flag_register.set_flag(CARRY_FLAG)
 
+    def set_carry_flag_execute(self, instruction):
+        self.set_flags_if_required(instruction, None)
+
 
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():
@@ -822,10 +827,10 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG]:
             if instruction.flags == "------":
                 return
-            if instruction.instruction_base in [DAA, COMPLEMENT]:
+            if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG]:
                 substituted_left_arg = self.A
             if substituted_left_arg.SIZE == 2:
                 substituted_left_arg = substituted_left_arg.high

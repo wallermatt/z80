@@ -125,7 +125,7 @@ with open('./tests.expected', 'r') as f:
                 v = after[m]
             else:
                 v = before[m]
-            memory[m] = (v, v)
+            memory[m] = (before[m], v)
 
         for m in after:
             if m not in before:
@@ -174,7 +174,7 @@ def run_test(before, after, test):
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
 
-TEST = '2f'
+TEST = ''
 if TEST:
     run_test(before, after, TEST)
 else:

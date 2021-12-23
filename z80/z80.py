@@ -698,9 +698,10 @@ class Z80():
 
     def convert_carry_flag_execute(self, instruction):
         if self.flag_register.get_flag(CARRY_FLAG):
-            self.flag_register.reset_flag(CARRY_FLAG)
+            potential_flags = {CARRY_FLAG: False}
         else:
-            self.flag_register.set_flag(CARRY_FLAG)
+            potential_flags = {CARRY_FLAG: True}
+        self.set_flags_if_required(instruction, potential_flags)
 
     def set_carry_flag_execute(self, instruction):
         self.set_flags_if_required(instruction, None)
@@ -810,6 +811,13 @@ class Z80():
                         else:
                             self.flag_register.reset_flag(flag)
                         continue
+                if instruction.text in [CONVERT_CARRY_FLAG]:
+                    if flag == CARRY_FLAG:
+                        if potential_flags[CARRY_FLAG]:
+                            self.flag_register.set_flag(CARRY_FLAG)
+                        else:
+                            self.flag_register.reset_flag(CARRY_FLAG)
+                    continue
                 if flag == PARITY_OVERFLOW_FLAG:
                     if self.registers_by_name["BC"].get_contents() - 1 == 0:
                         self.flag_register.reset_flag(flag)
@@ -827,10 +835,10 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG]:
             if instruction.flags == "------":
                 return
-            if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG]:
+            if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG]:
                 substituted_left_arg = self.A
             if substituted_left_arg.SIZE == 2:
                 substituted_left_arg = substituted_left_arg.high

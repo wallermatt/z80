@@ -822,10 +822,10 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT]:
             if instruction.flags == "------":
                 return
-            if instruction.instruction_base == DAA:
+            if instruction.instruction_base in [DAA, COMPLEMENT]:
                 substituted_left_arg = self.A
             if substituted_left_arg.SIZE == 2:
                 substituted_left_arg = substituted_left_arg.high

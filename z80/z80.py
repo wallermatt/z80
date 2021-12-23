@@ -497,9 +497,9 @@ class Z80():
                 self.A.addition_with_flags(6)
             if self.F.get_flag(CARRY_FLAG) or self.A.get_contents() > 99:
                 self.A.addition_with_flags(96)
-                self.A.set_flag(CARRY_FLAG)
+                self.F.set_flag(CARRY_FLAG)
             else:
-                self.A.reset_flag(CARRY_FLAG)
+                self.F.reset_flag(CARRY_FLAG)
         else:
             if self.F.get_flag(HALF_CARRY_FLAG) or (self.A.get_contents() & 15) > 9:
                 self.A.subtraction_with_flags(6)
@@ -508,6 +508,18 @@ class Z80():
                 self.F.set_flag(CARRY_FLAG)
             else:
                 self.F.reset_flag(CARRY_FLAG)
+        if self.F.get_flag(ADD_SUBTRACT_FLAG) and not self.F.get_flag(HALF_CARRY_FLAG):
+            self.F.potential_flags[HALF_CARRY_FLAG] = False
+        elif self.F.get_flag(ADD_SUBTRACT_FLAG) and self.F.get_flag(HALF_CARRY_FLAG):
+            if self.A.get_contents() & 15 < 6:
+                self.F.potential_flags[HALF_CARRY_FLAG] = True
+            else:
+                self.F.potential_flags[HALF_CARRY_FLAG] = False
+        else:
+            if self.A.get_contents() & 15 >= 10:
+                self.F.potential_flags[HALF_CARRY_FLAG] = True
+            else:
+                self.F.potential_flags[HALF_CARRY_FLAG] = False
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
 

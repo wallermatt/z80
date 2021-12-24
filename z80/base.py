@@ -70,7 +70,15 @@ class Component:
         self.potential_flags[ADD_SUBTRACT_FLAG] = False
         self.potential_flags[CARRY_FLAG] = overflow_result != result
         self.potential_flags[HALF_CARRY_FLAG] = left_nibble > result_nibble
+        
+        '''
         if (self.get_contents() // self.HALF_MAX_VALUE == value // self.HALF_MAX_VALUE) and (self.get_contents() // self.HALF_MAX_VALUE != overflow_result // self.HALF_MAX_VALUE):
+            self.potential_flags[PARITY_OVERFLOW_FLAG] = True
+        else:
+            self.potential_flags[PARITY_OVERFLOW_FLAG] = False
+        '''
+
+        if (self.sign(self.get_contents()) == self.sign(value)) and (self.sign(self.get_contents()) != self.sign(overflow_result)):
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
@@ -99,14 +107,27 @@ class Component:
         self.potential_flags[CARRY_FLAG] = overflow_result != result
         self.potential_flags[HALF_CARRY_FLAG] = nibble_overflow
 
+        
+        '''
         if self.get_contents() // self.HALF_MAX_VALUE != value // self.HALF_MAX_VALUE:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
+        '''
+        if (self.sign(self.get_contents()) != self.sign(value)) and (self.sign(self.get_contents()) != self.sign(overflow_result)):
+            self.potential_flags[PARITY_OVERFLOW_FLAG] = True
+        else:
+            self.potential_flags[PARITY_OVERFLOW_FLAG] = False
+
         if self.SIZE == 2:
             self.set_contents_value(overflow_result)
         else:
             self.set_contents(overflow_result)
+
+    def sign(self, value):
+        if value <= 127:
+            return "+"
+        return "-"
 
     def convert_contents_to_bit_list(self):
         '''

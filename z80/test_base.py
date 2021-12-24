@@ -127,7 +127,7 @@ def test_subtraction_with_flags():
     assert register.potential_flags[ADD_SUBTRACT_FLAG] == True
     assert register.potential_flags[HALF_CARRY_FLAG] == False
     assert register.potential_flags[CARRY_FLAG] == True
-    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == True
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == False
 
     register.set_contents(14)
     register.subtraction_with_flags(223)
@@ -135,7 +135,7 @@ def test_subtraction_with_flags():
     assert register.potential_flags[ADD_SUBTRACT_FLAG] == True
     assert register.potential_flags[HALF_CARRY_FLAG] == True
     assert register.potential_flags[CARRY_FLAG] == True
-    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == True
+    assert register.potential_flags[PARITY_OVERFLOW_FLAG] == False
 
 
 def test_set_potential_flags():

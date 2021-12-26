@@ -1369,7 +1369,7 @@ def test_and_const():
         {
             SIGN_FLAG: (1, 0),
             HALF_CARRY_FLAG: (0, 1),
-            PARITY_OVERFLOW_FLAG: (0, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
             ADD_SUBTRACT_FLAG: (1, 0),
             ZERO_FLAG: (0, 1),
             CARRY_FLAG: (1, 0)
@@ -1428,7 +1428,7 @@ def test_and_a():
         {
             SIGN_FLAG: (0, 1),
             HALF_CARRY_FLAG: (0, 1),
-            PARITY_OVERFLOW_FLAG: (0, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
             ADD_SUBTRACT_FLAG: (1, 0),
             ZERO_FLAG: (1, 0),
             CARRY_FLAG: (1, 0)
@@ -1456,7 +1456,7 @@ def test_or_const():
         {
             SIGN_FLAG: (0, 1),
             HALF_CARRY_FLAG: (1, 0),
-            PARITY_OVERFLOW_FLAG: (0, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
             ADD_SUBTRACT_FLAG: (1, 0),
             ZERO_FLAG: (1, 0),
             CARRY_FLAG: (1, 0)
@@ -1514,6 +1514,7 @@ def test_daa_add_h():
         {
             HALF_CARRY_FLAG: (1, 1),
             ADD_SUBTRACT_FLAG: (0, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {},
@@ -1711,6 +1712,7 @@ def test_in_e_c():
             ZERO_FLAG: (1,0),
             HALF_CARRY_FLAG: (1,0),
             ADD_SUBTRACT_FLAG: (1,0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {},
@@ -1739,6 +1741,7 @@ def test_in_c():
             ZERO_FLAG: (1,0),
             HALF_CARRY_FLAG: (1,0),
             ADD_SUBTRACT_FLAG: (1,0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {},
@@ -2185,6 +2188,7 @@ def test_rlc():
             CARRY_FLAG: (1, 0),
             HALF_CARRY_FLAG: (1, 0),
             ADD_SUBTRACT_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {},
@@ -2335,7 +2339,7 @@ def test_rrc():
             SIGN_FLAG: (0, 1),
             ZERO_FLAG: (1, 0),
             HALF_CARRY_FLAG: (1, 0),
-            PARITY_OVERFLOW_FLAG: (1, 0),
+            PARITY_OVERFLOW_FLAG: (0, 1),
             ADD_SUBTRACT_FLAG: (1, 0),
             CARRY_FLAG: (0, 1),
         },

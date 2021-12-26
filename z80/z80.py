@@ -1,6 +1,6 @@
 from types import DynamicClassAttribute
 from base import (
-    Component, Memory, DoubleComponent, SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG,
+    Component, Memory, DoubleComponent, SIGN_FLAG, ZERO_FLAG, HALF_CARRY_FLAG, PARITY_OVERFLOW_FLAG, ADD_SUBTRACT_FLAG, CARRY_FLAG, PARITY
 )
 from instructions import (
     CONVERT_CARRY_FLAG, instructions_by_opcode, instructions_by_text, NO_OPERATION, SPECIAL_ARGS, LOAD,
@@ -799,7 +799,7 @@ class Z80():
                     else:
                         self.flag_register.reset_flag(flag)
                     continue
-                if self.A.parity():
+                if potential_flags[PARITY]:
                     self.flag_register.set_flag(flag)
                 else:
                     self.flag_register.reset_flag(flag) 
@@ -835,10 +835,10 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND]:
             if instruction.flags == "------":
                 return
-            if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG]:
+            if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, SUB, AND]:
                 substituted_left_arg = self.A
             if substituted_left_arg.SIZE == 2:
                 substituted_left_arg = substituted_left_arg.high

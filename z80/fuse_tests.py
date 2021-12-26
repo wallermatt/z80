@@ -169,12 +169,12 @@ def run_test(before, after, test):
         low = v % 256
         print(get_flags(low))
 
-    print(get_flags(182))
+    print(get_flags(16))
 
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
 
-TEST = ''
+TEST = 'a8'
 if TEST:
     run_test(before, after, TEST)
 else:

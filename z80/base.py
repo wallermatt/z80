@@ -5,6 +5,7 @@ PARITY_OVERFLOW_FLAG = "P/V"
 ADD_SUBTRACT_FLAG = "N"
 CARRY_FLAG = "C"
 
+PARITY = "parity"
 
 FLAG_POSITIONS = {
     SIGN_FLAG: 7,
@@ -58,6 +59,12 @@ class Component:
                     self.potential_flags[PARITY_OVERFLOW_FLAG] = True
                 else:
                     self.potential_flags[PARITY_OVERFLOW_FLAG] = False
+
+        if self.SIZE == 1:
+            if self.parity():
+                self.potential_flags[PARITY] = True
+            else:
+                self.potential_flags[PARITY] = False
 
     def addition_with_flags(self, value):
         result = self.get_contents() + value
@@ -178,7 +185,7 @@ class Component:
         self.convert_bit_list_to_contents(bit_list)
 
     def parity(self):
-        return sum(self.convert_contents_to_bit_list()) == 4
+        return sum(self.convert_contents_to_bit_list()) % 2 == 0
 
 class DoubleComponent(Component):
 

@@ -234,7 +234,7 @@ instructions = [
     Instruction(opcode="146", instruction_base="sub", left_arg="a", right_arg="d", size="1", time="4", flags="++V+++", text="sub d", desc="Subtracts d from a."),
     Instruction(opcode="147", instruction_base="sub", left_arg="a", right_arg="e", size="1", time="4", flags="++V+++", text="sub e", desc="Subtracts e from a."),
     Instruction(opcode="148", instruction_base="sub", left_arg="a", right_arg="h", size="1", time="4", flags="++V+++", text="sub h", desc="Subtracts h from a."),
-    Instruction(opcode="149", instruction_base="sub", left_arg="a", right_arg="1", size="1", time="4", flags="++V+++", text="sub l", desc="Subtracts l from a."),
+    Instruction(opcode="149", instruction_base="sub", left_arg="a", right_arg="l", size="1", time="4", flags="++V+++", text="sub l", desc="Subtracts l from a."),
     Instruction(opcode="150", instruction_base="sub", left_arg="a", right_arg="(hl)", size="1", time="7", flags="++V+++", text="sub (hl)", desc="Subtracts (hl) from a."),
     Instruction(opcode="151", instruction_base="sub", left_arg="a", right_arg="a", size="1", time="4", flags="++V+++", text="sub a", desc="Subtracts a from a."),
     Instruction(opcode="152", instruction_base="sbc", left_arg="a", right_arg="b", size="1", time="4", flags="++V+++", text="sbc a,b", desc="Subtracts b and the carry flag from a."),

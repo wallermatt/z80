@@ -11,7 +11,7 @@ from instructions import (
     OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
     IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC, ROT_RIGHT,
     ROT_RIGHT_ACC, ROT_RIGHT_C, ROT_RIGHT_C_ACC, ROT_RIGHT_DEC, SHIFT_LEFT_A, SHIFT_LEFT_L, 
-    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG
+    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG, RESTART
 )
 
 
@@ -149,6 +149,9 @@ class Z80():
                 left_arg = None
             substituted_left_arg = self.substitute_arg(left_arg, right_arg)
             substituted_right_arg = self.substitute_right_arg(right_arg, left_arg)
+        elif instruction.instruction_base == RESTART:
+            substituted_left_arg = int(instruction.left_arg.replace("h", ""), 16)
+            substituted_right_arg = None
         else:
             if instruction.instruction_base in [ROT_RIGHT_C_ACC, ROT_LEFT_ACC, ROT_LEFT_C_ACC, ROT_RIGHT_ACC, ROT_RIGHT_DEC]:
                 substituted_left_arg = self.A
@@ -283,6 +286,8 @@ class Z80():
             self.convert_carry_flag_execute(instruction)
         elif instruction.instruction_base == SET_CARRY_FLAG:
             self.set_carry_flag_execute(instruction)
+        elif instruction.instruction_base == RESTART:
+            self.restart_execute(instruction, substituted_left_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -706,6 +711,9 @@ class Z80():
     def set_carry_flag_execute(self, instruction):
         self.set_flags_if_required(instruction, None)
 
+    def restart_execute(self, instruction, substituted_left_arg):
+        self.push_execute(instruction, self.program_counter)
+        self.program_counter.set_contents_value(substituted_left_arg)
 
     def substitute_arg(self, arg, opposite_arg):
         if arg and arg.isdigit():
@@ -835,10 +843,10 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE]:
             if instruction.flags == "------":
                 return
-            if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, SUB, AND]:
+            if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, SUB, AND, OR, XOR]:
                 substituted_left_arg = self.A
             if substituted_left_arg.SIZE == 2:
                 substituted_left_arg = substituted_left_arg.high

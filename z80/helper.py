@@ -50,14 +50,18 @@ class Z80TestHandler:
     def run_fuse_test(self):
         #instruction = self.z80.instructions_by_opcode[str(opcode)]
         #self.z80.execute_instruction(instruction)
-        last = -1
+        last = self.test_registers['PC'][0]
         for e in sorted(self.test_memory.keys()):
+            if e <= last:
+                continue
             if e == last + 1:
                 last = e
             else:
                 break
         if self.test_memory[last][0] != 0:
             last += 1
+        if last > self.test_registers["PC"][1] + 2:
+            last = self.test_registers["PC"][1]
         self.z80.run(code_end=last)
         self.assert_registers()
         self.assert_memory()

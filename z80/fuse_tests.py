@@ -137,6 +137,8 @@ with open('./tests.expected', 'r') as f:
         #opcode = hex(memory[registers['PC'][0]][0])
         #opcode = str(opcode)[2:]
         opcode = str(memory[registers['PC'][0]][0])
+        if opcode == "203":
+            opcode = "CB" + str(memory[registers['PC'][0] + 1][0])
         return opcode, (instructions_by_opcode[opcode]).text
 
     def get_flags(f_value):

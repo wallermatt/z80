@@ -123,6 +123,9 @@ class Z80():
         end_of_memory_reached = False
         while not end_of_memory_reached:
             opcode, end_of_memory_reached = self.read_memory_and_increment_pc()
+            if opcode == 203:
+                opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
+                opcode = "CB" + str(opcode2)
             if str(opcode) not in self.instructions_by_opcode:
                 raise Exception("Opcode {} not recognised!!!".format(opcode))
             instruction = self.instructions_by_opcode[str(opcode)]
@@ -843,7 +846,7 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C]:
             if instruction.flags == "------":
                 return
             if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, SUB, AND, OR, XOR]:

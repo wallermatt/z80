@@ -171,17 +171,17 @@ def run_test(before, after, test):
         low = v % 256
         print(get_flags(low))
 
-    print(get_flags(120))
+    print(get_flags(92))
 
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
 
-TEST = 'cb40'
+TEST = 'cb46'
 if TEST:
     run_test(before, after, TEST)
 else:
     for test in before:
-        if test in ['120']:
+        if test in ['27']:
             continue
         print('TEST: {}'.format(test))
         run_test(before, after, test)

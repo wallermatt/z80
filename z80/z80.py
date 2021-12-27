@@ -535,10 +535,10 @@ class Z80():
 
     def bit_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         potential_flags = {}
-        if 2 ** (7 - substituted_left_arg) & substituted_right_arg:
-            potential_flags[ZERO_FLAG] = 1
-        else:
+        if (2 ** substituted_left_arg) & substituted_right_arg:
             potential_flags[ZERO_FLAG] = 0
+        else:
+            potential_flags[ZERO_FLAG] = 1
         self.set_flags_if_required(instruction, potential_flags)
 
     def in_execute(self, instruction, substituted_left_arg, substituted_right_arg):

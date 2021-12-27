@@ -535,7 +535,7 @@ class Z80():
 
     def bit_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         potential_flags = {}
-        if 2 ** (7 - substituted_left_arg) & substituted_right_arg == 0:
+        if 2 ** (7 - substituted_left_arg) & substituted_right_arg:
             potential_flags[ZERO_FLAG] = 1
         else:
             potential_flags[ZERO_FLAG] = 0
@@ -846,11 +846,21 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C, ROT_RIGHT_C, ROT_LEFT, ROT_RIGHT_C, ROT_RIGHT, SHIFT_LEFT_A]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C, ROT_RIGHT_C, ROT_LEFT, ROT_RIGHT_C, ROT_RIGHT, SHIFT_LEFT_A, SHIFT_RIGHT_A, SHIFT_LEFT_L, SHIFT_RIGHT_L, BIT]:
             if instruction.flags == "------":
                 return
             if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, SUB, AND, OR, XOR]:
                 substituted_left_arg = self.A
+            if instruction.instruction_base in [BIT]:
+                if substituted_left_arg == 7 and substituted_right_arg >= 128:
+                    self.F.set_flag(SIGN_FLAG)
+                if self.F.get_flag(ZERO_FLAG):
+                    self.F.set_flag(PARITY_OVERFLOW_FLAG)
+                else:
+                    self.F.reset_flag(PARITY_OVERFLOW_FLAG)
+                left_arg = Component("temporary_right_arg")
+                left_arg.set_contents(substituted_right_arg)
+                substituted_left_arg = left_arg
             if substituted_left_arg.SIZE == 2:
                 substituted_left_arg = substituted_left_arg.high
             self.F.set_bit_position(5, substituted_left_arg.get_bit_position(5))

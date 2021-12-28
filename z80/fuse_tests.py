@@ -176,12 +176,12 @@ def run_test(before, after, test):
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
 
-TEST = 'db_1'
+TEST = 'dd00'
 if TEST:
     run_test(before, after, TEST)
 else:
     for test in before:
-        if test in ['27']:
+        if test in ['27', 'db_1', 'db_2', 'db_3', 'db']:
             continue
         print('TEST: {}'.format(test))
         run_test(before, after, test)

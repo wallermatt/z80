@@ -11,7 +11,7 @@ from instructions import (
     OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
     IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC, ROT_RIGHT,
     ROT_RIGHT_ACC, ROT_RIGHT_C, ROT_RIGHT_C_ACC, ROT_RIGHT_DEC, SHIFT_LEFT_A, SHIFT_LEFT_L, 
-    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG, RESTART, RESET
+    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG, RESTART, RESET, SET
 )
 
 
@@ -293,6 +293,8 @@ class Z80():
             self.restart_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == RESET:
             self.reset_execute(instruction, substituted_left_arg, substituted_right_arg)
+        elif instruction.instruction_base == SET:
+            self.set_execute(instruction, substituted_left_arg, substituted_right_arg)
 
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
@@ -723,6 +725,11 @@ class Z80():
     def reset_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         bit_list = substituted_right_arg.convert_contents_to_bit_list()
         bit_list[7 - substituted_left_arg] = 0
+        substituted_right_arg.convert_bit_list_to_contents(bit_list)
+
+    def set_execute(self, instruction, substituted_left_arg, substituted_right_arg):
+        bit_list = substituted_right_arg.convert_contents_to_bit_list()
+        bit_list[7 - substituted_left_arg] = 1
         substituted_right_arg.convert_bit_list_to_contents(bit_list)
 
     def substitute_arg(self, arg, opposite_arg):

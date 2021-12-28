@@ -733,6 +733,9 @@ class Z80():
                 return self.read_memory_and_increment_pc()[0]
             if arg.upper() in self.registers_by_name:
                 address = self.registers_by_name[arg.upper()].get_contents()
+                # bit n, (hl) check
+                if opposite_arg and isinstance(opposite_arg, str) and opposite_arg.isdigit():
+                    return self.memory.get_contents(address)
                 if not opposite_arg or opposite_arg == "*" or self.registers_by_name[opposite_arg.upper()].SIZE == 1:
                     return self.memory.get_contents(address)
                 return (self.memory.get_contents(address), self.memory.get_contents(address + 1))

@@ -176,7 +176,7 @@ def run_test(before, after, test):
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
 
-TEST = 'cb46'
+TEST = 'cb81'
 if TEST:
     run_test(before, after, TEST)
 else:

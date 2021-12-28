@@ -303,7 +303,7 @@ instructions = [
     Instruction(opcode="213", instruction_base="push", left_arg="de", right_arg=None, size="1", time="11", flags="------", text="push de", desc="sp is decremented and d is stored into the memory location pointed to by sp. sp is decremented again and e is stored into the memory location pointed to by sp."),
     Instruction(opcode="214", instruction_base="sub", left_arg="a", right_arg="*", size="2", time="7", flags="++V+++", text="sub *", desc="Subtracts * from a."),
     Instruction(opcode="215", instruction_base="rst", left_arg="10h", right_arg=None, size="1", time="11", flags="------", text="rst 10h", desc="The current pc value plus one is pushed onto the stack, then is loaded with 10h."),
-    Instruction(opcode="216", instruction_base="ret", left_arg="c", right_arg=None, size="1", time="11/5", flags="------", text="ret c", desc="If condition cc is true, the top stack entry is popped into pc."),
+    Instruction(opcode="216", instruction_base="ret", left_arg="cf", right_arg=None, size="1", time="11/5", flags="------", text="ret c", desc="If condition cc is true, the top stack entry is popped into pc."),
     Instruction(opcode="217", instruction_base="exx", left_arg=None, right_arg=None, size="1", time="4", flags="------", text="exx", desc="Exchanges the 16-bit contents of bc, de, and hl with bc', de', and hl'."),
     Instruction(opcode="218", instruction_base="jp", left_arg="c", right_arg="**", size="3", time="10", flags="------", text="jp c,**", desc="If condition cc is true, ** is copied to pc."),
     Instruction(opcode="219", instruction_base="in", left_arg="a", right_arg="(*)", size="2", time="11", flags="------", text="in a,(*)", desc="A byte from port * is written to a."),

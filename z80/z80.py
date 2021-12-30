@@ -126,6 +126,14 @@ class Z80():
             if opcode == 203:
                 opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
                 opcode = "CB" + str(opcode2)
+            elif opcode == 221:
+                opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
+                if opcode2 == 203:
+                    opcode3, end_of_memory_reached = self.read_memory_and_increment_pc()
+                    opcode2 = "CB" + str(opcode3)
+                opcode = "DD" + str(opcode2)
+                if str(opcode) not in self.instructions_by_opcode:
+                    opcode = opcode2
             if str(opcode) not in self.instructions_by_opcode:
                 raise Exception("Opcode {} not recognised!!!".format(opcode))
             instruction = self.instructions_by_opcode[str(opcode)]
@@ -757,10 +765,12 @@ class Z80():
                 if arg == "ix+*":
                     ix_value = self.registers_by_name["IX"].get_contents()
                     displacement, _ = self.read_memory_and_increment_pc()
+                    displacement = self.twos_complement(displacement)
                     return self.memory.get_contents(ix_value + displacement)
                 elif arg == "iy+*":
                     iy_value = self.registers_by_name["IY"].get_contents()
                     displacement, _ = self.read_memory_and_increment_pc()
+                    displacement = self.twos_complement(displacement)
                     return self.memory.get_contents(iy_value + displacement)
             if "**" in arg:
                 low_byte, end_of_memory_reached = self.read_memory_and_increment_pc()

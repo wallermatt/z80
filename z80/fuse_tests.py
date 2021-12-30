@@ -139,7 +139,11 @@ with open('./tests.expected', 'r') as f:
         opcode = str(memory[registers['PC'][0]][0])
         if opcode == "203":
             opcode = "CB" + str(memory[registers['PC'][0] + 1][0])
-        return opcode, (instructions_by_opcode[opcode]).text
+        elif opcode == "221":
+            opcode = "DD" + str(memory[registers['PC'][0] + 1][0])
+        if opcode in instructions_by_opcode:
+            opcode, (instructions_by_opcode[opcode]).text
+        return opcode, "not found"
 
     def get_flags(f_value):
         flags = {}
@@ -171,12 +175,12 @@ def run_test(before, after, test):
         low = v % 256
         print(get_flags(low))
 
-    print(get_flags(92))
+    print(get_flags(68))
 
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
 
-TEST = 'dd00'
+TEST = 'ddcb00'
 if TEST:
     run_test(before, after, TEST)
 else:

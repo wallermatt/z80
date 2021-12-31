@@ -11,7 +11,7 @@ from instructions import (
     OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
     IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC, ROT_RIGHT,
     ROT_RIGHT_ACC, ROT_RIGHT_C, ROT_RIGHT_C_ACC, ROT_RIGHT_DEC, SHIFT_LEFT_A, SHIFT_LEFT_L, 
-    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG, RESTART, RESET, SET
+    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG, RESTART, RESET, SET, DDCB
 )
 
 
@@ -129,11 +129,11 @@ class Z80():
             elif opcode == 221:
                 opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
                 if opcode2 == 203:
-                    opcode3, end_of_memory_reached = self.read_memory_and_increment_pc()
-                    opcode2 = "CB" + str(opcode3)
-                opcode = "DD" + str(opcode2)
-                if str(opcode) not in self.instructions_by_opcode:
+                    opcode = "DDCB" 
+                elif "DD" + str(opcode2) not in self.instructions_by_opcode:
                     opcode = opcode2
+                else:
+                    opcode = "DD" + str(opcode2)
             if str(opcode) not in self.instructions_by_opcode:
                 raise Exception("Opcode {} not recognised!!!".format(opcode))
             instruction = self.instructions_by_opcode[str(opcode)]
@@ -145,7 +145,9 @@ class Z80():
     def execute_instruction(self, instruction):
         if instruction.instruction_base == NO_OPERATION:
             pass
-        if instruction.instruction_base in JUMP_INSTRUCTIONS:
+        if instruction.instruction_base == DDCB:
+            pass
+        elif instruction.instruction_base in JUMP_INSTRUCTIONS:
             left_arg = instruction.left_arg
             right_arg = instruction.right_arg
             left_arg = left_arg.replace("(", "")

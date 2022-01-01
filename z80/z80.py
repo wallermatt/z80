@@ -146,7 +146,10 @@ class Z80():
         if instruction.instruction_base == NO_OPERATION:
             pass
         if instruction.instruction_base == DDCB:
-            pass
+            extra_opcode = self.memory.get_contents_value(self.program_counter.get_contents() + 1)
+            instruction = self.instructions_by_opcode[DDCB + str(extra_opcode)]
+            substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
+            substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg, DDCB)
         elif instruction.instruction_base in JUMP_INSTRUCTIONS:
             left_arg = instruction.left_arg
             right_arg = instruction.right_arg
@@ -268,21 +271,21 @@ class Z80():
         elif instruction.instruction_base == OUT_DEC_REPEAT:
             self.out_dec_repeat_execute(instruction)
         elif instruction.instruction_base == ROT_LEFT:
-            self.rot_left_execute(instruction, substituted_left_arg)
+            self.rot_left_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == ROT_LEFT_ACC:
             self.rot_left_execute(instruction, self.A)
         elif instruction.instruction_base == ROT_LEFT_C:
-            self.rot_left_c_execute(instruction, substituted_left_arg)
+            self.rot_left_c_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == ROT_LEFT_C_ACC:
             self.rot_left_c_execute(instruction, self.A)
         elif instruction.instruction_base == ROT_LEFT_DEC:
             self.rot_left_dec_execute(instruction)
         elif instruction.instruction_base == ROT_RIGHT:
-            self.rot_right_execute(instruction, substituted_left_arg)
+            self.rot_right_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == ROT_RIGHT_ACC:
             self.rot_right_execute(instruction, self.A)
         elif instruction.instruction_base == ROT_RIGHT_C:
-            self.rot_right_c_execute(instruction, substituted_left_arg)
+            self.rot_right_c_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == ROT_RIGHT_C_ACC:
             self.rot_right_c_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == ROT_RIGHT_DEC:
@@ -612,7 +615,7 @@ class Z80():
         while self.B.get_contents() != 0:
             self.out_dec_execute(instruction) 
 
-    def rot_left_execute(self, instruction, substituted_left_arg):
+    def rot_left_execute(self, instruction, substituted_left_arg, substituted_right_arg=None):
         bl = substituted_left_arg.convert_contents_to_bit_list()
         c_flag = self.flag_register.get_flag(CARRY_FLAG)
         c_value = bl[0]
@@ -621,8 +624,10 @@ class Z80():
         substituted_left_arg.set_potential_flags()
         substituted_left_arg.potential_flags[CARRY_FLAG] = c_value
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+        if substituted_right_arg:
+            substituted_right_arg.set_contents(substituted_left_arg.get_contents())
 
-    def rot_left_c_execute(self, instruction, substituted_left_arg):
+    def rot_left_c_execute(self, instruction, substituted_left_arg, substituted_right_arg=None):
         bl = substituted_left_arg.convert_contents_to_bit_list()
         c_value = bl[0]
         rot_bl = bl[1:] + [bl[0]]
@@ -630,6 +635,8 @@ class Z80():
         substituted_left_arg.set_potential_flags()
         substituted_left_arg.potential_flags[CARRY_FLAG] = c_value
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+        if substituted_right_arg:
+            substituted_right_arg.set_contents(substituted_left_arg.get_contents())
 
     def rot_left_dec_execute(self, instruction):
         mem_loc = self.memory.get_contents(self.HL.get_contents())
@@ -643,7 +650,7 @@ class Z80():
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
 
-    def rot_right_execute(self, instruction, substituted_left_arg):
+    def rot_right_execute(self, instruction, substituted_left_arg, substituted_right_arg=None):
         bl = substituted_left_arg.convert_contents_to_bit_list()
         c_flag = self.flag_register.get_flag(CARRY_FLAG)
         c_value = bl[7]
@@ -652,8 +659,10 @@ class Z80():
         substituted_left_arg.set_potential_flags()
         substituted_left_arg.potential_flags[CARRY_FLAG] = c_value
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+        if substituted_right_arg:
+            substituted_right_arg.set_contents(substituted_left_arg.get_contents())
 
-    def rot_right_c_execute(self, instruction, substituted_left_arg):
+    def rot_right_c_execute(self, instruction, substituted_left_arg, substituted_right_arg=None):
         bl = substituted_left_arg.convert_contents_to_bit_list()
         c_value = bl[7]
         rot_bl = [c_value] + bl[:7]
@@ -661,6 +670,8 @@ class Z80():
         substituted_left_arg.set_potential_flags()
         substituted_left_arg.potential_flags[CARRY_FLAG] = c_value
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+        if substituted_right_arg:
+            substituted_right_arg.set_contents(substituted_left_arg.get_contents())
 
     def rot_right_dec_execute(self, instruction):
         mem_loc = self.memory.get_contents(self.HL.get_contents())
@@ -742,7 +753,10 @@ class Z80():
         bit_list[7 - substituted_left_arg] = 1
         substituted_right_arg.convert_bit_list_to_contents(bit_list)
 
-    def substitute_arg(self, arg, opposite_arg):
+    def substitute_arg(self, arg, opposite_arg, special=False):
+        if special == DDCB:
+            if not opposite_arg.isdigit():
+                _, _ = self.read_memory_and_increment_pc()
         if arg and arg.isdigit():
             return int(arg)
         if not arg or arg in SPECIAL_ARGS:
@@ -768,7 +782,11 @@ class Z80():
                     ix_value = self.registers_by_name["IX"].get_contents()
                     displacement, _ = self.read_memory_and_increment_pc()
                     displacement = self.twos_complement(displacement)
-                    return self.memory.get_contents(ix_value + displacement)
+                    substituted_arg = self.memory.get_contents(ix_value + displacement)
+                    if special == DDCB:
+                        if opposite_arg.isdigit():
+                            _, _ = self.read_memory_and_increment_pc()
+                    return substituted_arg
                 elif arg == "iy+*":
                     iy_value = self.registers_by_name["IY"].get_contents()
                     displacement, _ = self.read_memory_and_increment_pc()
@@ -805,15 +823,19 @@ class Z80():
         low = value % 256
         return low, high
 
-    def substitute_right_arg(self, arg, opposite_arg=None):
+    def substitute_right_arg(self, arg, opposite_arg=None, special=False):
         if not arg or arg in SPECIAL_ARGS:
+            if special == DDCB:
+                _, _ = self.read_memory_and_increment_pc()
             return arg
-        substituted_arg = self.substitute_arg(arg, opposite_arg)
+        substituted_arg = self.substitute_arg(arg, opposite_arg, special)
         # res 0, r  bit 0, r etc
         if isinstance(opposite_arg, str) and opposite_arg.isdigit():
             return substituted_arg
         if not isinstance(substituted_arg, int):
             if not isinstance(substituted_arg, tuple):
+                if special == DDCB:
+                    return substituted_arg
                 substituted_arg = substituted_arg.get_contents()
             elif len(substituted_arg) == 2:
                 substituted_arg = self.convert_low_and_high_bytes_to_value(

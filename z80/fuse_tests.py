@@ -175,12 +175,12 @@ def run_test(before, after, test):
         low = v % 256
         print(get_flags(low))
 
-    print(get_flags(68))
+    print(get_flags(177))
 
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
 
-TEST = 'ddcb10'
+TEST = 'ddcb40'
 #TEST = ''
 
 if TEST:

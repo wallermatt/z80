@@ -291,13 +291,13 @@ class Z80():
         elif instruction.instruction_base == ROT_RIGHT_DEC:
             self.rot_right_dec_execute(instruction)
         elif instruction.instruction_base == SHIFT_LEFT_A:
-            self.shift_left_a_execute(instruction, substituted_left_arg)
+            self.shift_left_a_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == SHIFT_LEFT_L:
-            self.shift_left_l_execute(instruction, substituted_left_arg)
+            self.shift_left_l_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == SHIFT_RIGHT_A:
-            self.shift_right_a_execute(instruction, substituted_left_arg)
+            self.shift_right_a_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == SHIFT_RIGHT_L:
-            self.shift_right_l_execute(instruction, substituted_left_arg)
+            self.shift_right_l_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == CONVERT_CARRY_FLAG:
             self.convert_carry_flag_execute(instruction)
         elif instruction.instruction_base == SET_CARRY_FLAG:
@@ -685,7 +685,7 @@ class Z80():
         self.A.set_potential_flags()
         self.set_flags_if_required(instruction, self.A.potential_flags)
 
-    def shift_left_a_execute(self, instruction, substituted_left_arg):
+    def shift_left_a_execute(self, instruction, substituted_left_arg, substituted_right_arg=None):
         new_c, bl  = substituted_left_arg.split_bit_list_at_bit_pos(6)
         substituted_left_arg.convert_bit_list_to_contents(bl + [0])
         substituted_left_arg.set_potential_flags()
@@ -695,8 +695,10 @@ class Z80():
         else:
              substituted_left_arg.potential_flags[PARITY_OVERFLOW_FLAG] = False
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+        if substituted_right_arg:
+            substituted_right_arg.set_contents(substituted_left_arg.get_contents())
 
-    def shift_left_l_execute(self, instruction, substituted_left_arg):
+    def shift_left_l_execute(self, instruction, substituted_left_arg, substituted_right_arg=None):
         new_c, bl  = substituted_left_arg.split_bit_list_at_bit_pos(6)
         substituted_left_arg.convert_bit_list_to_contents(bl + [1])
         substituted_left_arg.set_potential_flags()
@@ -706,8 +708,10 @@ class Z80():
         else:
              substituted_left_arg.potential_flags[PARITY_OVERFLOW_FLAG] = False
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+        if substituted_right_arg:
+            substituted_right_arg.set_contents(substituted_left_arg.get_contents())
 
-    def shift_right_a_execute(self, instruction, substituted_left_arg):
+    def shift_right_a_execute(self, instruction, substituted_left_arg, substituted_right_arg=None):
         bl, new_c  = substituted_left_arg.split_bit_list_at_bit_pos(0)
         substituted_left_arg.convert_bit_list_to_contents([bl[0]] + bl)
         substituted_left_arg.set_potential_flags()
@@ -717,8 +721,10 @@ class Z80():
         else:
              substituted_left_arg.potential_flags[PARITY_OVERFLOW_FLAG] = False
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+        if substituted_right_arg:
+            substituted_right_arg.set_contents(substituted_left_arg.get_contents())
 
-    def shift_right_l_execute(self, instruction, substituted_left_arg):
+    def shift_right_l_execute(self, instruction, substituted_left_arg, substituted_right_arg=None):
         bl, new_c  = substituted_left_arg.split_bit_list_at_bit_pos(0)
         substituted_left_arg.convert_bit_list_to_contents([0] + bl)
         substituted_left_arg.set_potential_flags()
@@ -728,6 +734,8 @@ class Z80():
         else:
              substituted_left_arg.potential_flags[PARITY_OVERFLOW_FLAG] = False
         self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
+        if substituted_right_arg:
+            substituted_right_arg.set_contents(substituted_left_arg.get_contents())
 
     def convert_carry_flag_execute(self, instruction):
         if self.flag_register.get_flag(CARRY_FLAG):

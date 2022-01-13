@@ -23,7 +23,7 @@ def test_handler():
 def test_initial():
     z80 = Z80()
     assert len(z80.registers) == 32
-    assert len(z80.instructions_by_opcode) == 1268
+    assert len(z80.instructions_by_opcode) == 1269
     assert len(z80.memory.contents) == z80.MEMORY_SIZE
 
 

@@ -181,7 +181,7 @@ def run_test(before, after, test):
 
 
 TEST = 'ddcb40'
-#TEST = ''
+TEST = ''
 
 if TEST:
     run_test(before, after, TEST)

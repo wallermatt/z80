@@ -916,10 +916,13 @@ class Z80():
             if instruction.instruction_base in [BIT]:
                 if substituted_left_arg == 7 and substituted_right_arg.get_contents() >= 128:
                     self.F.set_flag(SIGN_FLAG)
+                else:
+                    self.F.reset_flag(SIGN_FLAG)
                 if self.F.get_flag(ZERO_FLAG):
                     self.F.set_flag(PARITY_OVERFLOW_FLAG)
                 else:
                     self.F.reset_flag(PARITY_OVERFLOW_FLAG)
+                return
                 substituted_left_arg = substituted_right_arg
             if substituted_left_arg.SIZE == 2:
                 substituted_left_arg = substituted_left_arg.high

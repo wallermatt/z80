@@ -119,6 +119,30 @@ class Z80():
             end_of_memory_reached = True
         return memory_contents, end_of_memory_reached
 
+    def dd_opcode(self):
+        opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
+        if opcode2 == 253:
+            return self.fd_opcode()
+        elif opcode2 == 203:
+            opcode = "DDCB" 
+        elif "DD" + str(opcode2) not in self.instructions_by_opcode:
+            opcode = opcode2
+        else:
+            opcode = "DD" + str(opcode2)
+        return opcode
+
+    def fd_opcode(self):
+        opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
+        if opcode2 == 221:
+            return self.dd_opcode()
+        elif opcode2 == 203:
+            opcode = "FDCB" 
+        elif "FD" + str(opcode2) not in self.instructions_by_opcode:
+            opcode = opcode2
+        else:
+            opcode = "FD" + str(opcode2)
+        return opcode
+
     def run(self, code_end=-1):
         end_of_memory_reached = False
         while not end_of_memory_reached:
@@ -127,13 +151,9 @@ class Z80():
                 opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
                 opcode = "CB" + str(opcode2)
             elif opcode == 221:
-                opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
-                if opcode2 == 203:
-                    opcode = "DDCB" 
-                elif "DD" + str(opcode2) not in self.instructions_by_opcode:
-                    opcode = opcode2
-                else:
-                    opcode = "DD" + str(opcode2)
+                opcode = self.dd_opcode()
+            elif opcode == 253:
+                opcode = self.fd_opcode()
             if str(opcode) not in self.instructions_by_opcode:
                 raise Exception("Opcode {} not recognised!!!".format(opcode))
             instruction = self.instructions_by_opcode[str(opcode)]
@@ -764,6 +784,10 @@ class Z80():
         bit_list = substituted_right_arg.convert_contents_to_bit_list()
         bit_list[7 - substituted_left_arg] = 1
         substituted_right_arg.convert_bit_list_to_contents(bit_list)
+        args = instruction.text.split(",")
+        if len(args) == 3:
+            third_arg = self.registers_by_name[args[2].capitalize()]
+            third_arg.set_contents(substituted_right_arg.get_contents())
 
     def substitute_arg(self, arg, opposite_arg, special=False):
         if special == DDCB:

@@ -755,6 +755,10 @@ class Z80():
         bit_list = substituted_right_arg.convert_contents_to_bit_list()
         bit_list[7 - substituted_left_arg] = 0
         substituted_right_arg.convert_bit_list_to_contents(bit_list)
+        args = instruction.text.split(",")
+        if len(args) == 3:
+            third_arg = self.registers_by_name[args[2].capitalize()]
+            third_arg.set_contents(substituted_right_arg.get_contents())
 
     def set_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         bit_list = substituted_right_arg.convert_contents_to_bit_list()

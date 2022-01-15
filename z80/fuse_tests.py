@@ -180,13 +180,19 @@ def run_test(before, after, test):
     Z80TestHandler(registers, {}, memory, {}, '', False, True)
 
 
-TEST = 'ddcb80'
+#TEST = 'ddcb80'
 TEST = ''
 
+START = 'e0_1'
+start_reached = False
 if TEST:
     run_test(before, after, TEST)
 else:
     for test in before:
+        if test == START:
+            start_reached = True
+        if not start_reached:
+            continue
         if test in ['27', 'db_1', 'db_2', 'db_3', 'db']:
             continue
         print('TEST: {}'.format(test))

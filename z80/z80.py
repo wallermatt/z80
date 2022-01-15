@@ -922,8 +922,12 @@ class Z80():
                     self.F.set_flag(PARITY_OVERFLOW_FLAG)
                 else:
                     self.F.reset_flag(PARITY_OVERFLOW_FLAG)
-                return
-                substituted_left_arg = substituted_right_arg
+                if instruction.right_arg == "(ix+*)":
+                    temp_comp = Component("temp")
+                    temp_comp.set_contents(substituted_right_arg.name // 256)
+                    substituted_left_arg = temp_comp
+                else:
+                    substituted_left_arg = substituted_right_arg
             if substituted_left_arg.SIZE == 2:
                 substituted_left_arg = substituted_left_arg.high
             self.F.set_bit_position(5, substituted_left_arg.get_bit_position(5))

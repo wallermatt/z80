@@ -226,7 +226,8 @@ class DoubleComponent(Component):
 class Memory:
 
     def __init__(self, size):
-        self.contents = [Component("address: {}".format(e)) for e in range(size)]
+        #self.contents = [Component("address: {}".format(e)) for e in range(size)]
+        self.contents = [Component(e) for e in range(size)]
 
     def get_contents(self, address):
         if address >= len(self.contents):

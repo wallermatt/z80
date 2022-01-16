@@ -150,6 +150,9 @@ class Z80():
             if opcode == 203:
                 opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
                 opcode = "CB" + str(opcode2)
+            elif opcode == 237:
+                opcode2, end_of_memory_reached = self.read_memory_and_increment_pc()
+                opcode = "ED" + str(opcode2)
             elif opcode == 221:
                 opcode = self.dd_opcode()
             elif opcode == 253:
@@ -398,10 +401,10 @@ class Z80():
             if self.flag_register.get_flag(CARRY_FLAG):
                 return False
         elif flag_arg == "po":
-            if not self.flag_register.get_flag(PARITY_OVERFLOW_FLAG):
+            if self.flag_register.get_flag(PARITY_OVERFLOW_FLAG):
                 return False
         elif flag_arg == "pe":
-            if self.flag_register.get_flag(PARITY_OVERFLOW_FLAG):
+            if not self.flag_register.get_flag(PARITY_OVERFLOW_FLAG):
                 return False
         elif flag_arg == "p":
             if self.flag_register.get_flag(SIGN_FLAG):

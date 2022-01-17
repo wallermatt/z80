@@ -21,7 +21,7 @@ REGISTERS = [
 
 
 class State:
-    def __init__(self, name, registers='', states='', memory=''):
+    def __init__(self, name, registers='', states='', memory='', ports=''):
         self.name = name
         self.registers = registers
         self.states = states
@@ -29,6 +29,10 @@ class State:
             self.memory = []
         else:
             self.memory = memory
+        if not ports:
+            self.ports = {}
+        else:
+            self.ports = ports
         self.test_registers = {}
         self.test_memory = {}
         self.test_ports = {}
@@ -89,6 +93,12 @@ with open('./tests.expected', 'r') as f:
     next_row = 0
     for i, l in enumerate(f):
         if l[0] == ' ':
+            if 'PR ' in l:
+                pr = l.split('PR ')[1][:4]
+                if 'PR' not in new_test.ports:
+                    new_test.ports['PR'] = [pr]
+                else:
+                    new_test.ports['PR'] = new_test.ports['PR'] + [pr]
             continue
         if in_order[next_row] == 'name':
             l = str(l).replace('\n', '')

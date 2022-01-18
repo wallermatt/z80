@@ -39,9 +39,10 @@ class State:
         self.instruction_text = ''
 
     def __str__(self):
-        return 'name: {}\n registers: {}\n states: {}\n memory: {}\n'.format(self.name, self.registers, self.states, self.memory)
+        return 'name: {}\n registers: {}\n states: {}\n memory: {}\n ports: {}\n'.format(self.name, self.registers, self.states, self.memory, self.ports)
 
     def load_test_registers(self):
+        self.registers = ' '.join(self.registers.split())
         for i, e in enumerate(self.registers.split(' ')):
             high = int(e[:2], 16)
             low = int(e[2:], 16)
@@ -60,6 +61,7 @@ class State:
                     break
                 self.test_memory[start] = int(e, 16)
                 start += 1
+
 
         
 
@@ -99,6 +101,12 @@ with open('./tests.expected', 'r') as f:
                     new_test.ports['PR'] = [pr]
                 else:
                     new_test.ports['PR'] = new_test.ports['PR'] + [pr]
+            elif 'PW ' in l:
+                pw = l.split('PW ')[1][:4]
+                if 'PW' not in new_test.ports:
+                    new_test.ports['PW'] = [pw]
+                else:
+                    new_test.ports['PW'] = new_test.ports['PW'] + [pw]           
             continue
         if in_order[next_row] == 'name':
             l = str(l).replace('\n', '')
@@ -142,6 +150,20 @@ with open('./tests.expected', 'r') as f:
                 memory[m] = (0, after[m])
         return memory
 
+    def create_z80_ports(before, after):
+        ports = {}
+        for pr in before:
+            v, p = int(pr[:2], 16), int(pr[2:], 16)
+            ports[p] = (v, v)
+        for pw in after:
+            v, p = int(pw[:2], 16), int(pw[2:], 16)
+            if p in ports:
+                ports[p][1] = v
+            else:
+                ports[p] = (0, v)
+        return ports
+
+
     def get_opcode_and_instruction(registers, memory):
         #import pdb; pdb.set_trace()
         #opcode = hex(memory[registers['PC'][0]][0])
@@ -181,19 +203,32 @@ def run_test(before, after, test):
 
     print(get_opcode_and_instruction(registers, memory))
 
+    if 'PR' in a.ports:
+        bp = a.ports['PR']
+    else:
+        bp = []
+
+    if 'PW' in a.ports:
+        ap = a.ports['PW']
+    else:
+        ap = []
+
+    ports = create_z80_ports(bp, ap)
+    print(ports)
+
     for v in registers['AF']:
         low = v % 256
         print(get_flags(low))
 
     print(get_flags(177))
 
-    Z80TestHandler(registers, {}, memory, {}, '', False, True)
+    Z80TestHandler(registers, {}, memory, ports, '', False, True)
 
 
 #TEST = 'ddcb80'
 TEST = ''
 
-START = 'ed40'
+START = 'ed43'
 start_reached = False
 if TEST:
     run_test(before, after, TEST)

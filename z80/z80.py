@@ -12,7 +12,8 @@ from instructions import (
     OUT, OUT_INC, OUT_INC_REPEAT, OUT_DEC, OUT_DEC_REPEAT, IN_INC, IN_INC_REPEAT, IN_DEC, 
     IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC, ROT_RIGHT,
     ROT_RIGHT_ACC, ROT_RIGHT_C, ROT_RIGHT_C_ACC, ROT_RIGHT_DEC, SHIFT_LEFT_A, SHIFT_LEFT_L, 
-    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG, RESTART, RESET, SET, DDCB
+    SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG, RESTART, RESET, SET, DDCB,
+    RETURN_NMI
 )
 
 
@@ -242,6 +243,8 @@ class Z80():
             self.call_execute(instruction, substituted_left_arg, substituted_right_arg)
         elif instruction.instruction_base == RETURN:
             self.return_execute(instruction, substituted_left_arg)
+        elif instruction.instruction_base == RETURN_NMI:
+            self.return_nmi_execute(instruction)
         elif instruction.instruction_base == COMPARE:
             self.compare_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == COMPARE_INC:
@@ -448,6 +451,9 @@ class Z80():
     def return_execute(self, instruction, substituted_left_arg):
         if substituted_left_arg and not self.check_flag_arg(substituted_left_arg):
             return
+        self.pop_execute(instruction, self.program_counter)
+
+    def return_nmi_execute(self, instruction):
         self.pop_execute(instruction, self.program_counter)
 
     def compare_execute(self, instruction, substituted_left_arg):

@@ -25,6 +25,7 @@ JUMP_RELATIVE = "jr"
 DEC_JUMP_RELATIVE = "djnz"
 CALL = "call"
 RETURN = "ret"
+RETURN_NMI = "retn"
 COMPARE = "cp"
 COMPARE_INC = "cpi"
 COMPARE_INC_REPEAT = "cpir"
@@ -67,6 +68,7 @@ RESTART = "rst"
 RESET = "res"
 SET = "set"
 DDCB = "DDCB"
+
 
 JUMP_INSTRUCTIONS = [JUMP, JUMP_RELATIVE, DEC_JUMP_RELATIVE, CALL]
 

@@ -112,6 +112,8 @@ class Z80TestHandler:
                 continue
             if r in additional_test_registers:
                 continue
+            if r == "R":
+                continue
             reg = self.z80.registers_by_name[r]
             if reg.SIZE == 2 and (reg.low.name in self.test_registers or reg.high.name in self.test_registers):
                 continue

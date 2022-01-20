@@ -4,7 +4,7 @@ from base import FLAG_POSITIONS
 
 in_order = ["name", "registers", "states", "memory", "-1"]
 
-REGISTERS = [
+REGISTERS_16_BIT = [
     "AF",
     "BC",
     "DE",
@@ -17,6 +17,11 @@ REGISTERS = [
     "IY",
     "SP",
     "PC"
+]
+
+REGISTERS_8_BIT = [
+    "I",
+    "R"
 ]
 
 
@@ -44,9 +49,12 @@ class State:
     def load_test_registers(self):
         self.registers = ' '.join(self.registers.split())
         for i, e in enumerate(self.registers.split(' ')):
-            high = int(e[:2], 16)
-            low = int(e[2:], 16)
-            self.test_registers[REGISTERS[i]] = high * 256 + low
+            if i < len(REGISTERS_16_BIT):
+                high = int(e[:2], 16)
+                low = int(e[2:], 16)
+                self.test_registers[REGISTERS_16_BIT[i]] = high * 256 + low
+            else:
+                self.test_registers[REGISTERS_8_BIT[i - len(REGISTERS_16_BIT)]] = int(e, 16)
 
     def load_test_memory(self):
         for m in self.memory:
@@ -82,6 +90,7 @@ with open('./tests.in', 'r') as f:
             next_row += 1
         elif in_order[next_row] == 'states':
             new_test.states = l
+            new_test.registers = new_test.registers + ' ' + l[:5]
             next_row += 1
         elif in_order[next_row] == 'memory':
             if l == '-1':
@@ -119,6 +128,7 @@ with open('./tests.expected', 'r') as f:
         elif in_order[next_row] == 'states':
             l = str(l).replace('\n', '')
             new_test.states = l
+            new_test.registers = new_test.registers + ' ' + l[:5]
             next_row += 1
         elif in_order[next_row] == 'memory':
             if l in ['\n', '-1']:

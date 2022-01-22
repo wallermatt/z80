@@ -13,7 +13,7 @@ from instructions import (
     IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC, ROT_RIGHT,
     ROT_RIGHT_ACC, ROT_RIGHT_C, ROT_RIGHT_C_ACC, ROT_RIGHT_DEC, SHIFT_LEFT_A, SHIFT_LEFT_L, 
     SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG, RESTART, RESET, SET, DDCB,
-    RETURN_NMI
+    RETURN_NMI, RETURN_INTERRUPT
 )
 
 
@@ -245,6 +245,8 @@ class Z80():
             self.return_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == RETURN_NMI:
             self.return_nmi_execute(instruction)
+        elif instruction.instruction_base == RETURN_INTERRUPT:
+            self.return_interrupt_execute(instruction)
         elif instruction.instruction_base == COMPARE:
             self.compare_execute(instruction, substituted_left_arg)
         elif instruction.instruction_base == COMPARE_INC:
@@ -339,6 +341,8 @@ class Z80():
     def load_execute(self, instruction, substituted_left_arg, substituted_right_arg):
         if not isinstance(substituted_left_arg, tuple):
             substituted_left_arg.set_contents(substituted_right_arg)
+            substituted_left_arg.set_potential_flags()
+            self.set_flags_if_required(instruction, substituted_left_arg.potential_flags)
         elif len(substituted_left_arg) == 2:
             low, high = self.convert_value_to_low_and_high_bytes(substituted_right_arg)
             substituted_left_arg[0].set_contents(low)
@@ -454,6 +458,9 @@ class Z80():
         self.pop_execute(instruction, self.program_counter)
 
     def return_nmi_execute(self, instruction):
+        self.pop_execute(instruction, self.program_counter)
+
+    def return_interrupt_execute(self, instruction):
         self.pop_execute(instruction, self.program_counter)
 
     def compare_execute(self, instruction, substituted_left_arg):
@@ -946,7 +953,7 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C, ROT_RIGHT_C, ROT_LEFT, ROT_RIGHT_C, ROT_RIGHT, SHIFT_LEFT_A, SHIFT_RIGHT_A, SHIFT_LEFT_L, SHIFT_RIGHT_L, BIT, NEGATION]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C, ROT_RIGHT_C, ROT_LEFT, ROT_RIGHT_C, ROT_RIGHT, SHIFT_LEFT_A, SHIFT_RIGHT_A, SHIFT_LEFT_L, SHIFT_RIGHT_L, BIT, NEGATION, IN, LOAD]:
             if instruction.flags == "------":
                 return
             if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, SUB, AND, OR, XOR, NEGATION]:

@@ -719,7 +719,7 @@ def test_jump_execute():
     z80.program_counter.set_contents_value(0)
     z80.memory.set_contents_value(0, 19)
     z80.memory.set_contents_value(1, 136)
-    z80.flag_register.set_flag(PARITY_OVERFLOW_FLAG)
+    z80.flag_register.reset_flag(PARITY_OVERFLOW_FLAG)
     instruction = z80.instructions_by_text["jp po,**"]
     z80.execute_instruction(instruction)
     assert z80.program_counter.get_contents() == 34835
@@ -730,7 +730,7 @@ def test_jump_execute():
     z80.flag_register.set_flag(PARITY_OVERFLOW_FLAG)
     instruction = z80.instructions_by_text["jp pe,**"]
     z80.execute_instruction(instruction)
-    assert z80.program_counter.get_contents() == 2
+    assert z80.program_counter.get_contents() == 34835
 
     z80.program_counter.set_contents_value(0)
     z80.memory.set_contents_value(0, 19)

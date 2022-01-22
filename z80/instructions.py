@@ -26,6 +26,7 @@ DEC_JUMP_RELATIVE = "djnz"
 CALL = "call"
 RETURN = "ret"
 RETURN_NMI = "retn"
+RETURN_INTERRUPT = "reti"
 COMPARE = "cp"
 COMPARE_INC = "cpi"
 COMPARE_INC_REPEAT = "cpir"
@@ -357,7 +358,7 @@ instructions = [
     Instruction(opcode="ED75", instruction_base="ld", left_arg="bc", right_arg="(**)", size="4", time="20", flags="------", text="ld bc,(**)", desc="Loads the value pointed to by ** into bc."),
     Instruction(opcode="ED76", instruction_base="neg", left_arg=None, right_arg=None, size="2", time="8", flags="++V+++", text="neg", desc="The contents of a are negated (two's complement). Operation is the same as subtracting a from zero."),
     Instruction(opcode="ED77", instruction_base="reti", left_arg=None, right_arg=None, size="2", time="14", flags="------", text="reti", desc="Used at the end of a maskable interrupt service routine. The top stack entry is popped into pc, and signals an I/O device that the interrupt has finished, allowing nested interrupts (not a consideration on the TI)."),
-    Instruction(opcode="ED78", instruction_base="im", left_arg="0/1", right_arg=None, size="2", time="8", flags="------", text="im 0/1", desc="Sets undefined interrupt mode 0/1."),
+    Instruction(opcode="ED78", instruction_base="im", left_arg="0", right_arg=None, size="2", time="8", flags="------", text="im 0/1", desc="Sets undefined interrupt mode 0/1."),
     Instruction(opcode="ED79", instruction_base="ld", left_arg="r", right_arg="a", size="2", time="9", flags="------", text="ld r,a", desc="Stores the value of a into register i or r."),
     Instruction(opcode="ED80", instruction_base="in", left_arg="d", right_arg="(c)", size="2", time="12", flags="-0P0++", text="in d,(c)", desc="A byte from port c is written to c."),
     Instruction(opcode="ED81", instruction_base="out", left_arg="(c)", right_arg="d", size="2", time="12", flags="------", text="out (c),d", desc="The value of c is written to port c."),

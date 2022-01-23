@@ -91,6 +91,8 @@ with open('./tests.in', 'r') as f:
         elif in_order[next_row] == 'states':
             new_test.states = l
             new_test.registers = new_test.registers + ' ' + l[:5]
+            new_test.IFF1 = l[6]
+            new_test.IFF2 = l[8]
             next_row += 1
         elif in_order[next_row] == 'memory':
             if l == '-1':
@@ -238,7 +240,7 @@ def run_test(before, after, test):
 #TEST = 'ddcb80'
 TEST = ''
 
-START = 'ed4e'
+START = 'ed57'
 start_reached = False
 if TEST:
     run_test(before, after, TEST)

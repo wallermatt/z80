@@ -75,6 +75,9 @@ class Z80():
 
         self.flag_register = self.F
 
+        self.IFF1 = 0
+        self.IFF2 = 0
+
         self.registers = [
             self.program_counter,
             self.stack_pointer,
@@ -937,6 +940,11 @@ class Z80():
                             self.flag_register.reset_flag(CARRY_FLAG)
                     continue
                 if flag == PARITY_OVERFLOW_FLAG:
+                    if instruction.text in [LOAD]:
+                        if self.IFF2 == 1:
+                            self.flag_register.set_flag(flag)
+                        else:
+                            self.flag_register.reset_flag(flag)
                     if self.registers_by_name["BC"].get_contents() - 1 == 0:
                         self.flag_register.reset_flag(flag)
                     else:

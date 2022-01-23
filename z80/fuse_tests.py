@@ -91,8 +91,8 @@ with open('./tests.in', 'r') as f:
         elif in_order[next_row] == 'states':
             new_test.states = l
             new_test.registers = new_test.registers + ' ' + l[:5]
-            new_test.IFF1 = l[6]
-            new_test.IFF2 = l[8]
+            new_test.IFF1 = int(l[6])
+            new_test.IFF2 = int(l[8])
             next_row += 1
         elif in_order[next_row] == 'memory':
             if l == '-1':
@@ -234,13 +234,13 @@ def run_test(before, after, test):
 
     print(get_flags(177))
 
-    Z80TestHandler(registers, {}, memory, ports, '', False, True)
+    Z80TestHandler(registers, {}, memory, ports, '', False, True, b.IFF1, b.IFF2)
 
 
 #TEST = 'ddcb80'
 TEST = ''
 
-START = 'ed57'
+START = 'ed6a'
 start_reached = False
 if TEST:
     run_test(before, after, TEST)

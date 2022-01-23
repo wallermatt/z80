@@ -26,7 +26,7 @@ class DoubleByte:
 
 
 class Z80TestHandler:
-    def __init__(self, registers, flags, memory, ports, instruction_text, run=True, run_fuse=False):
+    def __init__(self, registers, flags, memory, ports, instruction_text, run=True, run_fuse=False, iff1=0, iff2=0):
         self.test_registers = registers
         self.test_flags = flags
         self.test_memory = memory
@@ -37,6 +37,9 @@ class Z80TestHandler:
         self.set_flags()
         self.set_memory()
         self.set_ports()
+        self.z80.iff1 = iff1
+        self.z80.iff2 = iff2
+
         if run:
             self.run_test()
         elif run_fuse:
@@ -75,7 +78,10 @@ class Z80TestHandler:
 
     def set_registers(self):
         for r in self.test_registers:
-            initial_value = self.test_registers[r][0]
+            if r == "R":
+                initial_value = self.test_registers[r][1]
+            else:
+                initial_value = self.test_registers[r][0]
             register = self.z80.registers_by_name[r]
             if register.SIZE == 1:
                 register.set_contents(initial_value)

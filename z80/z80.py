@@ -962,10 +962,11 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C, ROT_RIGHT_C, ROT_LEFT, ROT_RIGHT_C, ROT_RIGHT, SHIFT_LEFT_A, SHIFT_RIGHT_A, SHIFT_LEFT_L, SHIFT_RIGHT_L, BIT, NEGATION, IN, LOAD, ADC]:
+        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C, ROT_RIGHT_C, ROT_LEFT, ROT_RIGHT_C, ROT_RIGHT, SHIFT_LEFT_A, SHIFT_RIGHT_A, SHIFT_LEFT_L, SHIFT_RIGHT_L, BIT, NEGATION, IN, LOAD, ADC, ROT_LEFT_DEC]:
+            sixteen_bit_flag = False
             if instruction.flags == "------":
                 return
-            if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, SUB, AND, OR, XOR, NEGATION]:
+            if instruction.instruction_base in [DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, SUB, AND, OR, XOR, NEGATION, ROT_LEFT_DEC]:
                 substituted_left_arg = self.A
             if instruction.instruction_base in [BIT]:
                 if substituted_left_arg == 7 and substituted_right_arg.get_contents() >= 128:
@@ -984,11 +985,12 @@ class Z80():
                     substituted_left_arg = substituted_right_arg
             elif instruction.text == "in (c)":
                     temp_comp = Component("temp")
-                    temp_comp.set_contents(substituted_left_arg)
+                    temp_comp.set_contents(self.ports.get_contents_value(substituted_left_arg))
                     substituted_left_arg = temp_comp
             if substituted_left_arg.SIZE == 2:
+                sixteen_bit_flag = True
                 substituted_left_arg = substituted_left_arg.high
             self.F.set_bit_position(5, substituted_left_arg.get_bit_position(5))
             self.F.set_bit_position(3, substituted_left_arg.get_bit_position(3))
-            if instruction.instruction_base in [ADD, ADC]:
-                self.F.set_bit_position(4, substituted_left_arg.get_bit_position(4))
+#            if instruction.instruction_base in [ADD, ADC] and sixteen_bit_flag:
+#                self.F.set_bit_position(4, substituted_left_arg.get_bit_position(4))

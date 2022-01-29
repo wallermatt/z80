@@ -232,30 +232,26 @@ class DoubleComponent(Component):
         self.potential_flags = self.high.potential_flags
 
     def subtraction_with_flags(self, value):
-        
-        if (self.sign(self.get_contents()) != self.sign(value)) and (self.sign(self.get_contents()) != self.sign(overflow_result)):
-            self.potential_flags[PARITY_OVERFLOW_FLAG] = True
-        else:
-            self.potential_flags[PARITY_OVERFLOW_FLAG] = False
-
         value_low = value % 256
         low_total = self.low.get_contents() - value_low
         if low_total < 0:
-            self.low.set_contents(256 - low_total)
-            low_carry = low_total
+            self.low.set_contents(256 + low_total)
+            low_carry = 1
         else:
             self.low.set_contents(low_total)
             low_carry = 0
         value_high = value // 256
-        high_subtraction_value = value_high - low_carry
+        high_subtraction_value = value_high + low_carry
         old_high_value = self.high.get_contents()
         self.high.subtraction_with_flags(high_subtraction_value)
         self.potential_flags = self.high.potential_flags
 
+        '''
         if (self.sign(old_high_value) != self.sign(high_subtraction_value)) and (self.sign(old_high_value) != self.sign(old_high_value - high_subtraction_value)):
             self.potential_flags[PARITY_OVERFLOW_FLAG] = True
         else:
             self.potential_flags[PARITY_OVERFLOW_FLAG] = False
+        '''
 
 
 class Memory:

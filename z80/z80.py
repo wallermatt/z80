@@ -613,7 +613,8 @@ class Z80():
         self.B.subtraction_with_flags(1, False)
         self.memory.set_contents_value(self.HL.get_contents(), in_value)
         self.HL.add_to_contents(1)
-        self.set_flags_if_required(instruction, None)
+        self.B.subtraction_with_flags(1)
+        self.set_flags_if_required(instruction, self.B.potential_flags)
 
     def in_inc_repeat_execute(self, instruction):
         while self.B.get_contents() != 0:
@@ -962,7 +963,7 @@ class Z80():
         return value - 256
 
     def undocumented_behaviour(self, instruction, substituted_left_arg, substituted_right_arg):
-        if instruction.instruction_base in [INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C, ROT_RIGHT_C, ROT_LEFT, ROT_RIGHT_C, ROT_RIGHT, SHIFT_LEFT_A, SHIFT_RIGHT_A, SHIFT_LEFT_L, SHIFT_RIGHT_L, BIT, NEGATION, IN, LOAD, ADC, ROT_LEFT_DEC, LOAD_INC]:
+        if instruction.instruction_base in [IN_INC, INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C, ROT_RIGHT_C, ROT_LEFT, ROT_RIGHT_C, ROT_RIGHT, SHIFT_LEFT_A, SHIFT_RIGHT_A, SHIFT_LEFT_L, SHIFT_RIGHT_L, BIT, NEGATION, IN, LOAD, ADC, ROT_LEFT_DEC, LOAD_INC]:
             sixteen_bit_flag = False
             if instruction.flags == "------":
                 return
@@ -992,6 +993,8 @@ class Z80():
                 temp_comp = Component("temp")
                 temp_comp.set_contents(memory_value)
                 substituted_left_arg = temp_comp
+            elif instruction.instruction_base in [IN_INC]:
+                substituted_left_arg = self.B
             if substituted_left_arg.SIZE == 2:
                 sixteen_bit_flag = True
                 substituted_left_arg = substituted_left_arg.high

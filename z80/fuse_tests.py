@@ -240,7 +240,7 @@ def run_test(before, after, test):
 #TEST = 'ddcb80'
 TEST = ''
 
-START = 'eda0'
+START = 'eda2'
 start_reached = False
 if TEST:
     run_test(before, after, TEST)

@@ -232,7 +232,7 @@ def run_test(before, after, test):
         low = v % 256
         print(get_flags(low))
 
-    print(get_flags(177))
+    print(get_flags(205))
 
     Z80TestHandler(registers, {}, memory, ports, '', False, True, b.IFF1, b.IFF2)
 

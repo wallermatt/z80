@@ -246,13 +246,6 @@ class DoubleComponent(Component):
         self.high.subtraction_with_flags(high_subtraction_value)
         self.potential_flags = self.high.potential_flags
 
-        '''
-        if (self.sign(old_high_value) != self.sign(high_subtraction_value)) and (self.sign(old_high_value) != self.sign(old_high_value - high_subtraction_value)):
-            self.potential_flags[PARITY_OVERFLOW_FLAG] = True
-        else:
-            self.potential_flags[PARITY_OVERFLOW_FLAG] = False
-        '''
-
 
 class Memory:
 

@@ -240,7 +240,7 @@ def run_test(before, after, test):
 #TEST = 'ddcb80'
 TEST = ''
 
-START = 'eda2'
+START = 'eda9'
 start_reached = False
 if TEST:
     run_test(before, after, TEST)
@@ -250,7 +250,10 @@ else:
             start_reached = True
         if not start_reached:
             continue
-        if test in ['27', 'db_1', 'db_2', 'db_3', 'db']:
+        if test in [
+            '27', 'db_1', 'db_2', 'db_3', 'db', 'eda2', 'eda2_01', 'eda2_02', 'eda2_03',
+            'eda3', 'eda3_01', 'eda3_02', 'eda3_03', 'eda3_04', 'eda3_05', 'eda3_06', 'eda3_07', 'eda3_08', 'eda3_09', 'eda3_10', 'eda3_11',
+        ]:
             continue
         print('TEST: {}'.format(test))
         run_test(before, after, test)

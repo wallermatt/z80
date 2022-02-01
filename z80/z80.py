@@ -970,6 +970,16 @@ class Z80():
             self.F.set_bit_position(3, temp_comp.get_bit_position(1))
             self.F.set_bit_position(5, temp_comp.get_bit_position(3))
             return
+        # he value of HF flag, which is set or reset by the hypothetical CP (HL). So, n = A - (HL) - HF.
+        if instruction.instruction_base in [COMPARE_DEC]:
+            memory_value = self.memory.get_contents_value(self.HL.get_contents() + 1)
+            n = self.A.get_contents() - memory_value - self.F.get_flag(HALF_CARRY_FLAG)
+            if n < 0:
+                n = 256 + n
+            temp_comp = Component("temp")
+            temp_comp.set_contents(n)
+            self.F.set_bit_position(3, temp_comp.get_bit_position(1))
+            self.F.set_bit_position(5, temp_comp.get_bit_position(3))
         if instruction.instruction_base in [IN_INC, INC, DEC, ADD, ADC, SUB, SBC, ROT_RIGHT_C_ACC, DAA, COMPLEMENT, SET_CARRY_FLAG, CONVERT_CARRY_FLAG, AND, OR, XOR, COMPARE, ROT_LEFT_C, ROT_RIGHT_C, ROT_LEFT, ROT_RIGHT_C, ROT_RIGHT, SHIFT_LEFT_A, SHIFT_RIGHT_A, SHIFT_LEFT_L, SHIFT_RIGHT_L, BIT, NEGATION, IN, LOAD, ADC, ROT_LEFT_DEC, LOAD_INC]:
             sixteen_bit_flag = False
             if instruction.flags == "------":

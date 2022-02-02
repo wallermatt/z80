@@ -522,7 +522,7 @@ def test_adc_execute():
     assert z80.program_counter.get_contents() == 0
     assert z80.flag_register.get_flag(SIGN_FLAG) == 0
     assert z80.flag_register.get_flag(ZERO_FLAG) == 0
-    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 1
+    assert z80.flag_register.get_flag(HALF_CARRY_FLAG) == 0
     assert z80.flag_register.get_flag(PARITY_OVERFLOW_FLAG) == 0
     assert z80.flag_register.get_flag(ADD_SUBTRACT_FLAG) == 0
     assert z80.flag_register.get_flag(CARRY_FLAG) == 0
@@ -1998,6 +1998,7 @@ def test_ini():
         {
             ZERO_FLAG: (1, 0),
             ADD_SUBTRACT_FLAG: (0, 1),
+            PARITY_OVERFLOW_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {

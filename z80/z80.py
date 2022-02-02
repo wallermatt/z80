@@ -624,7 +624,7 @@ class Z80():
         in_value = self.ports.get_contents_value(self.C.get_contents())
         self.B.subtraction_with_flags(1, False)
         self.memory.set_contents_value(self.HL.get_contents(), in_value)
-        self.HL.subtraction_with_flags(1, False)
+        self.HL.subtraction_with_flags(1)
         self.set_flags_if_required(instruction, None)
 
     def in_dec_repeat_execute(self, instruction):
@@ -649,7 +649,7 @@ class Z80():
         out_value = self.memory.get_contents_value(self.HL.get_contents())
         self.B.subtraction_with_flags(1, False)
         self.ports.set_contents_value(self.C.get_contents(), out_value)
-        self.HL.subtraction_with_flags(1, False)
+        self.HL.subtraction_with_flags(1)
         self.set_flags_if_required(instruction, None)
 
     def out_dec_repeat_execute(self, instruction):

@@ -115,9 +115,11 @@ class Z80TestHandler:
                 additional_test_registers.add(reg.high.name)
 
         for r in self.z80.registers_by_name:
-            if r == "AF" and self.ignore_flags:
-                continue
-            if r in ["F", "AF"] and r not in self.test_registers:
+            if r == "AF" and self.ignore_flags and r in self.test_registers:
+                r = "A"
+                af_values = self.test_registers["AF"]
+                self.test_registers[r] = (af_values[0] // 256, af_values[1] // 256)
+            elif r in ["F", "AF"] and r not in self.test_registers:
                 continue
             if r in additional_test_registers:
                 continue

@@ -166,13 +166,13 @@ with open('./tests.expected', 'r') as f:
         ports = {}
         for pr in before:
             v, p = int(pr[:2], 16), int(pr[2:], 16)
-            ports[p] = (v, v)
+            ports[p] = [v, v]
         for pw in after:
             v, p = int(pw[:2], 16), int(pw[2:], 16)
             if p in ports:
                 ports[p][1] = v
             else:
-                ports[p] = (0, v)
+                ports[p] = [0, v]
         return ports
 
 
@@ -198,7 +198,7 @@ with open('./tests.expected', 'r') as f:
         return flags
 
 
-def run_test(before, after, test):
+def run_test(before, after, test, ignore_flags=False):
     b = before[test]
     b.load_test_registers()
     b.load_test_memory()
@@ -234,13 +234,13 @@ def run_test(before, after, test):
 
     print(get_flags(205))
 
-    Z80TestHandler(registers, {}, memory, ports, '', False, True, b.IFF1, b.IFF2)
+    Z80TestHandler(registers, {}, memory, ports, '', False, True, b.IFF1, b.IFF2, ignore_flags)
 
 
 #TEST = 'ddcb80'
 TEST = ''
 
-START = 'edab'
+START = 'edbb'
 start_reached = False
 if TEST:
     run_test(before, after, TEST)
@@ -257,8 +257,12 @@ else:
             'edab_01', 'edab_02', 'edb0', 'edb1', 'edb2', 'edb3', 'edb8', 'edb9', 'edba'
         ]:
             continue
+        if test in ['edbb']:
+            ignore_flags = True
+        else:
+            ignore_flags = False
         print('TEST: {}'.format(test))
-        run_test(before, after, test)
+        run_test(before, after, test, ignore_flags)
 
 '''
     b = before[TEST]

@@ -26,7 +26,7 @@ class DoubleByte:
 
 
 class Z80TestHandler:
-    def __init__(self, registers, flags, memory, ports, instruction_text, run=True, run_fuse=False, iff1=0, iff2=0):
+    def __init__(self, registers, flags, memory, ports, instruction_text, run=True, run_fuse=False, iff1=0, iff2=0, ignore_flags=False):
         self.test_registers = registers
         self.test_flags = flags
         self.test_memory = memory
@@ -39,6 +39,7 @@ class Z80TestHandler:
         self.set_ports()
         self.z80.iff1 = iff1
         self.z80.iff2 = iff2
+        self.ignore_flags = ignore_flags
 
         if run:
             self.run_test()
@@ -114,6 +115,8 @@ class Z80TestHandler:
                 additional_test_registers.add(reg.high.name)
 
         for r in self.z80.registers_by_name:
+            if r == "AF" and self.ignore_flags:
+                continue
             if r in ["F", "AF"] and r not in self.test_registers:
                 continue
             if r in additional_test_registers:

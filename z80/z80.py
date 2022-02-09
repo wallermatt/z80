@@ -13,7 +13,7 @@ from instructions import (
     IN_DEC_REPEAT, ROT_LEFT, ROT_LEFT_ACC, ROT_LEFT_C, ROT_LEFT_C_ACC, ROT_LEFT_DEC, ROT_RIGHT,
     ROT_RIGHT_ACC, ROT_RIGHT_C, ROT_RIGHT_C_ACC, ROT_RIGHT_DEC, SHIFT_LEFT_A, SHIFT_LEFT_L, 
     SHIFT_RIGHT_A, SHIFT_RIGHT_L, CONVERT_CARRY_FLAG, SET_CARRY_FLAG, RESTART, RESET, SET, DDCB,
-    RETURN_NMI, RETURN_INTERRUPT
+    RETURN_NMI, RETURN_INTERRUPT, FDCB
 )
 
 
@@ -141,13 +141,13 @@ class Z80():
         if opcode2 == 221:
             return self.dd_opcode()
         elif opcode2 == 203:
-            opcode = "FDCB" 
+            opcode = FDCB
         elif "FD" + str(opcode2) not in self.instructions_by_opcode:
             opcode = opcode2
         else:
             opcode = "FD" + str(opcode2)
         return opcode
-
+        
     def run(self, code_end=-1):
         end_of_memory_reached = False
         while not end_of_memory_reached:
@@ -178,6 +178,12 @@ class Z80():
             instruction = self.instructions_by_opcode[DDCB + str(extra_opcode)]
             substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
             substituted_right_arg = self.substitute_right_arg(instruction.right_arg, instruction.left_arg, DDCB)
+        elif instruction.instruction_base == FDCB:
+            extra_opcode = self.memory.get_contents_value(self.program_counter.get_contents() + 1)
+            instruction = self.instructions_by_opcode[FDCB + str(extra_opcode)]
+            substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
+            if instruction.right_arg:
+                substituted_right_arg = self.substitute_arg(instruction.right_arg, instruction.left_arg, FDCB)
         elif instruction.instruction_base in JUMP_INSTRUCTIONS:
             left_arg = instruction.left_arg
             right_arg = instruction.right_arg
@@ -812,7 +818,7 @@ class Z80():
             third_arg.set_contents(substituted_right_arg.get_contents())
 
     def substitute_arg(self, arg, opposite_arg, special=False):
-        if special == DDCB:
+        if special in [DDCB, FDCB]:
             if not opposite_arg.isdigit():
                 _, _ = self.read_memory_and_increment_pc()
         if arg and arg.isdigit():

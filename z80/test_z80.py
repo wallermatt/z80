@@ -23,7 +23,7 @@ def test_handler():
 def test_initial():
     z80 = Z80()
     assert len(z80.registers) == 32
-    assert len(z80.instructions_by_opcode) == 1269
+    assert len(z80.instructions_by_opcode) == 1270
     assert len(z80.memory.contents) == z80.MEMORY_SIZE
 
 
@@ -2032,6 +2032,7 @@ def test_ind():
         {
             ZERO_FLAG: (1, 0),
             ADD_SUBTRACT_FLAG: (0, 1),
+            PARITY_OVERFLOW_FLAG: (0, 1),
         },
         # Memory location: (before, after)
         {

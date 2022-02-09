@@ -69,6 +69,7 @@ RESTART = "rst"
 RESET = "res"
 SET = "set"
 DDCB = "DDCB"
+FDCB = "FDCB"
 
 
 JUMP_INSTRUCTIONS = [JUMP, JUMP_RELATIVE, DEC_JUMP_RELATIVE, CALL]
@@ -1362,6 +1363,8 @@ instructions = [
     Instruction(opcode="FDCB255", instruction_base="set", left_arg="7", right_arg="(iy+*)", size="4", time="23", flags="------", text="set 7,(iy+*),a", desc="Sets bit 7 of the memory location pointed to by iy plus *."),
 
     Instruction(opcode="DDCB", instruction_base="DDCB", left_arg="left_arg", right_arg="opcode", size="2", time="0", flags="", text="ddcb left_arg, extra_opcode, right_arg", desc="Hack to handle DDCB where the extra part of opcode is after left_arg!!!"),
+    Instruction(opcode="FDCB", instruction_base="FDCB", left_arg="left_arg", right_arg="opcode", size="2", time="0", flags="", text="fdcb left_arg, extra_opcode, right_arg", desc="Hack to handle FDCB where the extra part of opcode is after left_arg!!!"),
+
 ]
 
 instructions_by_opcode = {i.opcode: i for i in instructions}

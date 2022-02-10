@@ -182,10 +182,10 @@ class Z80():
             extra_opcode = self.memory.get_contents_value(self.program_counter.get_contents() + 1)
             instruction = self.instructions_by_opcode[FDCB + str(extra_opcode)]
             substituted_left_arg = self.substitute_arg(instruction.left_arg, instruction.right_arg)
-            self.program_counter.add_to_contents(1)
             if instruction.right_arg:
                 substituted_right_arg = self.substitute_arg(instruction.right_arg, instruction.left_arg, FDCB)
             else:
+                _, _ = self.read_memory_and_increment_pc()
                 substituted_right_arg = None
         elif instruction.instruction_base in JUMP_INSTRUCTIONS:
             left_arg = instruction.left_arg
@@ -1005,7 +1005,7 @@ class Z80():
                     self.F.set_flag(PARITY_OVERFLOW_FLAG)
                 else:
                     self.F.reset_flag(PARITY_OVERFLOW_FLAG)
-                if instruction.right_arg == "(ix+*)":
+                if instruction.right_arg in ["(ix+*)", "(iy+*)"]:
                     temp_comp = Component("temp")
                     temp_comp.set_contents(substituted_right_arg.name // 256)
                     substituted_left_arg = temp_comp

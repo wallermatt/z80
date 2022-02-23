@@ -478,7 +478,10 @@ class Z80():
     def compare_execute(self, instruction, substituted_left_arg):
         a = self.registers_by_name["A"]
         a_original_contents = a.get_contents()
-        a.subtraction_with_flags(substituted_left_arg.get_contents())
+        if type(substituted_left_arg) is int:
+            a.subtraction_with_flags(substituted_left_arg)
+        else:
+            a.subtraction_with_flags(substituted_left_arg.get_contents())
         a.set_potential_flags()
         self.set_flags_if_required(instruction, a.potential_flags)
         a.set_contents(a_original_contents)
@@ -858,7 +861,11 @@ class Z80():
                     iy_value = self.registers_by_name["IY"].get_contents()
                     displacement, _ = self.read_memory_and_increment_pc()
                     displacement = self.twos_complement(displacement)
-                    return self.memory.get_contents(iy_value + displacement)
+                    substituted_arg =  self.memory.get_contents(iy_value + displacement)
+                    if special == FDCB:
+                        if opposite_arg.isdigit():
+                            _, _ = self.read_memory_and_increment_pc()
+                    return substituted_arg
             if "**" in arg:
                 low_byte, end_of_memory_reached = self.read_memory_and_increment_pc()
                 if end_of_memory_reached:
@@ -1011,7 +1018,7 @@ class Z80():
                     substituted_left_arg = temp_comp
                 else:
                     substituted_left_arg = substituted_right_arg
-            elif instruction.text == "in (c)":
+            elif instruction.text in ["in (c)", "cp *"]:
                     temp_comp = Component("temp")
                     temp_comp.set_contents(self.ports.get_contents_value(substituted_left_arg))
                     substituted_left_arg = temp_comp

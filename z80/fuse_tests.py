@@ -1,3 +1,4 @@
+import datetime
 from helper import Z80TestHandler
 from instructions import instructions_by_opcode
 from base import FLAG_POSITIONS
@@ -240,6 +241,8 @@ def run_test(before, after, test, ignore_flags=False):
 #TEST = 'ddcb80'
 TEST = ''
 
+start = datetime.datetime.now()
+
 START = '00'
 start_reached = False
 if TEST:
@@ -268,6 +271,7 @@ else:
         print('TEST: {}'.format(test))
         run_test(before, after, test, ignore_flags)
 
+print (datetime.datetime.now() - start)
 '''
     b = before[TEST]
     #print(b.registers)
